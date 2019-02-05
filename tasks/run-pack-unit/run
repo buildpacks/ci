@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+source pipeline-repo/scripts/common.sh
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+
+cd pack-repo
+
+echo "registry:2 image is needed for pack unit tests"
+docker pull registry:2
+
+docker_run -e "IS_CI=true" golang go test -v -count=1 -parallel=1 ./...

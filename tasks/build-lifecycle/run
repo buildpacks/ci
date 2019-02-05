@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+
+export GO111MODULE=on
+export GOOS=linux
+export GOARCH=amd64
+export CGO_ENABLED=0
+
+version=$(cat lifecycle-version/version)
+
+
+echo Building lifecycle binaries
+echo Version "$version"
+
+pushd ./lifecycle-repo
+  go build -mod=vendor -o "../lifecycle-binaries/detector-$version"  -a ./cmd/detector/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/analyzer-$version"  -a ./cmd/analyzer/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/builder-$version"   -a ./cmd/builder/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/exporter-$version"  -a ./cmd/exporter/main.go
+popd
+
+
+echo Built:
+
+ls -al lifecycle-binaries/
+
+echo Done.

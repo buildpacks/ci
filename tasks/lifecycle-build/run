@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+source pipeline-repo/scripts/common.sh
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+./lifecycle-repo/images/bin/build
+
+for image in base run build samples; do
+  docker save "packs/$image" -o "built-lifecycle-images/$image.tar"
+done

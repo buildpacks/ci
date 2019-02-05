@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+source pipeline-repo/scripts/common.sh
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+
+cd lifecycle-repo
+
+docker_run golang go test -v -mod=vendor -count=1 -parallel=1 ./...

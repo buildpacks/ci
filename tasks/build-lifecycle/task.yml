@@ -1,0 +1,17 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: "1.11"
+
+inputs:
+  - name: lifecycle-repo
+  - name: pipeline-repo
+  - name: lifecycle-version
+
+outputs:
+  - name: lifecycle-binaries
+
+run:
+  path: pipeline-repo/tasks/build-lifecycle/run

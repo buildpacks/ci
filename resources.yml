@@ -1,0 +1,61 @@
+---
+resources:
+  - name: lifecycle-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/lifecycle.git
+      branch: build-mod-vendor
+
+  - name: lifecycle-image-version
+    type: semver
+    source:
+      initial_version: 3.0.0
+      driver: gcs
+      bucket: buildpack-v3-lifecycle
+      key: version
+      json_key: ((concourse-service-account-key-json))
+
+  - name: pack-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/pack.git
+      branch: master
+
+  - name: pipeline-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/ci.git
+      branch: master
+
+  - name: packs-base-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/base # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
+  - name: packs-run-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/run # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
+  - name: packs-build-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/build # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
+  - name: packs-samples-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/samples # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
+
+
+# keep a new line at the end of this file :)
+

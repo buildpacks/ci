@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+source pipeline-repo/scripts/common.sh
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+
+docker load -i packs-samples-image/image
+docker tag "$(cat packs-samples-image/image-id)" "packs/samples:dev"
+
+docker load -i packs-build-image/image
+docker tag "$(cat packs-build-image/image-id)" "packs/build:dev"
+
+docker load -i packs-run-image/image
+docker tag "$(cat packs-run-image/image-id)" "packs/run:dev"
+
+cd pack-repo
+docker_run -e "PACK_TAG=dev" -e "IS_CI=true" golang go test -tags=acceptance -v -count=1 -parallel=1 ./acceptance

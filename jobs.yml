@@ -1,0 +1,78 @@
+jobs:
+  - name: lifecycle-build
+    plan:
+      - get: lifecycle-repo
+        trigger: true
+        version: every
+      - get: pipeline-repo
+      - get: lifecycle-image-version
+        params:
+          pre: rc
+      - aggregate:
+        - task: run-unit-tests
+          privileged: true
+          file: pipeline-repo/tasks/run-lifecycle-unit/task.yml
+        - task: build-lifecycle
+          privileged: true
+          file: pipeline-repo/tasks/lifecycle-build/task.yml
+      - aggregate:
+        - put: packs-base-image
+          params:
+            load_file: built-lifecycle-images/base.tar
+            load_repository: packs/base # port needed for private repos
+            load_tag: dev
+            tag_file: lifecycle-image-version/version
+        - put: packs-run-image
+          params:
+            load_file: built-lifecycle-images/run.tar
+            load_repository: packs/run # port needed for private repos
+            load_tag: dev
+            tag_file: lifecycle-image-version/version
+        - put: packs-build-image
+          params:
+            load_file: built-lifecycle-images/build.tar
+            load_repository: packs/build # port needed for private repos
+            load_tag: dev
+            tag_file: lifecycle-image-version/version
+        - put: packs-samples-image
+          params:
+            load_file: built-lifecycle-images/samples.tar
+            load_repository: packs/samples # port needed for private repos
+            load_tag: dev
+            tag_file: lifecycle-image-version/version
+      - put:  lifecycle-image-version
+        params:
+          file: lifecycle-image-version/version
+
+  - name: pack-unit
+    plan:
+      - aggregate:
+        - get: pack-repo
+          resource: pack-repo
+          trigger: true
+          version: every
+        - get: pipeline-repo
+      - task: run-unit-tests
+        privileged: true
+        file: pipeline-repo/tasks/run-pack-unit/task.yml
+
+  - name: acceptance
+    plan:
+      - aggregate:
+        - get: pack-repo
+          resource: pack-repo
+        - get: pipeline-repo
+        - get: packs-build-image
+          passed: [lifecycle-build]
+          params: {save: true}
+        - get: packs-run-image
+          passed: [lifecycle-build]
+          params: {save: true}
+        - get: packs-samples-image
+          passed: [lifecycle-build]
+          trigger: true
+          params: {save: true}
+        - get: lifecycle-image-version
+      - task: acceptance
+        privileged: true
+        file: pipeline-repo/tasks/run-acceptance/task.yml

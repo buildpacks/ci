@@ -4,17 +4,17 @@ jobs:
       - get: lifecycle-repo
         trigger: true
         version: every
-      - get: pipeline-repo
+      - get: ci
       - get: lifecycle-image-version
         params:
           pre: rc
       - aggregate:
         - task: run-unit-tests
           privileged: true
-          file: pipeline-repo/tasks/run-lifecycle-unit/task.yml
+          file: ci/tasks/run-lifecycle-unit/task.yml
         - task: build-lifecycle
           privileged: true
-          file: pipeline-repo/tasks/lifecycle-build/task.yml
+          file: ci/tasks/lifecycle-build/task.yml
       - aggregate:
         - put: packs-base-image
           params:
@@ -51,17 +51,17 @@ jobs:
           resource: pack-repo
           trigger: true
           version: every
-        - get: pipeline-repo
+        - get: ci
       - task: run-unit-tests
         privileged: true
-        file: pipeline-repo/tasks/run-pack-unit/task.yml
+        file: ci/tasks/run-pack-unit/task.yml
 
   - name: acceptance
     plan:
       - aggregate:
         - get: pack-repo
           resource: pack-repo
-        - get: pipeline-repo
+        - get: ci
         - get: packs-build-image
           passed: [lifecycle-build]
           params: {save: true}
@@ -75,4 +75,4 @@ jobs:
         - get: lifecycle-image-version
       - task: acceptance
         privileged: true
-        file: pipeline-repo/tasks/run-acceptance/task.yml
+        file: ci/tasks/run-acceptance/task.yml

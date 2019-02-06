@@ -21,7 +21,7 @@ resources:
       uri: https://github.com/buildpack/pack.git
       branch: master
 
-  - name: pipeline-repo
+  - name: ci
     type: git
     source:
       uri: https://github.com/buildpack/ci.git

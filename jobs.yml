@@ -73,6 +73,7 @@ jobs:
           trigger: true
           params: {save: true}
         - get: lifecycle-image-version
+          passed: [lifecycle-build]
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml

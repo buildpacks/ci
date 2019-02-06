@@ -1,5 +1,5 @@
 jobs:
-  - name: lifecycle-build
+  - name: build-lifecycle-images
     plan:
       - get: lifecycle-repo
         trigger: true
@@ -12,9 +12,9 @@ jobs:
         - task: run-unit-tests
           privileged: true
           file: ci/tasks/run-lifecycle-unit/task.yml
-        - task: build-lifecycle
+        - task: build-images
           privileged: true
-          file: ci/tasks/lifecycle-build/task.yml
+          file: ci/tasks/build-lifecycle-images/task.yml
       - aggregate:
         - put: packs-base-image
           params:
@@ -63,17 +63,17 @@ jobs:
           resource: pack-repo
         - get: ci
         - get: packs-build-image
-          passed: [lifecycle-build]
+          passed: [build-lifecycle-images]
           params: {save: true}
         - get: packs-run-image
-          passed: [lifecycle-build]
+          passed: [build-lifecycle-images]
           params: {save: true}
         - get: packs-samples-image
-          passed: [lifecycle-build]
+          passed: [build-lifecycle-images]
           trigger: true
           params: {save: true}
         - get: lifecycle-image-version
-          passed: [lifecycle-build]
+          passed: [build-lifecycle-images]
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml

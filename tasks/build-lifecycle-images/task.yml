@@ -12,4 +12,4 @@ outputs:
   - name: built-lifecycle-images
 
 run:
-  path: ci/tasks/lifecycle-build/run
+  path: ci/tasks/build-lifecycle-images/run

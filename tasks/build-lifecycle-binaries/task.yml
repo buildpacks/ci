@@ -14,4 +14,4 @@ outputs:
   - name: lifecycle-binaries
 
 run:
-  path: ci/tasks/build-lifecycle/run
+  path: ci/tasks/build-lifecycle-binaries/run

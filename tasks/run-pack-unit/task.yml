@@ -6,7 +6,7 @@ image_resource:
 
 inputs:
   - name: pack-repo
-  - name: pipeline-repo
+  - name: ci
 
 run:
-  path: pipeline-repo/tasks/run-pack-unit/run
+  path: ci/tasks/run-pack-unit/run

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source pipeline-repo/scripts/common.sh
+source ci/scripts/common.sh
 
 set -o errexit
 set -o nounset

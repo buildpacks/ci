@@ -7,11 +7,11 @@ image_resource:
 
 inputs:
   - name: lifecycle-repo
-  - name: pipeline-repo
+  - name: ci
   - name: lifecycle-version
 
 outputs:
   - name: lifecycle-binaries
 
 run:
-  path: pipeline-repo/tasks/build-lifecycle/run
+  path: ci/tasks/build-lifecycle/run

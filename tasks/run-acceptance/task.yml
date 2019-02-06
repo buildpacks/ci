@@ -6,11 +6,11 @@ image_resource:
 
 inputs:
   - name: pack-repo
-  - name: pipeline-repo
+  - name: ci
   - name: packs-samples-image
   - name: packs-build-image
   - name: packs-run-image
   - name: lifecycle-image-version
 
 run:
-  path: pipeline-repo/tasks/run-acceptance/run
+  path: ci/tasks/run-acceptance/run

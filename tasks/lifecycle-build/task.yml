@@ -6,10 +6,10 @@ image_resource:
 
 inputs:
   - name: lifecycle-repo
-  - name: pipeline-repo
+  - name: ci
 
 outputs:
   - name: built-lifecycle-images
 
 run:
-  path: pipeline-repo/tasks/lifecycle-build/run
+  path: ci/tasks/lifecycle-build/run

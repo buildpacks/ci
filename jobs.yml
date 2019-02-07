@@ -1,5 +1,5 @@
 jobs:
-  - name: build-lifecycle-images
+  - name: build-lifecycle-binaries
     plan:
       - get: lifecycle-repo
         trigger: true
@@ -9,12 +9,46 @@ jobs:
         params:
           pre: rc
       - aggregate:
+#        - task: format-lifecycle
+#          file: ci/tasks/format-lifecycle/task.yml
         - task: run-unit-tests
           privileged: true
           file: ci/tasks/run-lifecycle-unit/task.yml
-        - task: build-images
+        - task: build-binaries
           privileged: true
-          file: ci/tasks/build-lifecycle-images/task.yml
+          file: ci/tasks/build-lifecycle-binaries/task.yml
+      - aggregate:
+        - put: lifecycle-gcs
+          params:
+            file: lifecycle-binaries/detector-*
+        - put: lifecycle-gcs
+          params:
+            file: lifecycle-binaries/analyzer-*
+        - put: lifecycle-gcs
+          params:
+            file: lifecycle-binaries/builder-*
+        - put: lifecycle-gcs
+          params:
+            file: lifecycle-binaries/exporter-*
+        - put: lifecycle-gcs
+          params:
+            file: lifecycle-binaries/launcher-*
+      - put:  lifecycle-image-version
+        params:
+          file: lifecycle-image-version/version
+
+  - name: build-stack-images
+    plan:
+      - get: lifecycle-repo
+        trigger: true
+        passed: [build-lifecycle-binaries]
+      - get: ci
+        passed: [build-lifecycle-binaries]
+      - get: lifecycle-image-version
+        passed: [build-lifecycle-binaries]
+      - task: build-images
+        privileged: true
+        file: ci/tasks/build-stack-images/task.yml
       - aggregate:
         - put: packs-base-image
           params:
@@ -40,9 +74,6 @@ jobs:
             load_repository: packs/samples # port needed for private repos
             load_tag: dev
             tag_file: lifecycle-image-version/version
-      - put:  lifecycle-image-version
-        params:
-          file: lifecycle-image-version/version
 
   - name: pack-unit
     plan:
@@ -63,17 +94,17 @@ jobs:
           resource: pack-repo
         - get: ci
         - get: packs-build-image
-          passed: [build-lifecycle-images]
+          passed: [build-stack-images]
           params: {save: true}
         - get: packs-run-image
-          passed: [build-lifecycle-images]
+          passed: [build-stack-images]
           params: {save: true}
         - get: packs-samples-image
-          passed: [build-lifecycle-images]
+          passed: [build-stack-images]
           trigger: true
           params: {save: true}
         - get: lifecycle-image-version
-          passed: [build-lifecycle-images]
+          passed: [build-stack-images]
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml

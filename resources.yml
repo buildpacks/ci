@@ -1,17 +1,23 @@
 ---
+resource_types:
+  - name: gcs-resource
+    type: docker-image
+    source:
+      repository: frodenas/gcs-resource
+
 resources:
   - name: lifecycle-repo
     type: git
     source:
       uri: https://github.com/buildpack/lifecycle.git
-      branch: build-mod-vendor
+      branch: master
 
   - name: lifecycle-image-version
     type: semver
     source:
       initial_version: 3.0.0
       driver: gcs
-      bucket: buildpack-v3-lifecycle
+      bucket: buildpack-v3-lifecycle-version
       key: version
       json_key: ((concourse-service-account-key-json))
 
@@ -25,7 +31,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: master
+      branch: wip-pipeline #master
 
   - name: packs-base-image
     type: docker-image
@@ -55,6 +61,12 @@ resources:
       username: _json_key
       password: ((concourse-service-account-key-json))
 
+  - name: lifecycle-gcs
+    type: gcs-resource
+    source:
+      bucket: lifecycle-v3-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: (.*)/(detector|analyzer|builder|exporter|launcher)-.*
 
 
 # keep a new line at the end of this file :)

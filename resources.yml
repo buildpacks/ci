@@ -66,7 +66,7 @@ resources:
     source:
       bucket: lifecycle-v3-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: (.*)/(detector|analyzer|builder|exporter|launcher)-.*
+      regexp: \w*-(.*)
 
 
 # keep a new line at the end of this file :)

@@ -6,6 +6,11 @@ set -o pipefail
 
 pushd ./lifecycle-repo
   ./bin/format
+  if [[ ! -z "$(git status --porcelain)" ]];
+  then
+    echo "Code was incorrectly formatted. Please run ./bin/format before committing your changes."
+    exit 1
+  fi
 popd
 
 echo Done.

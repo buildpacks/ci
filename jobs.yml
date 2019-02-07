@@ -9,8 +9,8 @@ jobs:
         params:
           pre: rc
       - aggregate:
-#        - task: format-lifecycle
-#          file: ci/tasks/format-lifecycle/task.yml
+        - task: format-lifecycle
+          file: ci/tasks/format-lifecycle/task.yml
         - task: run-unit-tests
           privileged: true
           file: ci/tasks/run-lifecycle-unit/task.yml
@@ -18,19 +18,24 @@ jobs:
           privileged: true
           file: ci/tasks/build-lifecycle-binaries/task.yml
       - aggregate:
-        - put: lifecycle-gcs
+        - put: detector-gcs
+          resource: lifecycle-gcs
           params:
             file: lifecycle-binaries/detector-*
-        - put: lifecycle-gcs
+        - put: analyzer-gcs
+          resource: lifecycle-gcs
           params:
             file: lifecycle-binaries/analyzer-*
-        - put: lifecycle-gcs
+        - put: builder-gcs
+          resource: lifecycle-gcs
           params:
             file: lifecycle-binaries/builder-*
-        - put: lifecycle-gcs
+        - put: exporter-gcs
+          resource: lifecycle-gcs
           params:
             file: lifecycle-binaries/exporter-*
-        - put: lifecycle-gcs
+        - put: launcher-gcs
+          resource: lifecycle-gcs
           params:
             file: lifecycle-binaries/launcher-*
       - put:  lifecycle-image-version
@@ -93,6 +98,7 @@ jobs:
         - get: pack-repo
           resource: pack-repo
         - get: ci
+          passed: [build-stack-images]
         - get: packs-build-image
           passed: [build-stack-images]
           params: {save: true}

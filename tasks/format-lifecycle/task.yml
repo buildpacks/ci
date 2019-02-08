@@ -8,10 +8,9 @@ image_resource:
 inputs:
   - name: lifecycle-repo
   - name: ci
-  - name: lifecycle-image-version
 
 outputs:
   - name: lifecycle-binaries
 
 run:
-  path: ci/tasks/build-lifecycle-binaries/run
+  path: ci/tasks/format-lifecycle/run

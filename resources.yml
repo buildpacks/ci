@@ -40,7 +40,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: wip-pipeline #master
+      branch: continue-on-pipeline # master
 
   - name: packs-base-image
     type: docker-image

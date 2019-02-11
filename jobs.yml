@@ -118,6 +118,8 @@ jobs:
           params: {save: true}
         - get: lifecycle-image-version
           passed: [build-stack-images]
+        - get: lifecycle-build-version
+          passed: [build-stack-images]
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml

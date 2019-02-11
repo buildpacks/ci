@@ -14,6 +14,6 @@ version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/ve
 echo $version >> ./built-lifecycle-version/version
 
 for image in base run build samples; do
-  docker save "packs/$image" -o "built-lifecycle-images/$image.tar"
   docker tag "packs/$image:$version" "packs/$image:dev"
+  docker save "packs/$image:dev" -o "built-lifecycle-images/$image.tar"
 done

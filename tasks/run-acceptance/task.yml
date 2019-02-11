@@ -11,6 +11,7 @@ inputs:
   - name: packs-build-image
   - name: packs-run-image
   - name: lifecycle-image-version
+  - name: lifecycle-build-version
 
 run:
   path: ci/tasks/run-acceptance/run

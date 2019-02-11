@@ -7,7 +7,10 @@ jobs:
       - get: ci
       - get: lifecycle-image-version
         params:
-          pre: rc
+          pre: alpha
+      - get: lifecycle-build-version
+        params:
+          pre: build
       - aggregate:
         - task: format-lifecycle
           file: ci/tasks/format-lifecycle/task.yml
@@ -38,9 +41,9 @@ jobs:
           resource: lifecycle-gcs
           params:
             file: lifecycle-binaries/launcher-*
-      - put:  lifecycle-image-version
+      - put:  lifecycle-build-version
         params:
-          file: lifecycle-image-version/version
+          file: lifecycle-build-version/version
 
   - name: build-stack-images
     plan:
@@ -51,6 +54,10 @@ jobs:
         passed: [build-lifecycle-binaries]
       - get: lifecycle-image-version
         passed: [build-lifecycle-binaries]
+        params:
+          pre: alpha
+      - get: lifecycle-build-version
+        passed: [build-lifecycle-binaries]
       - task: build-images
         privileged: true
         file: ci/tasks/build-stack-images/task.yml
@@ -60,25 +67,25 @@ jobs:
             load_file: built-lifecycle-images/base.tar
             load_repository: packs/base # port needed for private repos
             load_tag: dev
-            tag_file: lifecycle-image-version/version
+            tag_file: built-lifecycle-version/version
         - put: packs-run-image
           params:
             load_file: built-lifecycle-images/run.tar
             load_repository: packs/run # port needed for private repos
             load_tag: dev
-            tag_file: lifecycle-image-version/version
+            tag_file: built-lifecycle-version/version
         - put: packs-build-image
           params:
             load_file: built-lifecycle-images/build.tar
             load_repository: packs/build # port needed for private repos
             load_tag: dev
-            tag_file: lifecycle-image-version/version
+            tag_file: built-lifecycle-version/version
         - put: packs-samples-image
           params:
             load_file: built-lifecycle-images/samples.tar
             load_repository: packs/samples # port needed for private repos
             load_tag: dev
-            tag_file: lifecycle-image-version/version
+            tag_file: built-lifecycle-version/version
 
   - name: pack-unit
     plan:

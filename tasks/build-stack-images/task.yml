@@ -7,9 +7,12 @@ image_resource:
 inputs:
   - name: lifecycle-repo
   - name: ci
+  - name: lifecycle-image-version
+  - name: lifecycle-build-version
 
 outputs:
   - name: built-lifecycle-images
+  - name: built-lifecycle-version
 
 run:
   path: ci/tasks/build-stack-images/run

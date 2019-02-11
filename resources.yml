@@ -21,6 +21,15 @@ resources:
       key: version
       json_key: ((concourse-service-account-key-json))
 
+  - name: lifecycle-build-version
+    type: semver
+    source:
+      initial_version: 0.0.0
+      driver: gcs
+      bucket: buildpack-v3-lifecycle-build-version
+      key: version
+      json_key: ((concourse-service-account-key-json))
+
   - name: pack-repo
     type: git
     source:

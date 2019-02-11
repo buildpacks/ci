@@ -9,6 +9,7 @@ inputs:
   - name: lifecycle-repo
   - name: ci
   - name: lifecycle-image-version
+  - name: lifecycle-build-version
 
 outputs:
   - name: lifecycle-binaries

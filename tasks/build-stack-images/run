@@ -7,8 +7,13 @@ set -o nounset
 set -o pipefail
 
 set -x
-./lifecycle-repo/images/bin/build
+version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/version | cut -d "-" -f2)"
+
+./lifecycle-repo/images/bin/build -v $version
+
+echo $version >> ./built-lifecycle-version/version
 
 for image in base run build samples; do
   docker save "packs/$image" -o "built-lifecycle-images/$image.tar"
+  docker tag "packs/$image" "packs/$image:dev"
 done

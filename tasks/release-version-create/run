@@ -10,6 +10,6 @@ release_version="$(cat lifecycle-image-version/version)"
 
 echo $accepted_version > ./accepted-lifecycle-version/version
 
-echo $version > ./release-lifecycle-version/version
+echo $release_version > ./release-lifecycle-version/version
 
 

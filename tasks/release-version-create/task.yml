@@ -1,0 +1,17 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: concourse/docker-image-resource
+
+inputs:
+- name: ci
+- name: lifecycle-image-version
+- name: lifecycle-build-version
+
+outputs:
+- name: accepted-lifecycle-version
+- name: release-lifecycle-version
+
+run:
+  path: ci/tasks/release-version-create/run

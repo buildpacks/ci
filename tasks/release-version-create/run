@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+accepted_version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/version | cut -d "-" -f2)"
+release_version="$(cat lifecycle-image-version/version)"
+
+echo accepted_version > ./accepted-lifecycle-version/version
+
+echo $version > ./release-lifecycle-version/version
+
+

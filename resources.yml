@@ -102,7 +102,7 @@ resources:
     type: github-release
     source:
       owner: buildpack
-      repository: pack
+      repository: ci
       drafts: true
       access_token: buildpack-pack-cli-github-release-token # TODO: org token, not private token
 

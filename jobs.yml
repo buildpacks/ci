@@ -195,8 +195,9 @@ jobs:
         name: pack-release/pack-release-path
         tag: pack-version/version
         tag_prefix: v
-        commitish: pack-repo/.ref
-        globs: pack-release/pack-*
+        commitish: pack-repo/.git/ref
+        globs:
+        - pack-release/pack-*
 
 
     # rebuild

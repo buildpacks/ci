@@ -7,11 +7,11 @@ set -o nounset
 set -o pipefail
 
 set -x
-version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/version | cut -d "-" -f2)"
+version="$(cat lifecycle-version/version)-$(cat lifecycle-build-number/version | cut -d "-" -f2)"
 
 ./lifecycle-repo/images/bin/build -v $version
 
-echo $version >> ./built-lifecycle-version/version
+echo $version >> ./lifecycle-series-and-build-version/version
 
 for image in base run build samples; do
   docker tag "packs/$image:$version" "packs/$image:dev"

@@ -6,29 +6,14 @@ resource_types:
       repository: frodenas/gcs-resource
 
 resources:
+
+  ## Git Repos ##
+
   - name: lifecycle-repo
     type: git
     source:
       uri: https://github.com/buildpack/lifecycle.git
       branch: master
-
-  - name: lifecycle-image-version
-    type: semver
-    source:
-      initial_version: 3.0.0
-      driver: gcs
-      bucket: buildpack-v3-lifecycle-version
-      key: version
-      json_key: ((concourse-service-account-key-json))
-
-  - name: lifecycle-build-version
-    type: semver
-    source:
-      initial_version: 0.0.0
-      driver: gcs
-      bucket: buildpack-v3-lifecycle-build-version
-      key: version
-      json_key: ((concourse-service-account-key-json))
 
   - name: pack-repo
     type: git
@@ -40,7 +25,30 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: continue-on-pipeline # master
+      branch: master
+
+
+  ## Semver ##
+
+  - name: lifecycle-version
+    type: semver
+    source:
+      initial_version: 3.0.0-alpha.2
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: lifecycle-version
+      json_key: ((concourse-service-account-key-json))
+
+  - name: lifecycle-build-number
+    type: semver
+    source:
+      initial_version: 0.0.0
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: lifecycle-build-number
+      json_key: ((concourse-service-account-key-json))
+
+  ## Docker Images ##
 
   - name: packs-base-image
     type: docker-image
@@ -70,13 +78,48 @@ resources:
       username: _json_key
       password: ((concourse-service-account-key-json))
 
-  - name: lifecycle-gcs
+  ## GCS Buckets ##
+
+  - name: detector-gcs
     type: gcs-resource
     source:
-      bucket: lifecycle-v3-binaries
+      bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: \w*-(.*)
+      regexp: development/detector-(.*)
 
+  - name: analyzer-gcs
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/analyzer-(.*)
 
-# keep a new line at the end of this file :)
+  - name: builder-gcs
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/builder-(.*)
+
+  - name: exporter-gcs
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/exporter-(.*)
+
+  - name: launcher-gcs
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/launcher-(.*)
+
+  - name: latest-lifecycle-archive-dev
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      versioned_file: development/lifecycle-binaries-latest.tgz
+
 

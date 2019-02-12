@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+version="$(cat lifecycle-version/version)-$(cat lifecycle-build-number/version | cut -d "-" -f2)"
+
+echo "Assembling binaries for version $version"
+
+cp builder-gcs/builder-*      binaries-archive/builder
+cp analyzer-gcs/analyzer-*    binaries-archive/analyzer
+cp detector-gcs/detector-*    binaries-archive/detector
+cp exporter-gcs/exporter-*    binaries-archive/exporter
+cp launcher-gcs/launcher-*    binaries-archive/launcher
+
+chmod +x binaries-archive/*
+
+echo ${version} > binaries-archive/VERSION
+
+pushd binaries-archive
+  # See: https://reproducible-builds.org/docs/archives/
+  export TZ=UTC
+  tar \
+  --sort=name \
+  --mtime='1970-01-01 00:00:00' \
+  --owner=0 --group=0 --numeric-owner \
+  -czvf lifecycle-binaries-latest.tgz ./*
+
+  echo Archive SHAs:
+  sha256sum lifecycle-binaries-latest.tgz
+  sha512sum lifecycle-binaries-latest.tgz
+popd
+
+echo Done.

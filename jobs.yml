@@ -125,8 +125,8 @@ jobs:
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
       - put: lifecycle-build-version
-        params:
-          pre: build
+#        params:
+#          pre: build
 
   - name: release-lifecycle
     plan:
@@ -172,3 +172,34 @@ jobs:
         - put: lifecycle-image-version
           params:
             pre: alpha
+
+  - name: release-pack
+    plan:
+    - aggregate:
+      - do:
+        - get: pack-version
+        - put: pack-version
+          params:
+            bump: patch
+      - get: lifecycle-image-version
+        passed: [release-lifecycle]
+      - get: pack-repo
+        passed: [acceptance]
+      - get: ci
+    - task: build-pack-cli-linux
+      file: ci/tasks/build-pack-cli/task.yml
+      params:
+        OS_NAME: linux
+    - put: pack-github-release
+      params:
+        name: pack-release/pack-release-path
+        tag: pack-version/version
+        tag_prefix: v
+        commitish: pack-repo/.ref
+        globs: pack-release/pack-*
+
+
+    # rebuild
+    # put binaries in bucket
+    # put github release
+

@@ -6,29 +6,14 @@ resource_types:
       repository: frodenas/gcs-resource
 
 resources:
+
+  ## Git Repos ##
+
   - name: lifecycle-repo
     type: git
     source:
       uri: https://github.com/buildpack/lifecycle.git
       branch: master
-
-  - name: lifecycle-image-version
-    type: semver
-    source:
-      initial_version: 3.0.0
-      driver: gcs
-      bucket: buildpack-v3-lifecycle-version
-      key: version
-      json_key: ((concourse-service-account-key-json))
-
-  - name: lifecycle-build-version
-    type: semver
-    source:
-      initial_version: 0.0.0
-      driver: gcs
-      bucket: buildpack-v3-lifecycle-build-version
-      key: version
-      json_key: ((concourse-service-account-key-json))
 
   - name: pack-repo
     type: git
@@ -41,6 +26,38 @@ resources:
     source:
       uri: https://github.com/buildpack/ci.git
       branch: continue-on-pipeline # master
+
+
+  ## Semver ##
+
+  - name: lifecycle-image-version
+    type: semver
+    source:
+      initial_version: 3.0.0
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: lifecycle-image-version
+      json_key: ((concourse-service-account-key-json))
+
+  - name: lifecycle-build-version
+    type: semver
+    source:
+      initial_version: 0.0.0
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: lifecycle-build-version
+      json_key: ((concourse-service-account-key-json))
+
+  - name: pack-version
+    type: semver
+    source:
+      initial_version: 0.0.1
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: pack-version
+      json_key: ((concourse-service-account-key-json))
+
+  ## Docker Images ##
 
   - name: packs-base-image
     type: docker-image
@@ -70,6 +87,8 @@ resources:
       username: _json_key
       password: ((concourse-service-account-key-json))
 
+  ## GCS Buckets ##
+
   - name: lifecycle-gcs
     type: gcs-resource
     source:
@@ -77,6 +96,14 @@ resources:
       json_key: ((concourse-service-account-key-json))
       regexp: \w*-(.*)
 
+  ## Github Releases ##
+
+  - name: pack-github-release
+    type: github-release
+    source:
+      owner: buildpack
+      repository: pack
+      drafts: true
+      access_token: buildpack-pack-cli-github-release-token # TODO: org token, not private token
 
 # keep a new line at the end of this file :)
-

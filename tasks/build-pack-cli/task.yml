@@ -1,0 +1,20 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: "1.11"
+
+inputs:
+  - name: pack-repo
+  - name: ci
+  - name: pack-version
+
+outputs:
+  - name: pack-release
+
+run:
+  path: ci/tasks/build-pack-cli/run
+
+params:
+  OS_NAME:

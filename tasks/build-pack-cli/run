@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+pack_version=$(cat pack-version/version)
+export PACK_PATH="$PWD/pack-release/pack-${pack_version}-${OS_NAME}"
+export GOOS=${OS_NAME}
+
+echo Building 'pack' CLI version: $pack_version
+
+pushd pack-repo
+    go build -ldflags "-X 'main.Version=${pack_version}'" -o "$PACK_PATH" ./cmd/pack
+popd
+
+echo $PACK_PATH > pack-release/pack-release-path
+
+echo Done.

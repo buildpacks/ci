@@ -1,5 +1,5 @@
-ARG base=ubuntu:18.04
-ARG go_version=1.11.4
+ARG base
+ARG go_version
 
 FROM golang:${go_version} as builder
 

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+echo Generating docker build args
+
+version=$(cat built-lifecycle-version/version)
+
+mkdir docker-build-args
+cat << EOF > docker-build-args/args.json
+  {
+    "base_image": "packs/build:${version}",
+    "build_image": "packs/build:${version}",
+    "run_image": "packs/run:${version}"
+  }
+EOF
+
+echo Done.

@@ -1,6 +1,6 @@
-ARG base=packs/build
+ARG build_image
 
-FROM $base
+FROM $build_image
 ARG samples_tgz=https://api.github.com/repos/buildpack/samples/tarball/master
 
 USER root

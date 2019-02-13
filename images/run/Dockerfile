@@ -1,6 +1,6 @@
-ARG base=packs/base
+ARG base_image
 
-FROM ${base}
+FROM ${base_image}
 ARG stack_id="io.buildpacks.stacks.bionic"
 
 EXPOSE 8080

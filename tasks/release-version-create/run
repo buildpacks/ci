@@ -4,6 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+## TODO: replace this task with input mapping
+
 set -x
 release_version="$(cat lifecycle-image-version/version)"
 

@@ -16,11 +16,11 @@ echo Building lifecycle binaries
 echo Version "$version"
 
 pushd ./lifecycle-repo
-  go build -mod=vendor -o "../lifecycle-binaries/detector-$version"  -a ./cmd/detector/main.go
-  go build -mod=vendor -o "../lifecycle-binaries/analyzer-$version"  -a ./cmd/analyzer/main.go
-  go build -mod=vendor -o "../lifecycle-binaries/builder-$version"   -a ./cmd/builder/main.go
-  go build -mod=vendor -o "../lifecycle-binaries/exporter-$version"  -a ./cmd/exporter/main.go
-  go build -mod=vendor -o "../lifecycle-binaries/launcher-$version"  -a ./cmd/launcher/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/detector-$version-$GOOS"  -a ./cmd/detector/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/analyzer-$version-$GOOS"  -a ./cmd/analyzer/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/builder-$version-$GOOS"   -a ./cmd/builder/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/exporter-$version-$GOOS"  -a ./cmd/exporter/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/launcher-$version-$GOOS"  -a ./cmd/launcher/main.go
 popd
 
 

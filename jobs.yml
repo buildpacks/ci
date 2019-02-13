@@ -51,41 +51,51 @@ jobs:
         trigger: true
         passed: [build-lifecycle-binaries]
       - get: ci
-        passed: [build-lifecycle-binaries]
+#        passed: [build-lifecycle-binaries]
       - get: lifecycle-image-version
         passed: [build-lifecycle-binaries]
         params:
           pre: alpha
       - get: lifecycle-build-version
         passed: [build-lifecycle-binaries]
-      - task: build-images
+      - task: calculate-lifecycle-version
         privileged: true
-        file: ci/tasks/build-stack-images/task.yml
+        file: ci/tasks/calculate-lifecycle-version/task.yml
+      - task: generate-docker-build-args
+        file: ci/tasks/generate-docker-build-args/task.yml
+      - put: packs-base-image
+        params:
+          build: ci/images/base
+          tag_file: built-lifecycle-version/version
+          build_args:
+            base: "ubuntu:18.04"
+            go_version: "1.11.4"
+          build_args_file: docker-build-args/args.json
       - aggregate:
-        - put: packs-base-image
-          params:
-            load_file: built-lifecycle-images/base.tar
-            load_repository: packs/base # port needed for private repos
-            load_tag: dev
-            tag_file: built-lifecycle-version/version
         - put: packs-run-image
           params:
-            load_file: built-lifecycle-images/run.tar
-            load_repository: packs/run # port needed for private repos
-            load_tag: dev
+            build: ci/images/run
             tag_file: built-lifecycle-version/version
+            build_args:
+              base: "ubuntu:18.04"
+              go_version: "1.11.4"
+            build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
-            load_file: built-lifecycle-images/build.tar
-            load_repository: packs/build # port needed for private repos
-            load_tag: dev
+            build: ci/images/build
             tag_file: built-lifecycle-version/version
+            build_args:
+              base: "ubuntu:18.04"
+              go_version: "1.11.4"
+            build_args_file: docker-build-args/args.json
         - put: packs-samples-image
           params:
-            load_file: built-lifecycle-images/samples.tar
-            load_repository: packs/samples # port needed for private repos
-            load_tag: dev
+            build: ci/images/samples
             tag_file: built-lifecycle-version/version
+            build_args:
+              base: "ubuntu:18.04"
+              go_version: "1.11.4"
+            build_args_file: docker-build-args/args.json
 
   - name: pack-unit
     plan:
@@ -175,12 +185,10 @@ jobs:
 
   - name: release-pack
     plan:
+    - put: pack-version
+      params:
+        bump: patch
     - aggregate:
-      - do:
-        - get: pack-version
-        - put: pack-version
-          params:
-            bump: patch
       - get: lifecycle-image-version
         passed: [release-lifecycle]
       - get: pack-repo

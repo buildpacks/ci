@@ -8,7 +8,6 @@ echo Generating docker build args
 
 version=$(cat built-lifecycle-version/version)
 
-mkdir docker-build-args
 cat << EOF > docker-build-args/args.json
   {
     "base_image": "packs/build:${version}",

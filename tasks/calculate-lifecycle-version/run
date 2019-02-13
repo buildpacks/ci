@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+echo Calculating version
+
+version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/version | cut -d "-" -f2)"
+
+echo Version is: $version
+echo Writing out version
+
+echo $version >> ./built-lifecycle-version/version
+
+echo Done.

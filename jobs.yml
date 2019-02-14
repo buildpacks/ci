@@ -12,90 +12,90 @@ jobs:
         params:
           pre: build
       - aggregate:
-        - task: format-lifecycle
-          file: ci/tasks/format-lifecycle/task.yml
-        - task: run-unit-tests
-          privileged: true
-          file: ci/tasks/run-lifecycle-unit/task.yml
+#        - task: format-lifecycle
+#          file: ci/tasks/format-lifecycle/task.yml
+#        - task: run-unit-tests
+#          privileged: true
+#          file: ci/tasks/run-lifecycle-unit/task.yml
         - task: build-binaries
           privileged: true
           file: ci/tasks/build-lifecycle-binaries/task.yml
       - aggregate:
         - put: detector-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/detector-*
+          params: {file: lifecycle-binaries/detector-*}
         - put: analyzer-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/analyzer-*
+          params: {file: lifecycle-binaries/analyzer-*}
         - put: builder-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/builder-*
+          params: {file: lifecycle-binaries/builder-*}
         - put: exporter-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/exporter-*
+          params: {file: lifecycle-binaries/exporter-*}
         - put: launcher-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/launcher-*
+          params: {file: lifecycle-binaries/launcher-*}
       - put:  lifecycle-build-version
         params:
           file: lifecycle-build-version/version
 
   - name: build-stack-images
     plan:
-      - get: lifecycle-repo
-        trigger: true
-        passed: [build-lifecycle-binaries]
-      - get: ci
-#        passed: [build-lifecycle-binaries]
-      - get: lifecycle-image-version
-        passed: [build-lifecycle-binaries]
-        params:
-          pre: alpha
-      - get: lifecycle-build-version
-        passed: [build-lifecycle-binaries]
-      - task: calculate-lifecycle-version
-        privileged: true
-        file: ci/tasks/calculate-lifecycle-version/task.yml
+
+      - aggregate:
+        ## Get repos, versions
+        - get: lifecycle-repo
+          trigger: true
+          passed: [build-lifecycle-binaries]
+        - get: ci
+      #        passed: [build-lifecycle-binaries]
+        - get: lifecycle-image-version
+          passed: [build-lifecycle-binaries]
+          params:
+            pre: alpha
+        - get: lifecycle-build-version
+          passed: [build-lifecycle-binaries]
+        ## Get binaries
+        - get: detector-gcs
+        - get: analyzer-gcs
+        - get: builder-gcs
+        - get: exporter-gcs
+        - get: launcher-gcs
+
+      ## Prep
+      - aggregate:
+        - task: calculate-lifecycle-version
+          file: ci/tasks/calculate-lifecycle-version/task.yml
+        - task: move-lifecycle-binaries-for-docker
+          file: ci/tasks/move-lifecycle-binaries/task.yml
       - task: generate-docker-build-args
         file: ci/tasks/generate-docker-build-args/task.yml
+
+      ## Docker builds
       - put: packs-base-image
         params:
-          build: ci/images/base
+          build: lifecycle-binaries
+          dockerfile: ci/images/base/Dockerfile
           tag_file: built-lifecycle-version/version
           build_args:
             base: "ubuntu:18.04"
-            go_version: "1.11.4"
-          build_args_file: docker-build-args/args.json
       - aggregate:
         - put: packs-run-image
           params:
-            build: ci/images/run
+            build: lifecycle-binaries
+            dockerfile: ci/images/run/Dockerfile
             tag_file: built-lifecycle-version/version
-            build_args:
-              base: "ubuntu:18.04"
-              go_version: "1.11.4"
             build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
-            build: ci/images/build
+            build: lifecycle-binaries
+            dockerfile: ci/images/build/Dockerfile
             tag_file: built-lifecycle-version/version
             build_args:
-              base: "ubuntu:18.04"
               go_version: "1.11.4"
             build_args_file: docker-build-args/args.json
-        - put: packs-samples-image
-          params:
-            build: ci/images/samples
-            tag_file: built-lifecycle-version/version
-            build_args:
-              base: "ubuntu:18.04"
-              go_version: "1.11.4"
-            build_args_file: docker-build-args/args.json
+      - put: packs-samples-image
+        params:
+          build: lifecycle-binaries
+          dockerfile: ci/images/samples/Dockerfile
+          tag_file: built-lifecycle-version/version
+          build_args_file: docker-build-args/args.json
 
   - name: pack-unit
     plan:

@@ -89,12 +89,40 @@ resources:
 
   ## GCS Buckets ##
 
-  - name: lifecycle-gcs
+  - name: detector-gcs
     type: gcs-resource
     source:
       bucket: lifecycle-v3-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: \w*-(.*)
+      regexp: detector-(.*)
+
+  - name: analyzer-gcs
+    type: gcs-resource
+    source:
+      bucket: lifecycle-v3-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: lifecycle-binaries/analyzer-(.*)
+
+  - name: builder-gcs
+    type: gcs-resource
+    source:
+      bucket: lifecycle-v3-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: lifecycle-binaries/builder-(.*)
+
+  - name: exporter-gcs
+    type: gcs-resource
+    source:
+      bucket: lifecycle-v3-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: lifecycle-binaries/exporter-(.*)
+
+  - name: launcher-gcs
+    type: gcs-resource
+    source:
+      bucket: lifecycle-v3-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: lifecycle-binaries/launcher-(.*)
 
   ## Github Releases ##
 

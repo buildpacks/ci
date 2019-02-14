@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+echo Moving binaries
+
+mv detector-gcs/detector-*  lifecycle-binaries/detector
+mv analyzer-gcs/analyzer-*  lifecycle-binaries/analyzer
+mv builder-gcs/builder-*    lifecycle-binaries/builder
+mv exporter-gcs/exporter-*  lifecycle-binaries/exporter
+mv launcher-gcs/launcher-*  lifecycle-binaries/launcher
+
+echo lifecycle-binaries after moves:
+
+ls -al lifecycle-binaries
+
+echo Done.

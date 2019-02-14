@@ -10,10 +10,14 @@ version=$(cat built-lifecycle-version/version)
 
 cat << EOF > docker-build-args/args.json
   {
-    "base_image": "gcr.io/cncf-buildpacks-ci/packs/base:${version}",
-    "build_image": "gcr.io/cncf-buildpacks-ci/packs/build:${version}",
-    "run_image": "gcr.io/cncf-buildpacks-ci/packs/run:${version}"
+    "base_image":   "gcr.io:443/cncf-buildpacks-ci/packs/base:${version}",
+    "build_image":  "gcr.io:443/cncf-buildpacks-ci/packs/build:${version}",
+    "run_image":    "gcr.io:443/cncf-buildpacks-ci/packs/run:${version}"
   }
 EOF
+
+echo Generated JSON:
+
+cat docker-build-args/args.json
 
 echo Done.

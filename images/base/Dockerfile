@@ -18,7 +18,7 @@ ENV PACK_USER_ID=${pack_uid}
 ENV PACK_GROUP_ID=${pack_gid}
 ENV PACK_USER_GID=${pack_gid}
 
-COPY ./* /lifecycle
+COPY ./* /lifecycle/
 
 RUN wget -qO /usr/local/bin/jq "${jq_url}" && chmod +x /usr/local/bin/jq && \
   wget -qO /usr/local/bin/yj "${yj_url}" && chmod +x /usr/local/bin/yj

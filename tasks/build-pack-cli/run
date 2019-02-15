@@ -15,6 +15,7 @@ pushd pack-repo
 popd
 
 echo $PACK_PATH > pack-release/pack-release-path
+echo "pack v${pack_version}" > pack-release/pack-release-name
 
 echo Built:
 

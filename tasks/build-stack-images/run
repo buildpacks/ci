@@ -11,7 +11,7 @@ version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/ve
 
 ./lifecycle-repo/images/bin/build -v $version
 
-echo $version >> ./built-lifecycle-version/version
+echo $version >> ./lifecycle-series-and-build-version/version
 
 for image in base run build samples; do
   docker tag "packs/$image:$version" "packs/$image:dev"

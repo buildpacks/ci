@@ -11,6 +11,6 @@ version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/ve
 echo Version is: $version
 echo Writing out version
 
-echo $version >> ./built-lifecycle-version/version
+echo $version >> ./lifecycle-series-and-build-version/version
 
 echo Done.

@@ -80,7 +80,7 @@ jobs:
         params:
           build: lifecycle-binaries
           dockerfile: ci/images/base/Dockerfile
-          tag_file: built-lifecycle-version/version
+          tag_file: lifecycle-series-and-build-version/version
           build_args:
             base: "ubuntu:18.04"
       - aggregate:
@@ -88,13 +88,13 @@ jobs:
           params:
             build: lifecycle-binaries
             dockerfile: ci/images/run/Dockerfile
-            tag_file: built-lifecycle-version/version
+            tag_file: lifecycle-series-and-build-version/version
             build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
             build: lifecycle-binaries
             dockerfile: ci/images/build/Dockerfile
-            tag_file: built-lifecycle-version/version
+            tag_file: lifecycle-series-and-build-version/version
             build_args:
               go_version: "1.11.4"
             build_args_file: docker-build-args/args.json
@@ -102,7 +102,7 @@ jobs:
         params:
           build: lifecycle-binaries
           dockerfile: ci/images/samples/Dockerfile
-          tag_file: built-lifecycle-version/version
+          tag_file: lifecycle-series-and-build-version/version
           build_args_file: docker-build-args/args.json
 
   - name: pack-unit

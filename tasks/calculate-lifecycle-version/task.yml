@@ -11,7 +11,7 @@ inputs:
 - name: lifecycle-build-version
 
 outputs:
-- name: built-lifecycle-version
+- name: lifecycle-series-and-build-version
 
 run:
   path: ci/tasks/calculate-lifecycle-version/run

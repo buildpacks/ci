@@ -1,5 +1,6 @@
 jobs:
   - name: build-lifecycle-binaries
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
       - get: lifecycle-repo
         trigger: true
@@ -41,6 +42,7 @@ jobs:
       - aggregate:
         ## Get repos, versions
         - get: lifecycle-repo
+          version: every
           trigger: true
           passed: [build-lifecycle-binaries]
         - get: ci
@@ -51,12 +53,18 @@ jobs:
             pre: alpha
         - get: lifecycle-build-version
           passed: [build-lifecycle-binaries]
+
         ## Get binaries
         - get: detector-gcs
+          passed: [build-lifecycle-binaries]
         - get: analyzer-gcs
+          passed: [build-lifecycle-binaries]
         - get: builder-gcs
+          passed: [build-lifecycle-binaries]
         - get: exporter-gcs
+          passed: [build-lifecycle-binaries]
         - get: launcher-gcs
+          passed: [build-lifecycle-binaries]
 
       ## Prep
       - aggregate:
@@ -134,9 +142,9 @@ jobs:
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
-      - put: lifecycle-build-version
-#        params:
-#          pre: build
+
+      ## TODO: create a "latest" archive for lifecycle binaries and push to GCS
+      ## To make it easy for buildpacks to consume
 
   - name: release-lifecycle
     plan:

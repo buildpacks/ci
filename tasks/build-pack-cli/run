@@ -12,11 +12,8 @@ echo Building 'pack' CLI version: $pack_version
 
 pushd pack-repo
     go build -ldflags "-X 'main.Version=${pack_version}'" -o "$PACK_PATH" ./cmd/pack
-
-    git rev-list HEAD -n1    > ../pack-release/pack-commit-sha
 popd
 
-echo $PACK_PATH              > pack-release/pack-release-path
 echo "pack v${pack_version}" > pack-release/pack-release-name
 
 echo Built:

@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 pack_version=$(cat pack-version/version)
-export PACK_PATH="$PWD/pack-release/pack-${pack_version}-${OS_NAME}"
+export PACK_PATH="../pack-release/pack-${pack_version}-${OS_NAME}"
 export GOOS=${OS_NAME}
 
 echo Building 'pack' CLI version: $pack_version
@@ -15,5 +15,9 @@ pushd pack-repo
 popd
 
 echo $PACK_PATH > pack-release/pack-release-path
+
+echo Built:
+
+ls -al pack-release/
 
 echo Done.

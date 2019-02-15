@@ -125,6 +125,8 @@ jobs:
           passed: [pack-unit]
         - get: ci
           passed: [build-stack-images]
+        - get: packs-base-image
+          passed: [build-stack-images]
         - get: packs-build-image
           passed: [build-stack-images]
           params: {save: true}
@@ -159,6 +161,9 @@ jobs:
           passed: [acceptance]
           params:
             pre: build
+        - get: packs-base-image
+          passed: [acceptance]
+          params: {save: true}
         - get: packs-build-image
           passed: [acceptance]
           params: {save: true}
@@ -171,6 +176,10 @@ jobs:
       - task: release-version-create
         file: ci/tasks/release-version-create/task.yml
       - aggregate:
+        - put: packs-base-image
+          params:
+            load: packs-base-image
+            tag_file: release-lifecycle-version/version
         - put: packs-build-image
           params:
             load: packs-build-image

@@ -14,8 +14,9 @@ pushd pack-repo
     go build -ldflags "-X 'main.Version=${pack_version}'" -o "$PACK_PATH" ./cmd/pack
 popd
 
-echo $PACK_PATH > pack-release/pack-release-path
-echo "pack v${pack_version}" > pack-release/pack-release-name
+echo $PACK_PATH                     > pack-release/pack-release-path
+echo "pack v${pack_version}"        > pack-release/pack-release-name
+cat pack-repo/.git/ref | tr -d '\n' > pack-release/pack-commit-sha
 
 echo Built:
 

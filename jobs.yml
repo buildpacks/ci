@@ -217,15 +217,10 @@ jobs:
         OS_NAME: linux
     - put: pack-github-release
       params:
-        name: pack-release/pack-release-path
+        name: pack-release/pack-release-name
         tag: pack-version/version
         tag_prefix: v
         commitish: pack-repo/.git/ref
         globs:
-        - pack-release/pack-*
-
-
-    # rebuild
-    # put binaries in bucket
-    # put github release
+        - pack-release/pack-*-linux
 

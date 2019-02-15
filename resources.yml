@@ -92,37 +92,37 @@ resources:
   - name: detector-gcs
     type: gcs-resource
     source:
-      bucket: lifecycle-v3-binaries
+      bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: detector-(.*)
+      regexp: development/detector-(.*)
 
   - name: analyzer-gcs
     type: gcs-resource
     source:
-      bucket: lifecycle-v3-binaries
+      bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: lifecycle-binaries/analyzer-(.*)
+      regexp: development/analyzer-(.*)
 
   - name: builder-gcs
     type: gcs-resource
     source:
-      bucket: lifecycle-v3-binaries
+      bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: lifecycle-binaries/builder-(.*)
+      regexp: development/builder-(.*)
 
   - name: exporter-gcs
     type: gcs-resource
     source:
-      bucket: lifecycle-v3-binaries
+      bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: lifecycle-binaries/exporter-(.*)
+      regexp: development/exporter-(.*)
 
   - name: launcher-gcs
     type: gcs-resource
     source:
-      bucket: lifecycle-v3-binaries
+      bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: lifecycle-binaries/launcher-(.*)
+      regexp: development/launcher-(.*)
 
   ## Github Releases ##
 

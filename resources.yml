@@ -30,7 +30,7 @@ resources:
 
   ## Semver ##
 
-  - name: lifecycle-image-version
+  - name: lifecycle-marketing-version-test-0
     type: semver
     source:
       initial_version: 3.0.0
@@ -39,7 +39,7 @@ resources:
       key: lifecycle-image-version
       json_key: ((concourse-service-account-key-json))
 
-  - name: lifecycle-build-version
+  - name: lifecycle-build-version-test-0
     type: semver
     source:
       initial_version: 0.0.0
@@ -48,7 +48,7 @@ resources:
       key: lifecycle-build-version
       json_key: ((concourse-service-account-key-json))
 
-  - name: pack-version
+  - name: pack-version-test-0
     type: semver
     source:
       initial_version: 0.0.1
@@ -123,6 +123,13 @@ resources:
       bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
       regexp: development/launcher-(.*)
+
+  - name: latest-lifecycle-archive-dev
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      versioned_file: development/lifecycle-binaries-latest.tgz
 
   ## Github Releases ##
 

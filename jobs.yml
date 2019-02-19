@@ -9,15 +9,15 @@ jobs:
       - get: lifecycle-image-version
         params:
           pre: alpha
-      - get: lifecycle-build-version
+      - put:  lifecycle-build-version
         params:
           pre: build
       - aggregate:
-#        - task: format-lifecycle
-#          file: ci/tasks/format-lifecycle/task.yml
-#        - task: run-unit-tests
-#          privileged: true
-#          file: ci/tasks/run-lifecycle-unit/task.yml
+        - task: format-lifecycle
+          file: ci/tasks/format-lifecycle/task.yml
+        - task: run-unit-tests
+          privileged: true
+          file: ci/tasks/run-lifecycle-unit/task.yml
         - task: build-binaries
           privileged: true
           file: ci/tasks/build-lifecycle-binaries/task.yml
@@ -32,13 +32,9 @@ jobs:
           params: {file: lifecycle-binaries/exporter-*}
         - put: launcher-gcs
           params: {file: lifecycle-binaries/launcher-*}
-      - put:  lifecycle-build-version
-        params:
-          file: lifecycle-build-version/version
 
   - name: build-stack-images
     plan:
-
       - aggregate:
         ## Get repos, versions
         - get: lifecycle-repo
@@ -46,7 +42,7 @@ jobs:
           trigger: true
           passed: [build-lifecycle-binaries]
         - get: ci
-      #        passed: [build-lifecycle-binaries]
+          passed: [build-lifecycle-binaries]
         - get: lifecycle-image-version
           passed: [build-lifecycle-binaries]
           params:
@@ -125,6 +121,7 @@ jobs:
           passed: [pack-unit]
         - get: ci
           passed: [build-stack-images]
+        # Images
         - get: packs-base-image
           passed: [build-stack-images]
         - get: packs-build-image
@@ -137,16 +134,32 @@ jobs:
           passed: [build-stack-images]
           trigger: true
           params: {save: true}
+        # Versions
         - get: lifecycle-image-version
           passed: [build-stack-images]
         - get: lifecycle-build-version
           passed: [build-stack-images]
+        # Binaries
+        - get: detector-gcs
+          passed: [build-stack-images]
+        - get: analyzer-gcs
+          passed: [build-stack-images]
+        - get: builder-gcs
+          passed: [build-stack-images]
+        - get: exporter-gcs
+          passed: [build-stack-images]
+        - get: launcher-gcs
+          passed: [build-stack-images]
+
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
-
-      ## TODO: create a "latest" archive for lifecycle binaries and push to GCS
-      ## To make it easy for buildpacks to consume
+      - task: assemble-binary-archive
+        file: ci/tasks/assemble-binary-archive/task.yml
+      - put: latest-lifecycle-archive-dev
+        params:
+          file: binaries-archive/lifecycle-binaries-latest.tgz
+          content_type: application/gzip # there's no distinct tgz mimetype
 
   - name: release-lifecycle
     plan:
@@ -223,4 +236,3 @@ jobs:
         commitish: pack-repo/.git/ref
         globs:
         - pack-release/pack-*-linux
-

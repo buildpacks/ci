@@ -30,31 +30,31 @@ resources:
 
   ## Semver ##
 
-  - name: lifecycle-marketing-version-test-0
+  - name: lifecycle-version-test-0 # TODO: Finalize name (remove test-*)
     type: semver
     source:
-      initial_version: 3.0.0
+      initial_version: 3.0.0-alpha.2
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: lifecycle-image-version
+      key: lifecycle-version-test-0 # TODO: Finalize name (remove test-*)
       json_key: ((concourse-service-account-key-json))
 
-  - name: lifecycle-build-version-test-0
+  - name: lifecycle-build-number-test-0 # TODO: Finalize name (remove test-*)
     type: semver
     source:
       initial_version: 0.0.0
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: lifecycle-build-version
+      key: lifecycle-build-number-test-0 # TODO: Finalize name (remove test-*)
       json_key: ((concourse-service-account-key-json))
 
-  - name: pack-version-test-0
+  - name: pack-version-test-0 # TODO: Finalize name (remove test-*)
     type: semver
     source:
-      initial_version: 0.0.1
+      initial_version: 0.0.9
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: pack-version
+      key: pack-version-test-0 # TODO: Finalize name (remove test-*)
       json_key: ((concourse-service-account-key-json))
 
   ## Docker Images ##
@@ -140,5 +140,3 @@ resources:
       repository: ci
       drafts: true
       access_token: buildpack-pack-cli-github-release-token # TODO: org token, not private token
-
-# keep a new line at the end of this file :)

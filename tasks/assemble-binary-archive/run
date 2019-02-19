@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/version | cut -d "-" -f2)"
+version="$(cat lifecycle-version/version)-$(cat lifecycle-build-number/version | cut -d "-" -f2)"
 
 echo "Assembling binaries for version $version"
 

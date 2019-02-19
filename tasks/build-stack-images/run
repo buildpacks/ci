@@ -7,7 +7,7 @@ set -o nounset
 set -o pipefail
 
 set -x
-version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/version | cut -d "-" -f2)"
+version="$(cat lifecycle-version/version)-$(cat lifecycle-build-number/version | cut -d "-" -f2)"
 
 ./lifecycle-repo/images/bin/build -v $version
 

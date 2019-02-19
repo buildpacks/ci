@@ -6,7 +6,7 @@ set -o pipefail
 
 echo Calculating version
 
-version="$(cat lifecycle-image-version/version)-$(cat lifecycle-build-version/version | cut -d "-" -f2)"
+version="$(cat lifecycle-version/version)-$(cat lifecycle-build-number/version | cut -d "-" -f2)"
 
 echo Version is: $version
 echo Writing out version

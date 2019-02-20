@@ -42,7 +42,6 @@ jobs:
         ## Get repos, versions
         - get: lifecycle-repo
           version: every
-          trigger: true
           passed: [build-lifecycle-binaries]
         - get: ci
           passed: [build-lifecycle-binaries]
@@ -54,6 +53,7 @@ jobs:
         - get: lifecycle-build-number
           resource: lifecycle-build-number-test-0 # TODO: Remove after finalizing pipeline
           passed: [build-lifecycle-binaries]
+          trigger: true
 
         ## Get binaries
         - get: detector-gcs
@@ -125,7 +125,7 @@ jobs:
           resource: pack-repo
           passed: [pack-unit]
         - get: ci
-          passed: [build-stack-images, pack-unit]
+          passed: [build-stack-images]
         # Images
         - get: packs-base-image
           passed: [build-stack-images]
@@ -137,7 +137,6 @@ jobs:
           params: {save: true}
         - get: packs-samples-image
           passed: [build-stack-images]
-          trigger: true
           params: {save: true}
         # Versions
         - get: lifecycle-version
@@ -148,6 +147,7 @@ jobs:
         - get: lifecycle-build-number
           resource: lifecycle-build-number-test-0 # TODO: Remove after finalizing pipeline
           passed: [build-stack-images]
+          trigger: true
         # Binaries
         - get: detector-gcs
           passed: [build-stack-images]

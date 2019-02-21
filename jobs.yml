@@ -165,8 +165,8 @@ jobs:
         file: ci/tasks/run-acceptance/task.yml
       - task: assemble-binary-archive
         file: ci/tasks/assemble-binary-archive/task.yml
-        params:
-          VERSION_FILE: lifecycle-series-and-build-version/version
+        input_mapping:
+          version: lifecycle-series-and-build-version
       - put: latest-lifecycle-archive-dev
         params:
           file: binaries-archive/lifecycle-binaries-latest.tgz
@@ -204,8 +204,8 @@ jobs:
         # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - task: assemble-binary-archive
         file: ci/tasks/assemble-binary-archive/task.yml
-        params:
-          VERSION_FILE: lifecycle-version/version
+        input_mapping:
+          version: lifecycle-version
       - aggregate:
         - put: packs-base-image
           params:

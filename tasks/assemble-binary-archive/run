@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-version="$(cat $VERSION_FILE)"
+version="$(cat version/version)"
 
 echo "Assembling binaries for version $version"
 

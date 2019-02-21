@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+echo Generating docker build args
+
+version=$(cat lifecycle-series-and-build-version/version)
+
+cat << EOF > docker-build-args/args.json
+  {
+    "base_image":   "gcr.io:443/cncf-buildpacks-ci/packs/base:${version}",
+    "build_image":  "gcr.io:443/cncf-buildpacks-ci/packs/build:${version}",
+    "run_image":    "gcr.io:443/cncf-buildpacks-ci/packs/run:${version}"
+  }
+EOF
+
+echo Generated JSON:
+
+cat docker-build-args/args.json
+
+echo Done.

@@ -1,0 +1,16 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: ubuntu
+    tag: bionic
+
+inputs:
+- name: ci
+- name: lifecycle-series-and-build-version
+
+outputs:
+- name: docker-build-args
+
+run:
+  path: ci/tasks/generate-docker-build-args/run

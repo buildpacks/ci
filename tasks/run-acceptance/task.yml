@@ -10,8 +10,8 @@ inputs:
   - name: packs-samples-image
   - name: packs-build-image
   - name: packs-run-image
-  - name: lifecycle-image-version
-  - name: lifecycle-build-version
+  - name: lifecycle-version
+  - name: lifecycle-build-number
 
 run:
   path: ci/tasks/run-acceptance/run

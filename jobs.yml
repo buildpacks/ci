@@ -1,14 +1,17 @@
 jobs:
   - name: build-lifecycle-binaries
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
       - get: lifecycle-repo
         trigger: true
         version: every
       - get: ci
-      - get: lifecycle-image-version
+      - get: lifecycle-version
+        resource: lifecycle-version
         params:
           pre: alpha
-      - get: lifecycle-build-version
+      - put:  lifecycle-build-number
+        resource: lifecycle-build-number
         params:
           pre: build
       - aggregate:
@@ -22,70 +25,85 @@ jobs:
           file: ci/tasks/build-lifecycle-binaries/task.yml
       - aggregate:
         - put: detector-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/detector-*
+          params: {file: lifecycle-binaries/detector-*}
         - put: analyzer-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/analyzer-*
+          params: {file: lifecycle-binaries/analyzer-*}
         - put: builder-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/builder-*
+          params: {file: lifecycle-binaries/builder-*}
         - put: exporter-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/exporter-*
+          params: {file: lifecycle-binaries/exporter-*}
         - put: launcher-gcs
-          resource: lifecycle-gcs
-          params:
-            file: lifecycle-binaries/launcher-*
-      - put:  lifecycle-build-version
-        params:
-          file: lifecycle-build-version/version
+          params: {file: lifecycle-binaries/launcher-*}
 
   - name: build-stack-images
     plan:
-      - get: lifecycle-repo
-        trigger: true
-        passed: [build-lifecycle-binaries]
-      - get: ci
-        passed: [build-lifecycle-binaries]
-      - get: lifecycle-image-version
-        passed: [build-lifecycle-binaries]
-        params:
-          pre: alpha
-      - get: lifecycle-build-version
-        passed: [build-lifecycle-binaries]
-      - task: build-images
-        privileged: true
-        file: ci/tasks/build-stack-images/task.yml
       - aggregate:
-        - put: packs-base-image
+        ## Get repos, versions
+        - get: lifecycle-repo
+          version: every
+          passed: [build-lifecycle-binaries]
+        - get: ci
+          passed: [build-lifecycle-binaries]
+        - get: lifecycle-version
+          resource: lifecycle-version
+          passed: [build-lifecycle-binaries]
           params:
-            load_file: built-lifecycle-images/base.tar
-            load_repository: packs/base # port needed for private repos
-            load_tag: dev
-            tag_file: built-lifecycle-version/version
+            pre: alpha
+        - get: lifecycle-build-number
+          resource: lifecycle-build-number
+          passed: [build-lifecycle-binaries]
+          trigger: true
+
+        ## Get binaries
+        - get: detector-gcs
+          passed: [build-lifecycle-binaries]
+        - get: analyzer-gcs
+          passed: [build-lifecycle-binaries]
+        - get: builder-gcs
+          passed: [build-lifecycle-binaries]
+        - get: exporter-gcs
+          passed: [build-lifecycle-binaries]
+        - get: launcher-gcs
+          passed: [build-lifecycle-binaries]
+
+      ## Prep
+      - aggregate:
+        - task: calculate-lifecycle-version
+          file: ci/tasks/calculate-lifecycle-version/task.yml
+        - task: move-lifecycle-binaries-for-docker
+          file: ci/tasks/move-lifecycle-binaries/task.yml
+      - task: generate-docker-build-args
+        file: ci/tasks/generate-docker-build-args/task.yml
+
+      ## Docker builds
+      - put: packs-base-image
+        params:
+          build: lifecycle-binaries
+          dockerfile: ci/images/base/Dockerfile
+          tag_file: lifecycle-series-and-build-version/version
+          build_args:
+            base: "ubuntu:18.04"
+      - aggregate:
         - put: packs-run-image
           params:
-            load_file: built-lifecycle-images/run.tar
-            load_repository: packs/run # port needed for private repos
-            load_tag: dev
-            tag_file: built-lifecycle-version/version
+            build: lifecycle-binaries
+            dockerfile: ci/images/run/Dockerfile
+            tag_file: lifecycle-series-and-build-version/version
+            build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
-            load_file: built-lifecycle-images/build.tar
-            load_repository: packs/build # port needed for private repos
-            load_tag: dev
-            tag_file: built-lifecycle-version/version
-        - put: packs-samples-image
-          params:
-            load_file: built-lifecycle-images/samples.tar
-            load_repository: packs/samples # port needed for private repos
-            load_tag: dev
-            tag_file: built-lifecycle-version/version
+            build: lifecycle-binaries
+            dockerfile: ci/images/build/Dockerfile
+            tag_file: lifecycle-series-and-build-version/version
+            build_args:
+              go_version: "1.11.4"
+            build_args_file: docker-build-args/args.json
+      - put: packs-samples-image
+        params:
+          build: lifecycle-binaries
+          dockerfile: ci/images/samples/Dockerfile
+          tag_file: lifecycle-series-and-build-version/version
+          build_args_file: docker-build-args/args.json
 
   - name: pack-unit
     plan:
@@ -106,6 +124,9 @@ jobs:
           resource: pack-repo
           passed: [pack-unit]
         - get: ci
+          passed: [build-stack-images, pack-unit]
+        # Images
+        - get: packs-base-image
           passed: [build-stack-images]
         - get: packs-build-image
           passed: [build-stack-images]
@@ -115,32 +136,56 @@ jobs:
           params: {save: true}
         - get: packs-samples-image
           passed: [build-stack-images]
-          trigger: true
           params: {save: true}
-        - get: lifecycle-image-version
+        # Versions
+        - get: lifecycle-version
+          resource: lifecycle-version
           passed: [build-stack-images]
-        - get: lifecycle-build-version
+          params:
+            pre: alpha
+        - get: lifecycle-build-number
+          resource: lifecycle-build-number
+          passed: [build-stack-images]
+          trigger: true
+        # Binaries
+        - get: detector-gcs
+          passed: [build-stack-images]
+        - get: analyzer-gcs
+          passed: [build-stack-images]
+        - get: builder-gcs
+          passed: [build-stack-images]
+        - get: exporter-gcs
+          passed: [build-stack-images]
+        - get: launcher-gcs
           passed: [build-stack-images]
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
-      - put: lifecycle-build-version
+      - task: assemble-binary-archive
+        file: ci/tasks/assemble-binary-archive/task.yml
+      - put: latest-lifecycle-archive-dev
         params:
-          pre: build
+          file: binaries-archive/lifecycle-binaries-latest.tgz
+          content_type: application/gzip # there's no distinct tgz mimetype
 
   - name: release-lifecycle
     plan:
       - aggregate:
         - get: ci
           passed: [acceptance]
-        - get: lifecycle-image-version
+        - get: lifecycle-version
+          resource: lifecycle-version
           passed: [acceptance]
           params:
             pre: alpha
-        - get: lifecycle-build-version
+        - get: lifecycle-build-number
+          resource: lifecycle-build-number
           passed: [acceptance]
           params:
             pre: build
+        - get: packs-base-image
+          passed: [acceptance]
+          params: {save: true}
         - get: packs-build-image
           passed: [acceptance]
           params: {save: true}
@@ -152,7 +197,12 @@ jobs:
           params: {save: true}
       - task: release-version-create
         file: ci/tasks/release-version-create/task.yml
+        # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - aggregate:
+        - put: packs-base-image
+          params:
+            load: packs-base-image
+            tag_file: release-lifecycle-version/version
         - put: packs-build-image
           params:
             load: packs-build-image
@@ -165,10 +215,8 @@ jobs:
           params:
             load: packs-samples-image
             tag_file: release-lifecycle-version/version
-        - put: packs-run-image
-          params:
-            load: packs-run-image
-            tag_file: release-lifecycle-version/version
-        - put: lifecycle-image-version
+        - put: lifecycle-version
+          resource: lifecycle-version
           params:
             pre: alpha
+

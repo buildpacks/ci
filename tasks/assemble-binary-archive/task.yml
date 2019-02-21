@@ -1,0 +1,22 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: ubuntu
+    tag: bionic
+
+inputs:
+- name: ci
+- name: lifecycle-version
+- name: lifecycle-build-number
+- name: builder-gcs
+- name: analyzer-gcs
+- name: detector-gcs
+- name: exporter-gcs
+- name: launcher-gcs
+
+outputs:
+- name: binaries-archive
+
+run:
+  path: ci/tasks/assemble-binary-archive/run

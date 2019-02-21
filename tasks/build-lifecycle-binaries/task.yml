@@ -8,8 +8,7 @@ image_resource:
 inputs:
   - name: lifecycle-repo
   - name: ci
-  - name: lifecycle-version
-  - name: lifecycle-build-number
+  - name: version
 
 outputs:
   - name: lifecycle-binaries

@@ -25,7 +25,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: aggregate-release-binaries
+      branch: master
 
 
   ## Semver ##

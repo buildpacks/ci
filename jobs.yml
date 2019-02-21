@@ -14,6 +14,8 @@ jobs:
         resource: lifecycle-build-number
         params:
           pre: build
+      - task: calculate-lifecycle-version
+        file: ci/tasks/calculate-lifecycle-version/task.yml
       - aggregate:
         - task: format-lifecycle
           file: ci/tasks/format-lifecycle/task.yml
@@ -23,6 +25,8 @@ jobs:
         - task: build-binaries
           privileged: true
           file: ci/tasks/build-lifecycle-binaries/task.yml
+          input_mapping:
+            version: calculated-lifecycle-version
       - aggregate:
         - put: detector-gcs
           params: {file: lifecycle-binaries/detector-*}
@@ -74,6 +78,8 @@ jobs:
           file: ci/tasks/move-lifecycle-binaries/task.yml
       - task: generate-docker-build-args
         file: ci/tasks/generate-docker-build-args/task.yml
+        input_mapping:
+          version: calculated-lifecycle-version
 
       ## Docker builds
       - put: packs-base-image

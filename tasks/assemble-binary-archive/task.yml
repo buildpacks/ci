@@ -7,8 +7,6 @@ image_resource:
 
 inputs:
 - name: ci
-- name: lifecycle-version
-- name: lifecycle-build-number
 - name: builder-gcs
 - name: analyzer-gcs
 - name: detector-gcs

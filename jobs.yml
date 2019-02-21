@@ -158,11 +158,15 @@ jobs:
           passed: [build-stack-images]
         - get: launcher-gcs
           passed: [build-stack-images]
+      - task: calculate-lifecycle-version
+        file: ci/tasks/calculate-lifecycle-version/task.yml
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
       - task: assemble-binary-archive
         file: ci/tasks/assemble-binary-archive/task.yml
+        params:
+          VERSION_FILE: lifecycle-series-and-build-version/version
       - put: latest-lifecycle-archive-dev
         params:
           file: binaries-archive/lifecycle-binaries-latest.tgz
@@ -198,6 +202,10 @@ jobs:
       - task: release-version-create
         file: ci/tasks/release-version-create/task.yml
         # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
+      - task: assemble-binary-archive
+        file: ci/tasks/assemble-binary-archive/task.yml
+        params:
+          VERSION_FILE: lifecycle-version/version
       - aggregate:
         - put: packs-base-image
           params:

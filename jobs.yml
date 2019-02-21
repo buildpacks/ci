@@ -80,7 +80,7 @@ jobs:
         params:
           build: lifecycle-binaries
           dockerfile: ci/images/base/Dockerfile
-          tag_file: lifecycle-series-and-build-version/version
+          tag_file: calculated-lifecycle-version/version
           build_args:
             base: "ubuntu:18.04"
       - aggregate:
@@ -88,13 +88,13 @@ jobs:
           params:
             build: lifecycle-binaries
             dockerfile: ci/images/run/Dockerfile
-            tag_file: lifecycle-series-and-build-version/version
+            tag_file: calculated-lifecycle-version/version
             build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
             build: lifecycle-binaries
             dockerfile: ci/images/build/Dockerfile
-            tag_file: lifecycle-series-and-build-version/version
+            tag_file: calculated-lifecycle-version/version
             build_args:
               go_version: "1.11.4"
             build_args_file: docker-build-args/args.json
@@ -102,7 +102,7 @@ jobs:
         params:
           build: lifecycle-binaries
           dockerfile: ci/images/samples/Dockerfile
-          tag_file: lifecycle-series-and-build-version/version
+          tag_file: calculated-lifecycle-version/version
           build_args_file: docker-build-args/args.json
 
   - name: pack-unit
@@ -166,7 +166,7 @@ jobs:
       - task: assemble-binary-archive
         file: ci/tasks/assemble-binary-archive/task.yml
         input_mapping:
-          version: lifecycle-series-and-build-version
+          version: calculated-lifecycle-version
       - put: latest-lifecycle-archive-dev
         params:
           file: binaries-archive/lifecycle-binaries-latest.tgz
@@ -199,6 +199,19 @@ jobs:
         - get: packs-samples-image
           passed: [acceptance]
           params: {save: true}
+
+        - get: detector-gcs
+          passed: [acceptance]
+        - get: analyzer-gcs
+          passed: [acceptance]
+        - get: builder-gcs
+          passed: [acceptance]
+        - get: exporter-gcs
+          passed: [acceptance]
+        - get: launcher-gcs
+          passed: [acceptance]
+
+
       - task: release-version-create
         file: ci/tasks/release-version-create/task.yml
         # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
@@ -207,6 +220,10 @@ jobs:
         input_mapping:
           version: lifecycle-version
       - aggregate:
+        - put: latest-lifecycle-archive-prod
+          params:
+            file: binaries-archive/lifecycle-binaries-latest.tgz
+            content_type: application/gzip # there's no distinct tgz mimetype
         - put: packs-base-image
           params:
             load: packs-base-image

@@ -7,7 +7,7 @@ image_resource:
 
 inputs:
 - name: ci
-- name: lifecycle-series-and-build-version
+- name: calculated-lifecycle-version
 
 outputs:
 - name: docker-build-args

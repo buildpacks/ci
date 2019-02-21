@@ -122,4 +122,11 @@ resources:
       json_key: ((concourse-service-account-key-json))
       versioned_file: development/lifecycle-binaries-latest.tgz
 
+  - name: latest-lifecycle-archive-prod
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      versioned_file: release/lifecycle-binaries-latest.tgz
+
 

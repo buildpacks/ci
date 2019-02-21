@@ -6,7 +6,7 @@ set -o pipefail
 
 echo Generating docker build args
 
-version=$(cat lifecycle-series-and-build-version/version)
+version=$(cat calculated-lifecycle-version/version)
 
 cat << EOF > docker-build-args/args.json
   {

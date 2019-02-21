@@ -25,36 +25,27 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: continue-on-pipeline # master
+      branch: master
 
 
   ## Semver ##
 
-  - name: lifecycle-version-test-0 # TODO: Finalize name (remove test-*)
+  - name: lifecycle-version
     type: semver
     source:
       initial_version: 3.0.0-alpha.2
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: lifecycle-version-test-0 # TODO: Finalize name (remove test-*)
+      key: lifecycle-version
       json_key: ((concourse-service-account-key-json))
 
-  - name: lifecycle-build-number-test-0 # TODO: Finalize name (remove test-*)
+  - name: lifecycle-build-number
     type: semver
     source:
       initial_version: 0.0.0
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: lifecycle-build-number-test-0 # TODO: Finalize name (remove test-*)
-      json_key: ((concourse-service-account-key-json))
-
-  - name: pack-version-test-0 # TODO: Finalize name (remove test-*)
-    type: semver
-    source:
-      initial_version: 0.0.9
-      driver: gcs
-      bucket: cloud-native-buildpacks-versions
-      key: pack-version-test-0 # TODO: Finalize name (remove test-*)
+      key: lifecycle-build-number
       json_key: ((concourse-service-account-key-json))
 
   ## Docker Images ##
@@ -131,12 +122,4 @@ resources:
       json_key: ((concourse-service-account-key-json))
       versioned_file: development/lifecycle-binaries-latest.tgz
 
-  ## Github Releases ##
 
-  - name: pack-github-release
-    type: github-release
-    source:
-      owner: buildpack
-      repository: ci
-      drafts: true
-      access_token: buildpack-pack-cli-github-release-token # TODO: org token, not private token

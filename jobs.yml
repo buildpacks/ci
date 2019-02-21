@@ -7,20 +7,19 @@ jobs:
         version: every
       - get: ci
       - get: lifecycle-version
-        resource: lifecycle-version-test-0 # TODO: Remove after finalizing pipeline
+        resource: lifecycle-version
         params:
           pre: alpha
       - put:  lifecycle-build-number
-        resource: lifecycle-build-number-test-0 # TODO: Remove after finalizing pipeline
+        resource: lifecycle-build-number
         params:
           pre: build
       - aggregate:
         - task: format-lifecycle
           file: ci/tasks/format-lifecycle/task.yml
-# TODO: Re-enable these tests. Commented out for speed of iteration.
-#        - task: run-unit-tests
-#          privileged: true
-#          file: ci/tasks/run-lifecycle-unit/task.yml
+        - task: run-unit-tests
+          privileged: true
+          file: ci/tasks/run-lifecycle-unit/task.yml
         - task: build-binaries
           privileged: true
           file: ci/tasks/build-lifecycle-binaries/task.yml
@@ -46,12 +45,12 @@ jobs:
         - get: ci
           passed: [build-lifecycle-binaries]
         - get: lifecycle-version
-          resource: lifecycle-version-test-0 # TODO: Remove after finalizing pipeline
+          resource: lifecycle-version
           passed: [build-lifecycle-binaries]
           params:
             pre: alpha
         - get: lifecycle-build-number
-          resource: lifecycle-build-number-test-0 # TODO: Remove after finalizing pipeline
+          resource: lifecycle-build-number
           passed: [build-lifecycle-binaries]
           trigger: true
 
@@ -114,10 +113,9 @@ jobs:
           trigger: true
           version: every
         - get: ci
-# TODO: Re-enable these tests. Commented out for speed of iteration.
-#      - task: run-unit-tests
-#        privileged: true
-#        file: ci/tasks/run-pack-unit/task.yml
+      - task: run-unit-tests
+        privileged: true
+        file: ci/tasks/run-pack-unit/task.yml
 
   - name: acceptance
     plan:
@@ -141,12 +139,12 @@ jobs:
           params: {save: true}
         # Versions
         - get: lifecycle-version
-          resource: lifecycle-version-test-0 # TODO: Remove after finalizing pipeline
+          resource: lifecycle-version
           passed: [build-stack-images]
           params:
             pre: alpha
         - get: lifecycle-build-number
-          resource: lifecycle-build-number-test-0 # TODO: Remove after finalizing pipeline
+          resource: lifecycle-build-number
           passed: [build-stack-images]
           trigger: true
         # Binaries
@@ -160,10 +158,9 @@ jobs:
           passed: [build-stack-images]
         - get: launcher-gcs
           passed: [build-stack-images]
-# TODO: Re-enable these tests. Commented out for speed of iteration.
-#      - task: acceptance
-#        privileged: true
-#        file: ci/tasks/run-acceptance/task.yml
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance/task.yml
       - task: assemble-binary-archive
         file: ci/tasks/assemble-binary-archive/task.yml
       - put: latest-lifecycle-archive-dev
@@ -177,12 +174,12 @@ jobs:
         - get: ci
           passed: [acceptance]
         - get: lifecycle-version
-          resource: lifecycle-version-test-0 # TODO: Remove after finalizing pipeline
+          resource: lifecycle-version
           passed: [acceptance]
           params:
             pre: alpha
         - get: lifecycle-build-number
-          resource: lifecycle-build-number-test-0 # TODO: Remove after finalizing pipeline
+          resource: lifecycle-build-number
           passed: [acceptance]
           params:
             pre: build
@@ -200,6 +197,7 @@ jobs:
           params: {save: true}
       - task: release-version-create
         file: ci/tasks/release-version-create/task.yml
+        # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - aggregate:
         - put: packs-base-image
           params:
@@ -218,43 +216,7 @@ jobs:
             load: packs-samples-image
             tag_file: release-lifecycle-version/version
         - put: lifecycle-version
-          resource: lifecycle-version-test-0 # TODO: Remove after finalizing pipeline
+          resource: lifecycle-version
           params:
             pre: alpha
 
-  - name: release-pack
-    plan:
-    - put: pack-version
-      resource: pack-version-test-0 # TODO: Remove after finalizing pipeline
-      params:
-        bump: patch
-    - aggregate:
-      - get: lifecycle-version
-        resource: lifecycle-version-test-0 # TODO: Remove after finalizing pipeline
-        passed: [release-lifecycle]
-      - get: pack-repo
-        passed: [acceptance]
-      - get: ci
-        passed: [acceptance]
-    - task: build-pack-cli-linux
-      file: ci/tasks/build-pack-cli/task.yml
-      params:
-        OS_NAME: linux
-    - task: build-pack-cli-darwin
-      file: ci/tasks/build-pack-cli/task.yml
-      params:
-        OS_NAME: darwin
-    - task: build-pack-cli-windows
-      file: ci/tasks/build-pack-cli/task.yml
-      params:
-        OS_NAME: windows
-    - put: pack-github-release
-      params:
-        name: pack-release/pack-release-name
-        tag: pack-version/version
-        tag_prefix: v
-        commitish: pack-repo/.git/ref
-        globs:
-        - pack-release/pack-*-linux
-        - pack-release/pack-*-darwin
-        - pack-release/pack-*-windows

@@ -48,6 +48,15 @@ resources:
       key: lifecycle-build-number
       json_key: ((concourse-service-account-key-json))
 
+  - name: pack-version
+    type: semver
+    source:
+      initial_version: 0.0.9
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: pack-versionå
+      json_key: ((concourse-service-account-key-json))
+
   ## Docker Images ##
 
   - name: packs-base-image
@@ -128,5 +137,15 @@ resources:
       bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
       versioned_file: release/lifecycle-binaries-latest.tgz
+
+  ## Github Releases ##
+
+  - name: pack-github-release
+    type: github-release
+    source:
+      owner: buildpack
+      repository: ci
+      drafts: true
+      access_token: buildpack-pack-cli-github-release-token # TODO: org token, not private token
 
 

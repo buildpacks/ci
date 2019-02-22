@@ -285,3 +285,36 @@ jobs:
           params:
             pre: alpha
 
+  - name: release-pack
+    plan:
+    - aggregate:
+      - put: pack-version
+        resource: pack-version
+        params:
+          bump: patch
+      - get: pack-repo
+        passed: [pack-acceptance]
+      - get: ci
+        passed: [pack-acceptance]
+    - task: build-pack-cli-linux
+      file: ci/tasks/build-pack-cli/task.yml
+      params:
+        OS_NAME: linux
+    - task: build-pack-cli-darwin
+      file: ci/tasks/build-pack-cli/task.yml
+      params:
+        OS_NAME: darwin
+    - task: build-pack-cli-windows
+      file: ci/tasks/build-pack-cli/task.yml
+      params:
+        OS_NAME: windows
+    - put: pack-github-release
+      params:
+        name: pack-release/pack-release-name
+        tag: pack-version/version
+        tag_prefix: v
+        globs:
+        - pack-release/pack-*-linux
+        - pack-release/pack-*-darwin
+        - pack-release/pack-*-windows
+

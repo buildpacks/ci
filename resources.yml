@@ -138,6 +138,29 @@ resources:
       json_key: ((concourse-service-account-key-json))
       versioned_file: release/lifecycle-binaries-latest.tgz
 
+  - name: pack-linux-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-linux
+
+  - name: pack-darwin-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-darwin
+
+  - name: pack-windows-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-windows
+
+
+
   ## Github Releases ##
 
   - name: pack-github-release

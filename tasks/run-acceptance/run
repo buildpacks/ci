@@ -17,5 +17,7 @@ docker tag "$(cat packs-build-image/image-id)" "packs/build:dev"
 docker load -i packs-run-image/image
 docker tag "$(cat packs-run-image/image-id)" "packs/run:dev"
 
+pack_path=$(PWD)/pack-linux-binary/pack-*-linux
+
 cd pack-repo
-docker_run -e "PACK_TAG=dev" -e "IS_CI=true" golang go test -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+docker_run -e "PACK_TAG=dev" -e "IS_CI=true" -e "PACK_PATH=$pack_path" golang go test -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance

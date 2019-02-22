@@ -123,11 +123,48 @@ jobs:
         privileged: true
         file: ci/tasks/run-pack-unit/task.yml
 
+  - name: build-pack
+    plan:
+    - aggregate:
+      - get: pack-repo
+        resource: pack-repo
+        trigger: true
+        version: every
+        passed: [pack-unit]
+      - get: ci
+      - get: pack-version
+        resource: pack-version
+        params:
+          pre: build
+    - aggregate:
+      - task: build-pack-cli-linux
+        file: ci/tasks/build-pack-cli/task.yml
+        output_mapping: {pack-release: pack-linux-release}
+        params:
+          OS_NAME: linux
+      - task: build-pack-cli-darwin
+        file: ci/tasks/build-pack-cli/task.yml
+        output_mapping: {pack-release: pack-darwin-release}
+        params:
+          OS_NAME: darwin
+      - task: build-pack-cli-windows
+        file: ci/tasks/build-pack-cli/task.yml
+        output_mapping: {pack-release: pack-windows-release}
+        params:
+          OS_NAME: windows
+    - aggregate:
+      - put: pack-linux-binary
+        params: {file: pack-linux-release/pack-*-linux}
+      - put: pack-windows-binary
+        params: {file: pack-windows-release/pack-*-windows}
+      - put: pack-darwin-binary
+        params: {file: pack-darwin-release/pack-*-darwin}
+
   - name: lifecycle-acceptance
     plan:
       - aggregate:
-        - get: pack-repo
-          passed: [pack-unit]
+        - get: pack-linux-binary
+          passed: [build-pack]
         - get: ci
           passed: [build-stack-images]
         # Images
@@ -180,8 +217,8 @@ jobs:
   - name: pack-acceptance
     plan:
       - aggregate:
-        - get: pack-repo
-          passed: [pack-unit]
+        - get: pack-linux-binary
+          passed: [build-pack]
           trigger: true
         - get: ci
           passed: [pack-unit]

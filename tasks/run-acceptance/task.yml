@@ -5,6 +5,7 @@ image_resource:
     repository: concourse/docker-image-resource
 
 inputs:
+  - name: pack-repo
   - name: pack-linux-binary
   - name: ci
   - name: packs-samples-image

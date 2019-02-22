@@ -15,6 +15,8 @@ We also provide a "latest" file to ease consumption by other automated systems, 
 
 https://storage.googleapis.com/cloud-native-buildpacks-lifecycle-binaries/development/lifecycle-binaries-latest.tgz
 
+https://storage.googleapis.com/cloud-native-buildpacks-lifecycle-binaries/release/lifecycle-binaries-latest.tgz
+
 This file is updated after each successful acceptance test of the lifecycle.
 
 To see and retrieve older versions of `lifecycle-binaries-latest.tgz`, you can use `gsutil`:

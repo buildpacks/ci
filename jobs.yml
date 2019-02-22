@@ -123,14 +123,13 @@ jobs:
         privileged: true
         file: ci/tasks/run-pack-unit/task.yml
 
-  - name: acceptance
+  - name: lifecycle-acceptance
     plan:
       - aggregate:
         - get: pack-repo
-          resource: pack-repo
           passed: [pack-unit]
         - get: ci
-          passed: [build-stack-images, pack-unit]
+          passed: [build-stack-images]
         # Images
         - get: packs-base-image
           passed: [build-stack-images]
@@ -178,44 +177,79 @@ jobs:
           file: binaries-archive/lifecycle-binaries-latest.tgz
           content_type: application/gzip # there's no distinct tgz mimetype
 
+  - name: pack-acceptance
+    plan:
+      - aggregate:
+        - get: pack-repo
+          passed: [pack-unit]
+          trigger: true
+        - get: ci
+          passed: [pack-unit]
+        # Images
+        - get: packs-base-image
+          passed: [build-stack-images]
+        - get: packs-build-image
+          passed: [build-stack-images]
+          params: {save: true}
+        - get: packs-run-image
+          passed: [build-stack-images]
+          params: {save: true}
+        - get: packs-samples-image
+          passed: [build-stack-images]
+          params: {save: true}
+        # Binaries
+        - get: detector-gcs
+          passed: [build-stack-images]
+        - get: analyzer-gcs
+          passed: [build-stack-images]
+        - get: builder-gcs
+          passed: [build-stack-images]
+        - get: exporter-gcs
+          passed: [build-stack-images]
+        - get: launcher-gcs
+          passed: [build-stack-images]
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance/task.yml
+
   - name: release-lifecycle
     plan:
       - aggregate:
         - get: ci
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
         - get: lifecycle-version
           resource: lifecycle-version
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
           params:
             pre: alpha
         - get: lifecycle-build-number
           resource: lifecycle-build-number
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
           params:
             pre: build
         - get: packs-base-image
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
           params: {save: true}
         - get: packs-build-image
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
           params: {save: true}
         - get: packs-run-image
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
           params: {save: true}
         - get: packs-samples-image
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
           params: {save: true}
 
         - get: detector-gcs
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
         - get: analyzer-gcs
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
         - get: builder-gcs
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
         - get: exporter-gcs
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
         - get: launcher-gcs
-          passed: [acceptance]
+          passed: [lifecycle-acceptance]
 
 
       - task: release-version-create

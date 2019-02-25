@@ -133,9 +133,9 @@ jobs:
         passed: [pack-unit]
       - get: ci
       - get: pack-version
-        resource: pack-version
         params:
           pre: build
+          bump: patch
     - aggregate:
       - task: build-pack-cli-linux
         file: ci/tasks/build-pack-cli/task.yml
@@ -222,6 +222,10 @@ jobs:
         - get: pack-repo
           passed: [build-pack]
         - get: pack-linux-binary
+          passed: [build-pack]
+        - get: pack-windows-binary
+          passed: [build-pack]
+        - get: pack-darwin-binary
           passed: [build-pack]
           trigger: true
         - get: ci
@@ -329,33 +333,49 @@ jobs:
   - name: release-pack
     plan:
     - aggregate:
-      - put: pack-version
-        resource: pack-version
+      - get: pack-version
         params:
-          bump: patch
-      - get: pack-repo
-        passed: [build-pack]
+          bump: final
+      - get: pack-linux-binary
+        passed: [pack-acceptance]
+      - get: pack-windows-binary
+        passed: [pack-acceptance]
+      - get: pack-darwin-binary
+        passed: [pack-acceptance]
       - get: ci
         passed: [pack-acceptance]
-    - task: build-pack-cli-linux
-      file: ci/tasks/build-pack-cli/task.yml
-      params:
-        OS_NAME: linux
-    - task: build-pack-cli-darwin
-      file: ci/tasks/build-pack-cli/task.yml
-      params:
-        OS_NAME: darwin
-    - task: build-pack-cli-windows
-      file: ci/tasks/build-pack-cli/task.yml
-      params:
-        OS_NAME: windows
+    - aggregate:
+      - task: package-pack-release-linux
+        file: ci/tasks/package-pack-release/task.yml
+        input_mapping:
+          pack-binary: pack-linux-binary
+        params:
+          OS: linux
+        output_mapping:
+          pack-binary-release: linux-release
+      - task: package-pack-release-darwin
+        file: ci/tasks/package-pack-release/task.yml
+        input_mapping:
+          pack-binary: pack-darwin-binary
+        params:
+          OS: darwin
+        output_mapping:
+          pack-binary-release: darwin-release
+      - task: package-pack-release-windows
+        file: ci/tasks/package-pack-release/task.yml
+        input_mapping:
+          pack-binary: pack-windows-binary
+        params:
+          OS: windows
+        output_mapping:
+          pack-binary-release: windows-release
     - put: pack-github-release
       params:
         name: pack-release/pack-release-name
         tag: pack-version/version
         tag_prefix: v
         globs:
-        - pack-release/pack-*-linux
-        - pack-release/pack-*-darwin
-        - pack-release/pack-*-windows
+        - linux-release/pack-*-linux.tar.gz
+        - darwin-release/pack-*-darwin.tar.gz
+        - windows-release/pack-*-windows.zip
 

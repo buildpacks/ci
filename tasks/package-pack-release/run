@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+
+pack_version=$(cat pack-version/version)
+mkdir -p tmp-binary
+mv pack-binary/pack-* tmp-binary/pack-${pack_version}-${OS}
+chmod +x tmp-binary/pack-${pack_version}-${OS}
+
+pushd tmp-binary
+    if [[ ${OS} == "windows" ]]; then
+        zip ../pack-binary-release/pack-${pack_version}-${OS}.zip pack-${pack_version}-${OS}
+    else
+        tar czvf ../pack-binary-release/pack-${pack_version}-${OS}.tar.gz pack-${pack_version}-${OS}
+    fi
+popd

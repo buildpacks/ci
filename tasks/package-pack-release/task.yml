@@ -16,4 +16,4 @@ outputs:
 - name: pack-binary-release
 
 run:
-  path: ci/tasks/rename-pack-binary/run
+  path: ci/tasks/package-pack-release/run

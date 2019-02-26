@@ -6,12 +6,7 @@ jobs:
         trigger: true
         version: every
       - get: ci
-      - get: lifecycle-version
-        resource: lifecycle-version
-        params:
-          pre: alpha
-      - put:  lifecycle-build-number
-        resource: lifecycle-build-number
+      - put: lifecycle-version
         params:
           pre: build
       - task: calculate-lifecycle-version
@@ -49,12 +44,6 @@ jobs:
         - get: ci
           passed: [build-lifecycle-binaries]
         - get: lifecycle-version
-          resource: lifecycle-version
-          passed: [build-lifecycle-binaries]
-          params:
-            pre: alpha
-        - get: lifecycle-build-number
-          resource: lifecycle-build-number
           passed: [build-lifecycle-binaries]
           trigger: true
 
@@ -184,12 +173,6 @@ jobs:
           params: {save: true}
         # Versions
         - get: lifecycle-version
-          resource: lifecycle-version
-          passed: [build-stack-images]
-          params:
-            pre: alpha
-        - get: lifecycle-build-number
-          resource: lifecycle-build-number
           passed: [build-stack-images]
           trigger: true
         # Binaries
@@ -266,15 +249,9 @@ jobs:
         - get: ci
           passed: [lifecycle-acceptance]
         - get: lifecycle-version
-          resource: lifecycle-version
           passed: [lifecycle-acceptance]
           params:
-            pre: alpha
-        - get: lifecycle-build-number
-          resource: lifecycle-build-number
-          passed: [lifecycle-acceptance]
-          params:
-            pre: build
+            bump: final
 
         # Binaries
         - get: detector-gcs
@@ -287,14 +264,14 @@ jobs:
           passed: [lifecycle-acceptance]
         - get: launcher-gcs
           passed: [lifecycle-acceptance]
+      - task: calculate-lifecycle-version
+        file: ci/tasks/calculate-lifecycle-version/task.yml
 
-      - task: release-version-create
-        file: ci/tasks/release-version-create/task.yml
         # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - task: assemble-binary-archive
         file: ci/tasks/assemble-binary-archive/task.yml
         input_mapping:
-          version: lifecycle-version
+          version: calculated-lifecycle-version
       - put: latest-lifecycle-archive-prod
         params:
           file: binaries-archive/lifecycle-binaries-latest.tgz
@@ -306,14 +283,14 @@ jobs:
       - task: generate-docker-build-args
         file: ci/tasks/generate-docker-build-args/task.yml
         input_mapping:
-          version: lifecycle-version
+          version: calculated-lifecycle-version
 
       ## Docker builds
       - put: packs-base-image
         params:
           build: lifecycle-binaries
           dockerfile: ci/images/base/Dockerfile
-          tag_file: lifecycle-version/version
+          tag_file: calculated-lifecycle-version/version
           build_args:
             base: "ubuntu:18.04"
       - aggregate:
@@ -321,13 +298,13 @@ jobs:
           params:
             build: lifecycle-binaries
             dockerfile: ci/images/run/Dockerfile
-            tag_file: lifecycle-version/version
+            tag_file: calculated-lifecycle-version/version
             build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
             build: lifecycle-binaries
             dockerfile: ci/images/build/Dockerfile
-            tag_file: lifecycle-version/version
+            tag_file: calculated-lifecycle-version/version
             build_args:
               go_version: "1.11.4"
             build_args_file: docker-build-args/args.json
@@ -335,14 +312,13 @@ jobs:
         params:
           build: lifecycle-binaries
           dockerfile: ci/images/samples/Dockerfile
-          tag_file: lifecycle-version/version
+          tag_file: calculated-lifecycle-version/version
           build_args_file: docker-build-args/args.json
 
       ## Bump Version
       - put: lifecycle-version
-        resource: lifecycle-version
         params:
-          pre: alpha
+          bump: patch
 
   - name: release-pack
     plan:

@@ -8,7 +8,6 @@ image_resource:
 inputs:
 - name: ci
 - name: lifecycle-version
-- name: lifecycle-build-number
 
 outputs:
 - name: calculated-lifecycle-version

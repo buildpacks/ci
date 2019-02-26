@@ -6,11 +6,12 @@ set -o pipefail
 
 echo Calculating version
 
-version="$(cat lifecycle-version/version)-$(cat lifecycle-build-number/version | cut -d "-" -f2)"
+version=$(cat lifecycle-version/version)
+marketing_version=3.0.0-alpha${version:3}
 
-echo Version is: $version
+echo Version is: $marketing_version
 echo Writing out version
 
-echo $version >> ./calculated-lifecycle-version/version
+echo $marketing_version >> ./calculated-lifecycle-version/version
 
 echo Done.

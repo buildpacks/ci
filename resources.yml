@@ -32,19 +32,10 @@ resources:
   - name: lifecycle-version
     type: semver
     source:
-      initial_version: 3.0.0-alpha.2
+      initial_version: 0.0.3
       driver: gcs
       bucket: cloud-native-buildpacks-versions
       key: lifecycle-version
-      json_key: ((concourse-service-account-key-json))
-
-  - name: lifecycle-build-number
-    type: semver
-    source:
-      initial_version: 0.0.0
-      driver: gcs
-      bucket: cloud-native-buildpacks-versions
-      key: lifecycle-build-number
       json_key: ((concourse-service-account-key-json))
 
   - name: pack-version

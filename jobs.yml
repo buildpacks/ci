@@ -114,6 +114,9 @@ jobs:
   - name: pack-unit
     plan:
       - aggregate:
+        - put: pack-version
+          params:
+            pre: build
         - get: pack-repo
           resource: pack-repo
           trigger: true
@@ -123,19 +126,17 @@ jobs:
         privileged: true
         file: ci/tasks/run-pack-unit/task.yml
 
-  - name: build-pack
+  - name: pack-build
     plan:
     - aggregate:
       - get: pack-repo
-        resource: pack-repo
-        trigger: true
         version: every
         passed: [pack-unit]
       - get: ci
+        passed: [pack-unit]
       - get: pack-version
-        params:
-          pre: build
-          bump: patch
+        trigger: true
+        passed: [pack-unit]
     - aggregate:
       - task: build-pack-cli-linux
         file: ci/tasks/build-pack-cli/task.yml
@@ -164,9 +165,9 @@ jobs:
     plan:
       - aggregate:
         - get: pack-linux-binary
-          passed: [build-pack]
+          passed: [pack-build]
         - get: pack-repo
-          passed: [build-pack]
+          passed: [pack-build]
         - get: ci
           passed: [build-stack-images]
         # Images
@@ -219,17 +220,19 @@ jobs:
   - name: pack-acceptance
     plan:
       - aggregate:
-        - get: pack-repo
-          passed: [build-pack]
-        - get: pack-linux-binary
-          passed: [build-pack]
-        - get: pack-windows-binary
-          passed: [build-pack]
-        - get: pack-darwin-binary
-          passed: [build-pack]
+        - get: pack-version
+          passed: [pack-build]
           trigger: true
+        - get: pack-repo
+          passed: [pack-build]
+        - get: pack-linux-binary
+          passed: [pack-build]
+        - get: pack-windows-binary
+          passed: [pack-build]
+        - get: pack-darwin-binary
+          passed: [pack-build]
         - get: ci
-          passed: [pack-unit]
+          passed: [pack-build]
         # Images
         - get: packs-base-image
           passed: [build-stack-images]
@@ -272,19 +275,8 @@ jobs:
           passed: [lifecycle-acceptance]
           params:
             pre: build
-        - get: packs-base-image
-          passed: [lifecycle-acceptance]
-          params: {save: true}
-        - get: packs-build-image
-          passed: [lifecycle-acceptance]
-          params: {save: true}
-        - get: packs-run-image
-          passed: [lifecycle-acceptance]
-          params: {save: true}
-        - get: packs-samples-image
-          passed: [lifecycle-acceptance]
-          params: {save: true}
 
+        # Binaries
         - get: detector-gcs
           passed: [lifecycle-acceptance]
         - get: analyzer-gcs
@@ -296,7 +288,6 @@ jobs:
         - get: launcher-gcs
           passed: [lifecycle-acceptance]
 
-
       - task: release-version-create
         file: ci/tasks/release-version-create/task.yml
         # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
@@ -304,31 +295,54 @@ jobs:
         file: ci/tasks/assemble-binary-archive/task.yml
         input_mapping:
           version: lifecycle-version
+      - put: latest-lifecycle-archive-prod
+        params:
+          file: binaries-archive/lifecycle-binaries-latest.tgz
+          content_type: application/gzip # there's no distinct tgz mimetype
+
+      ## Prep
+      - task: move-lifecycle-binaries-for-docker
+        file: ci/tasks/move-lifecycle-binaries/task.yml
+      - task: generate-docker-build-args
+        file: ci/tasks/generate-docker-build-args/task.yml
+        input_mapping:
+          version: lifecycle-version
+
+      ## Docker builds
+      - put: packs-base-image
+        params:
+          build: lifecycle-binaries
+          dockerfile: ci/images/base/Dockerfile
+          tag_file: lifecycle-version/version
+          build_args:
+            base: "ubuntu:18.04"
       - aggregate:
-        - put: latest-lifecycle-archive-prod
-          params:
-            file: binaries-archive/lifecycle-binaries-latest.tgz
-            content_type: application/gzip # there's no distinct tgz mimetype
-        - put: packs-base-image
-          params:
-            load: packs-base-image
-            tag_file: release-lifecycle-version/version
-        - put: packs-build-image
-          params:
-            load: packs-build-image
-            tag_file: release-lifecycle-version/version
         - put: packs-run-image
           params:
-            load: packs-run-image
-            tag_file: release-lifecycle-version/version
-        - put: packs-samples-image
+            build: lifecycle-binaries
+            dockerfile: ci/images/run/Dockerfile
+            tag_file: lifecycle-version/version
+            build_args_file: docker-build-args/args.json
+        - put: packs-build-image
           params:
-            load: packs-samples-image
-            tag_file: release-lifecycle-version/version
-        - put: lifecycle-version
-          resource: lifecycle-version
-          params:
-            pre: alpha
+            build: lifecycle-binaries
+            dockerfile: ci/images/build/Dockerfile
+            tag_file: lifecycle-version/version
+            build_args:
+              go_version: "1.11.4"
+            build_args_file: docker-build-args/args.json
+      - put: packs-samples-image
+        params:
+          build: lifecycle-binaries
+          dockerfile: ci/images/samples/Dockerfile
+          tag_file: lifecycle-version/version
+          build_args_file: docker-build-args/args.json
+
+      ## Bump Version
+      - put: lifecycle-version
+        resource: lifecycle-version
+        params:
+          pre: alpha
 
   - name: release-pack
     plan:
@@ -336,6 +350,7 @@ jobs:
       - get: pack-version
         params:
           bump: final
+        passed: [pack-acceptance]
       - get: pack-linux-binary
         passed: [pack-acceptance]
       - get: pack-windows-binary
@@ -371,11 +386,14 @@ jobs:
           pack-binary-release: windows-release
     - put: pack-github-release
       params:
-        name: pack-release/pack-release-name
+        name: pack-version/version
         tag: pack-version/version
         tag_prefix: v
         globs:
         - linux-release/pack-*-linux.tar.gz
         - darwin-release/pack-*-darwin.tar.gz
         - windows-release/pack-*-windows.zip
+    - put: pack-version
+      params:
+        bump: patch
 

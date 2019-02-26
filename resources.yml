@@ -27,7 +27,6 @@ resources:
       uri: https://github.com/buildpack/ci.git
       branch: master
 
-
   ## Semver ##
 
   - name: lifecycle-version
@@ -51,10 +50,10 @@ resources:
   - name: pack-version
     type: semver
     source:
-      initial_version: 0.0.9
+      initial_version: 0.1.0
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: pack-versionå
+      key: pack-version
       json_key: ((concourse-service-account-key-json))
 
   ## Docker Images ##
@@ -158,8 +157,6 @@ resources:
       bucket: cloud-native-buildpacks-pack-binaries
       json_key: ((concourse-service-account-key-json))
       regexp: development/pack-(.*)-windows
-
-
 
   ## Github Releases ##
 

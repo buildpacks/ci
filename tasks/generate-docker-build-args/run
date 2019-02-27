@@ -8,11 +8,12 @@ echo Generating docker build args
 
 version=$(cat version/version)
 
+# Note: run_image must not have :443 port as it is used in label metadata, not Concourse
 cat << EOF > docker-build-args/args.json
   {
     "base_image":   "gcr.io:443/cncf-buildpacks-ci/packs/base:${version}",
     "build_image":  "gcr.io:443/cncf-buildpacks-ci/packs/build:${version}",
-    "run_image":    "gcr.io:443/cncf-buildpacks-ci/packs/run:${version}"
+    "run_image":    "gcr.io/cncf-buildpacks-ci/packs/run:${version}"
   }
 EOF
 

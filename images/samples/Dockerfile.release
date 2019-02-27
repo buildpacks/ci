@@ -1,0 +1,5 @@
+ARG $samples_image
+FROM $samples_image
+
+ARG run_image
+LABEL io.buildpacks.builder.metadata="{\"runImage\": {\"image\": \"${run_image}\"}}"

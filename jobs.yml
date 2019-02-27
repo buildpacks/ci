@@ -264,10 +264,27 @@ jobs:
           passed: [lifecycle-acceptance]
         - get: launcher-gcs
           passed: [lifecycle-acceptance]
+
+        # Images
+        - get: packs-base-image
+          passed: [lifecycle-acceptance]
+          params:
+            save: true
+        - get: packs-run-image
+          passed: [lifecycle-acceptance]
+          params:
+            save: true
+        - get: packs-build-image
+          passed: [lifecycle-acceptance]
+          params:
+            save: true
+        - get: packs-samples-image
+          passed: [lifecycle-acceptance]
+          params:
+            save: true
+
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml
-
-        # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - task: assemble-binary-archive
         file: ci/tasks/assemble-binary-archive/task.yml
         input_mapping:
@@ -277,43 +294,31 @@ jobs:
           file: binaries-archive/lifecycle-binaries-latest.tgz
           content_type: application/gzip # there's no distinct tgz mimetype
 
-      ## Prep
-      - task: move-lifecycle-binaries-for-docker
-        file: ci/tasks/move-lifecycle-binaries/task.yml
-      - task: generate-docker-build-args
-        file: ci/tasks/generate-docker-build-args/task.yml
-        input_mapping:
-          version: calculated-lifecycle-version
-
-      ## Docker builds
-      - put: packs-base-image
-        params:
-          build: lifecycle-binaries
-          dockerfile: ci/images/base/Dockerfile
-          tag_file: calculated-lifecycle-version/version
-          build_args:
-            base: "ubuntu:18.04"
+      ## Release Docker images
+      # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - aggregate:
+        - put: packs-base-image
+          params:
+            load: packs-base-image/image
+            tag_file: calculated-lifecycle-version/version
         - put: packs-run-image
           params:
-            build: lifecycle-binaries
-            dockerfile: ci/images/run/Dockerfile
+            load: packs-run-image/image
             tag_file: calculated-lifecycle-version/version
-            build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
-            build: lifecycle-binaries
-            dockerfile: ci/images/build/Dockerfile
+            load: packs-build-image/image
             tag_file: calculated-lifecycle-version/version
-            build_args:
-              go_version: "1.11.4"
-            build_args_file: docker-build-args/args.json
-      - put: packs-samples-image
-        params:
-          build: lifecycle-binaries
-          dockerfile: ci/images/samples/Dockerfile
-          tag_file: calculated-lifecycle-version/version
-          build_args_file: docker-build-args/args.json
+        - do:
+          - task: generate-docker-release-args
+            file: ci/tasks/generate-docker-release-args/task.yml
+            input_mapping:
+              version: calculated-lifecycle-version
+          - put: packs-samples-image
+            params:
+              dockerfile: ci/images/samples/Dockerfile.release
+              tag_file: calculated-lifecycle-version/version
+              build_args_file: docker-release-args/args.json
 
       ## Bump Version
       - put: lifecycle-version

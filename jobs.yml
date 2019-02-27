@@ -81,24 +81,22 @@ jobs:
       - aggregate:
         - put: packs-run-image
           params:
-            build: lifecycle-binaries
-            dockerfile: ci/images/run/Dockerfile
+            build: ci/images/run
             tag_file: calculated-lifecycle-version/version
             build_args_file: docker-build-args/args.json
-        - put: packs-build-image
-          params:
-            build: lifecycle-binaries
-            dockerfile: ci/images/build/Dockerfile
-            tag_file: calculated-lifecycle-version/version
-            build_args:
-              go_version: "1.11.4"
-            build_args_file: docker-build-args/args.json
-      - put: packs-samples-image
-        params:
-          build: lifecycle-binaries
-          dockerfile: ci/images/samples/Dockerfile
-          tag_file: calculated-lifecycle-version/version
-          build_args_file: docker-build-args/args.json
+        - do:
+          - put: packs-build-image
+            params:
+              build: ci/images/build
+              tag_file: calculated-lifecycle-version/version
+              build_args:
+                go_version: "1.11.4"
+              build_args_file: docker-build-args/args.json
+          - put: packs-samples-image
+            params:
+              build: ci/images/samples
+              tag_file: calculated-lifecycle-version/version
+              build_args_file: docker-build-args/args.json
 
   - name: pack-unit
     plan:
@@ -316,6 +314,7 @@ jobs:
               version: calculated-lifecycle-version
           - put: packs-samples-image
             params:
+              load_base: packs-samples-image
               build: ci/images/samples
               dockerfile: ci/images/samples/Dockerfile.release
               tag_file: calculated-lifecycle-version/version

@@ -299,15 +299,15 @@ jobs:
       - aggregate:
         - put: packs-base-image
           params:
-            load: packs-base-image/image
+            load: packs-base-image
             tag_file: calculated-lifecycle-version/version
         - put: packs-run-image
           params:
-            load: packs-run-image/image
+            load: packs-run-image
             tag_file: calculated-lifecycle-version/version
         - put: packs-build-image
           params:
-            load: packs-build-image/image
+            load: packs-build-image
             tag_file: calculated-lifecycle-version/version
         - do:
           - task: generate-docker-release-args
@@ -316,6 +316,7 @@ jobs:
               version: calculated-lifecycle-version
           - put: packs-samples-image
             params:
+              build: ci/images/samples
               dockerfile: ci/images/samples/Dockerfile.release
               tag_file: calculated-lifecycle-version/version
               build_args_file: docker-release-args/args.json

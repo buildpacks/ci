@@ -8,12 +8,12 @@ echo Generating docker release args
 
 version=$(cat version/version)
 
-samples_image=$(cat "packs-samples-image/repository"):$(cat "packs-samples-image/tag")
+samples_image=$(cat "packs-samples-image/repository"):$(cat "packs-samples-image/digest")
 
 # Note: run_image must not have :443 port as it is used in label metadata, not Concourse
 cat << EOF > docker-release-args/args.json
   {
-    "run_image":    "gcr.io/cncf-buildpacks-ci/packs/run:${version}",
+    "run_image":        "gcr.io/cncf-buildpacks-ci/packs/run:${version}",
     "samples_image":    "${samples_image}"
   }
 EOF

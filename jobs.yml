@@ -188,6 +188,8 @@ jobs:
         # Images
         - get: packs-base-image
           passed: [build-stack-images]
+          params:
+             skip_download: true
         - get: packs-build-image
           passed: [build-stack-images]
           params: {save: true}

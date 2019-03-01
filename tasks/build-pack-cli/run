@@ -12,7 +12,8 @@ export GOOS=${OS_NAME}
 echo Building 'pack' CLI version: $pack_version
 
 pushd pack-repo
-    CGO_ENABLED=0 go build -ldflags "-X 'main.Version=${pack_base_version}'" -o "$PACK_PATH" ./cmd/pack
+    version_string="v$pack_base_version (git sha: $(git log -1 --pretty=%H))"
+    CGO_ENABLED=0 go build -ldflags "-X 'main.Version=${version_string}'" -o "$PACK_PATH" ./cmd/pack
 popd
 
 echo "pack v${pack_version}" > pack-release/pack-release-name

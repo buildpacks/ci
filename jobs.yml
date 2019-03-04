@@ -1,27 +1,37 @@
 jobs:
-  - name: build-lifecycle-binaries
+  - name: lifecycle-unit
     max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
       - get: lifecycle-repo
         trigger: true
         version: every
       - get: ci
-      - put: lifecycle-version
-        params:
-          pre: build
-      - task: calculate-lifecycle-version
-        file: ci/tasks/calculate-lifecycle-version/task.yml
       - aggregate:
         - task: format-lifecycle
           file: ci/tasks/format-lifecycle/task.yml
         - task: run-unit-tests
           privileged: true
           file: ci/tasks/run-lifecycle-unit/task.yml
-        - task: build-binaries
-          privileged: true
-          file: ci/tasks/build-lifecycle-binaries/task.yml
-          input_mapping:
-            version: calculated-lifecycle-version
+
+  - name: build-lifecycle-binaries
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
+    plan:
+      - aggregate:
+        - get: lifecycle-repo
+          passed: [lifecycle-unit]
+          trigger: true
+          version: every
+        - get: ci
+        - put: lifecycle-version
+          params:
+            pre: build
+      - task: calculate-lifecycle-version
+        file: ci/tasks/calculate-lifecycle-version/task.yml
+      - task: build-binaries
+        privileged: true
+        file: ci/tasks/build-lifecycle-binaries/task.yml
+        input_mapping:
+          version: calculated-lifecycle-version
       - aggregate:
         - put: detector-gcs
           params: {file: lifecycle-binaries/detector-*}
@@ -46,7 +56,6 @@ jobs:
           version: every
           passed: [build-lifecycle-binaries]
         - get: ci
-          passed: [build-lifecycle-binaries]
         - get: lifecycle-version
           passed: [build-lifecycle-binaries]
           trigger: true
@@ -128,7 +137,6 @@ jobs:
         version: every
         passed: [pack-unit]
       - get: ci
-        passed: [pack-unit]
       - get: pack-version
         trigger: true
         passed: [pack-unit]
@@ -171,7 +179,6 @@ jobs:
         - get: pack-repo
           passed: [pack-build]
         - get: ci
-          passed: [build-stack-images, pack-build]
 
         # Pack binaries
         - get: pack-linux-binary
@@ -230,7 +237,6 @@ jobs:
     plan:
       - aggregate:
         - get: ci
-          passed: [acceptance]
 
         # Versions
         - get: lifecycle-version

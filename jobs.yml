@@ -20,7 +20,6 @@ jobs:
         - get: lifecycle-repo
           passed: [lifecycle-unit]
           trigger: true
-          version: every
         - get: ci
         - put: lifecycle-version
           params:

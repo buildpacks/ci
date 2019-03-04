@@ -8,10 +8,12 @@ version="$(cat version/version)"
 
 echo "Assembling binaries for version $version"
 
-cp builder-gcs/builder-*      binaries-archive/builder
-cp analyzer-gcs/analyzer-*    binaries-archive/analyzer
 cp detector-gcs/detector-*    binaries-archive/detector
+cp restorer-gcs/restorer-*    binaries-archive/restorer
+cp analyzer-gcs/analyzer-*    binaries-archive/analyzer
+cp builder-gcs/builder-*      binaries-archive/builder
 cp exporter-gcs/exporter-*    binaries-archive/exporter
+cp cacher-gcs/cacher-*        binaries-archive/cacher
 cp launcher-gcs/launcher-*    binaries-archive/launcher
 
 chmod +x binaries-archive/*

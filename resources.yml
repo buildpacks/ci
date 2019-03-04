@@ -86,6 +86,13 @@ resources:
       json_key: ((concourse-service-account-key-json))
       regexp: development/detector-(.*)
 
+  - name: restorer-gcs
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/restorer-(.*)
+
   - name: analyzer-gcs
     type: gcs-resource
     source:
@@ -106,6 +113,13 @@ resources:
       bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
       regexp: development/exporter-(.*)
+
+  - name: cacher-gcs
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/cacher-(.*)
 
   - name: launcher-gcs
     type: gcs-resource

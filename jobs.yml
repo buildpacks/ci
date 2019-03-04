@@ -25,12 +25,16 @@ jobs:
       - aggregate:
         - put: detector-gcs
           params: {file: lifecycle-binaries/detector-*}
+        - put: restorer-gcs
+          params: {file: lifecycle-binaries/restorer-*}
         - put: analyzer-gcs
           params: {file: lifecycle-binaries/analyzer-*}
         - put: builder-gcs
           params: {file: lifecycle-binaries/builder-*}
         - put: exporter-gcs
           params: {file: lifecycle-binaries/exporter-*}
+        - put: cacher-gcs
+          params: {file: lifecycle-binaries/cacher-*}
         - put: launcher-gcs
           params: {file: lifecycle-binaries/launcher-*}
 
@@ -50,11 +54,15 @@ jobs:
         ## Get binaries
         - get: detector-gcs
           passed: [build-lifecycle-binaries]
+        - get: restorer-gcs
+          passed: [build-lifecycle-binaries]
         - get: analyzer-gcs
           passed: [build-lifecycle-binaries]
         - get: builder-gcs
           passed: [build-lifecycle-binaries]
         - get: exporter-gcs
+          passed: [build-lifecycle-binaries]
+        - get: cacher-gcs
           passed: [build-lifecycle-binaries]
         - get: launcher-gcs
           passed: [build-lifecycle-binaries]
@@ -176,11 +184,15 @@ jobs:
         # Lifecycle binaries
         - get: detector-gcs
           passed: [build-stack-images]
+        - get: restorer-gcs
+          passed: [build-stack-images]
         - get: analyzer-gcs
           passed: [build-stack-images]
         - get: builder-gcs
           passed: [build-stack-images]
         - get: exporter-gcs
+          passed: [build-stack-images]
+        - get: cacher-gcs
           passed: [build-stack-images]
         - get: launcher-gcs
           passed: [build-stack-images]
@@ -233,11 +245,15 @@ jobs:
         # Binaries
         - get: detector-gcs
           passed: [acceptance]
+        - get: restorer-gcs
+          passed: [acceptance]
         - get: analyzer-gcs
           passed: [acceptance]
         - get: builder-gcs
           passed: [acceptance]
         - get: exporter-gcs
+          passed: [acceptance]
+        - get: cacher-gcs
           passed: [acceptance]
         - get: launcher-gcs
           passed: [acceptance]

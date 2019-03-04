@@ -17,9 +17,11 @@ echo Version "$version"
 
 pushd ./lifecycle-repo
   go build -mod=vendor -o "../lifecycle-binaries/detector-$version-$GOOS"  -a ./cmd/detector/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/restorer-$version-$GOOS"  -a ./cmd/restorer/main.go
   go build -mod=vendor -o "../lifecycle-binaries/analyzer-$version-$GOOS"  -a ./cmd/analyzer/main.go
   go build -mod=vendor -o "../lifecycle-binaries/builder-$version-$GOOS"   -a ./cmd/builder/main.go
   go build -mod=vendor -o "../lifecycle-binaries/exporter-$version-$GOOS"  -a ./cmd/exporter/main.go
+  go build -mod=vendor -o "../lifecycle-binaries/cacher-$version-$GOOS"  -a ./cmd/cacher/main.go
   go build -mod=vendor -o "../lifecycle-binaries/launcher-$version-$GOOS"  -a ./cmd/launcher/main.go
 popd
 

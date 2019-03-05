@@ -13,4 +13,4 @@ cd pack-repo
 echo "registry:2 image is needed for pack unit tests"
 docker pull registry:2
 
-docker_run golang go test -mod=vendor -v -count=1 -parallel=1 -timeout=0 ./build
+docker_run golang go test -mod=vendor -v -count=1 -parallel=1 -timeout=0 ./...

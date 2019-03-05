@@ -22,4 +22,4 @@ pack_path=$PWD/pack-linux-binary/pack
 chmod +x ${pack_path}
 
 cd pack-repo
-docker_run -e "PACK_TAG=dev" -e "PACK_PATH=/tmp/pack" -v "$pack_path":/tmp/pack golang go test -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+docker_run -e "PACK_TAG=dev" -e "PACK_PATH=/tmp/pack" -v "$pack_path":/tmp/pack golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance

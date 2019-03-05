@@ -13,7 +13,7 @@ echo Building 'pack' CLI version: $pack_version
 
 pushd pack-repo
     version_string="v$pack_base_version (git sha: $(git log -1 --pretty=%H))"
-    CGO_ENABLED=0 go build -ldflags "-X 'main.Version=${version_string}'" -o "$PACK_PATH" ./cmd/pack
+    CGO_ENABLED=0 go build -mod=vendor -ldflags "-X 'main.Version=${version_string}'" -o "$PACK_PATH" ./cmd/pack
 popd
 
 echo "pack v${pack_version}" > pack-release/pack-release-name

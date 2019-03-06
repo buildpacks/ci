@@ -8,9 +8,9 @@ set -o pipefail
 
 set -x
 
-cd lifecycle-repo
-
 docker load -i golang-image/image
 docker tag "$(cat golang-image/image-id)" "golang"
+
+cd lifecycle-repo
 
 docker_run golang go test -v -mod=vendor -count=1 -parallel=1 -timeout=0 ./...

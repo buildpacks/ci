@@ -8,9 +8,9 @@ set -o pipefail
 
 set -x
 
-cd pack-repo
-
 docker load -i golang-image/image
 docker tag "$(cat golang-image/image-id)" "golang"
+
+cd pack-repo
 
 docker_run golang go test -mod=vendor -v -count=1 -parallel=1 -timeout=0 ./...

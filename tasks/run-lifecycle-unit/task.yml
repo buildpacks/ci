@@ -7,6 +7,7 @@ image_resource:
 inputs:
   - name: lifecycle-repo
   - name: ci
+  - name: golang-image
 
 run:
   path: ci/tasks/run-lifecycle-unit/run

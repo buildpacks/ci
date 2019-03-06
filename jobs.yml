@@ -13,6 +13,20 @@ jobs:
           privileged: true
           file: ci/tasks/run-lifecycle-unit/task.yml
 
+  - name: lifecycle-unit
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
+    plan:
+      - get: lifecycle-repo
+        trigger: true
+        version: every
+      - get: ci
+      - aggregate:
+        - task: format-lifecycle
+          file: ci/tasks/format-lifecycle/task.yml
+        - task: run-unit-tests
+          privileged: true
+          file: ci/tasks/run-lifecycle-unit/task.yml
+
   - name: build-lifecycle-binaries
     max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
@@ -125,6 +139,21 @@ jobs:
           trigger: true
           version: every
         - get: ci
+      - task: run-unit-tests
+        privileged: true
+        file: ci/tasks/run-pack-unit/task.yml
+
+  - name: pack-unit-experimental
+    plan:
+      - aggregate:
+        - put: pack-version
+          params:
+            pre: build
+        - get: pack-repo
+          resource: pack-repo
+          trigger: true
+          version: every
+        - get: ci-experimental
       - task: run-unit-tests
         privileged: true
         file: ci/tasks/run-pack-unit/task.yml

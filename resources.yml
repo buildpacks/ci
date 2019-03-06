@@ -27,6 +27,12 @@ resources:
       uri: https://github.com/buildpack/ci.git
       branch: master
 
+  - name: ci-experimental
+    type: git
+    source:
+      uri: https://github.com/buildpack/ci.git
+      branch: docker-performance
+
   ## Semver ##
 
   - name: lifecycle-version

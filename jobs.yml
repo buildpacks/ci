@@ -8,7 +8,7 @@ jobs:
           version: every
         - get: ci
         - get: golang-image
-          save: true
+          params: {save: true}
       - aggregate:
         - task: format-lifecycle
           image: golang-image
@@ -130,7 +130,7 @@ jobs:
           version: every
         - get: ci
         - get: golang-image
-          save: true
+          params: {save: true}
       - task: run-unit-tests
         privileged: true
         file: ci/tasks/run-pack-unit/task.yml
@@ -227,7 +227,7 @@ jobs:
           passed: [build-stack-images]
           params: {save: true}
         - get: golang-image
-          save: true
+          params: {save: true}
 
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml
@@ -284,20 +284,16 @@ jobs:
           # Images
         - get: packs-base-image
           passed: [acceptance]
-          params:
-            save: true
+          params: {save: true}
         - get: packs-run-image
           passed: [acceptance]
-          params:
-            save: true
+          params: {save: true}
         - get: packs-build-image
           passed: [acceptance]
-          params:
-            save: true
+          params: {save: true}
         - get: packs-samples-image
           passed: [acceptance]
-          params:
-            save: true
+          params: {save: true}
 
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml

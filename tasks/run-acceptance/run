@@ -17,6 +17,9 @@ docker tag "$(cat packs-build-image/image-id)" "packs/build:dev"
 docker load -i packs-run-image/image
 docker tag "$(cat packs-run-image/image-id)" "packs/run:dev"
 
+docker load -i golang-image/image
+docker tag "$(cat golang-image/image-id)" "golang"
+
 mv pack-linux-binary/pack-*-linux pack-linux-binary/pack
 pack_path=$PWD/pack-linux-binary/pack
 chmod +x ${pack_path}

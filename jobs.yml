@@ -2,12 +2,16 @@ jobs:
   - name: lifecycle-unit
     max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
-      - get: lifecycle-repo
-        trigger: true
-        version: every
-      - get: ci
+      - aggregate:
+        - get: lifecycle-repo
+          trigger: true
+          version: every
+        - get: ci
+        - get: golang-image
+          save: true
       - aggregate:
         - task: format-lifecycle
+          image: golang-image
           file: ci/tasks/format-lifecycle/task.yml
         - task: run-unit-tests
           privileged: true
@@ -27,7 +31,7 @@ jobs:
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml
       - task: build-binaries
-        privileged: true
+        image: golang-image
         file: ci/tasks/build-lifecycle-binaries/task.yml
         input_mapping:
           version: calculated-lifecycle-version
@@ -125,6 +129,8 @@ jobs:
           trigger: true
           version: every
         - get: ci
+        - get: golang-image
+          save: true
       - task: run-unit-tests
         privileged: true
         file: ci/tasks/run-pack-unit/task.yml
@@ -141,16 +147,19 @@ jobs:
         passed: [pack-unit]
     - aggregate:
       - task: build-pack-cli-linux
+        image: golang-image
         file: ci/tasks/build-pack-cli/task.yml
         output_mapping: {pack-release: pack-linux-release}
         params:
           OS_NAME: linux
       - task: build-pack-cli-darwin
+        image: golang-image
         file: ci/tasks/build-pack-cli/task.yml
         output_mapping: {pack-release: pack-darwin-release}
         params:
           OS_NAME: darwin
       - task: build-pack-cli-windows
+        image: golang-image
         file: ci/tasks/build-pack-cli/task.yml
         output_mapping: {pack-release: pack-windows-release}
         params:
@@ -217,6 +226,8 @@ jobs:
         - get: packs-samples-image
           passed: [build-stack-images]
           params: {save: true}
+        - get: golang-image
+          save: true
 
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml

@@ -11,6 +11,7 @@ inputs:
   - name: packs-samples-image
   - name: packs-build-image
   - name: packs-run-image
+  - name: golang-image
 
 run:
   path: ci/tasks/run-acceptance/run

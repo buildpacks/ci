@@ -77,6 +77,12 @@ resources:
       username: _json_key
       password: ((concourse-service-account-key-json))
 
+  - name: golang
+    type: registry-image
+    source:
+      repository: golang
+      tag: 1.12
+
   ## GCS Buckets ##
 
   - name: detector-gcs

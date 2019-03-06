@@ -28,6 +28,8 @@ jobs:
         - put: lifecycle-version
           params:
             pre: build
+        - get: golang-image
+          params: {save: true}
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml
       - task: build-binaries
@@ -145,6 +147,8 @@ jobs:
       - get: pack-version
         trigger: true
         passed: [pack-unit]
+      - get: golang-image
+        params: {save: true}
     - aggregate:
       - task: build-pack-cli-linux
         image: golang-image

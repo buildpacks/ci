@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ci/scripts/common.sh
+source ci-experimental/scripts/common.sh
 
 set -o errexit
 set -o nounset

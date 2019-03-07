@@ -162,7 +162,7 @@ jobs:
         - get: ci-experimental
       - task: run-unit-tests
         privileged: true
-        file: ci/tasks/run-pack-unit/task.yml
+        file: ci-experimental/tasks/run-pack-unit/task.yml
 
   - name: pack-build
     plan:

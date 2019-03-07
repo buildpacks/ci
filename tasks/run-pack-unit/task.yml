@@ -6,8 +6,8 @@ image_resource:
 
 inputs:
   - name: pack-repo
-  - name: ci
+  - name: ci-experimental
   - name: golang-image
 
 run:
-  path: ci/tasks/run-pack-unit/run
+  path: ci-experimental/tasks/run-pack-unit/run

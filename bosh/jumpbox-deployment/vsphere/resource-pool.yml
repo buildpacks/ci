@@ -1,4 +1,0 @@
----
-- type: replace
-  path: /cloud_provider/properties/vcenter/datacenters/name=((vcenter_dc))/clusters/0/((vcenter_cluster))/resource_pool?
-  value: ((vcenter_rp))

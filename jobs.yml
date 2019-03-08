@@ -7,6 +7,8 @@ jobs:
           trigger: true
           version: every
         - get: ci
+          params:
+            submodules: none
         - get: golang-image
           params: {save: true}
       - aggregate:
@@ -25,6 +27,8 @@ jobs:
           passed: [lifecycle-unit]
           trigger: true
         - get: ci
+          params:
+            submodules: none
         - put: lifecycle-version
           params:
             pre: build
@@ -61,6 +65,8 @@ jobs:
           version: every
           passed: [build-lifecycle-binaries]
         - get: ci
+          params:
+            submodules: none
         - get: lifecycle-version
           passed: [build-lifecycle-binaries]
           trigger: true
@@ -131,6 +137,8 @@ jobs:
           trigger: true
           version: every
         - get: ci
+          params:
+            submodules: none
         - get: golang-image
           params: {save: true}
       - task: run-unit-tests
@@ -144,6 +152,8 @@ jobs:
         version: every
         passed: [pack-unit]
       - get: ci
+        params:
+          submodules: none
       - get: pack-version
         trigger: true
         passed: [pack-unit]
@@ -191,6 +201,8 @@ jobs:
         - get: pack-repo
           passed: [pack-build]
         - get: ci
+          params:
+            submodules: none
 
         # Pack binaries
         - get: pack-linux-binary
@@ -251,6 +263,8 @@ jobs:
     plan:
       - aggregate:
         - get: ci
+          params:
+            submodules: none
 
         # Versions
         - get: lifecycle-version

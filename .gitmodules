@@ -1,0 +1,3 @@
+[submodule "concourse/concourse-bosh-deployment"]
+	path = concourse/concourse-bosh-deployment
+	url = git@github.com:concourse/concourse-bosh-deployment.git

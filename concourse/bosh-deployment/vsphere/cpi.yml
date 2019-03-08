@@ -1,0 +1,66 @@
+- path: /releases/-
+  type: replace
+  value:
+    name: bosh-vsphere-cpi
+    sha1: 73f4cd14eef75e037d6ca553ee63d8b55062f0ab
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh-vsphere-cpi-release?v=52
+    version: "52"
+- name: stemcell
+  path: /resource_pools/name=vms/stemcell?
+  type: replace
+  value:
+    sha1: ec327636a44ff3247ed87729d45d17a90a8fabb4
+    url: https://s3.amazonaws.com/bosh-core-stemcells/vsphere/bosh-stemcell-250.9-vsphere-esxi-ubuntu-xenial-go_agent.tgz
+- path: /resource_pools/name=vms/cloud_properties?
+  type: replace
+  value:
+    cpu: 2
+    disk: 40000
+    ram: 4096
+- path: /networks/name=default/subnets/0/cloud_properties?
+  type: replace
+  value:
+    name: ((network_name))
+- path: /instance_groups/name=bosh/jobs/-
+  type: replace
+  value:
+    name: vsphere_cpi
+    release: bosh-vsphere-cpi
+- path: /instance_groups/name=bosh/properties/director/cpi_job?
+  type: replace
+  value: vsphere_cpi
+- path: /cloud_provider/template?
+  type: replace
+  value:
+    name: vsphere_cpi
+    release: bosh-vsphere-cpi
+- path: /instance_groups/name=bosh/properties/vcenter?
+  type: replace
+  value:
+    address: ((vcenter_ip))
+    datacenters:
+    - clusters:
+      - ((vcenter_cluster)): {}
+      datastore_pattern: ((vcenter_ds))
+      disk_path: ((vcenter_disks))
+      name: ((vcenter_dc))
+      persistent_datastore_pattern: ((vcenter_ds))
+      template_folder: ((vcenter_templates))
+      vm_folder: ((vcenter_vms))
+    password: ((vcenter_password))
+    user: ((vcenter_user))
+- path: /cloud_provider/properties/vcenter?
+  type: replace
+  value:
+    address: ((vcenter_ip))
+    datacenters:
+    - clusters:
+      - ((vcenter_cluster)): {}
+      datastore_pattern: ((vcenter_ds))
+      disk_path: ((vcenter_disks))
+      name: ((vcenter_dc))
+      persistent_datastore_pattern: ((vcenter_ds))
+      template_folder: ((vcenter_templates))
+      vm_folder: ((vcenter_vms))
+    password: ((vcenter_password))
+    user: ((vcenter_user))

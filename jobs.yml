@@ -129,9 +129,6 @@ jobs:
   - name: pack-unit
     plan:
       - aggregate:
-        - put: pack-version
-          params:
-            pre: build
         - get: pack-repo
           resource: pack-repo
           trigger: true
@@ -169,10 +166,8 @@ jobs:
         params:
           submodules: none
       - get: pack-version
-        trigger: true
-        passed:
-        - pack-unit
-        - pack-unit-windows
+        params:
+          pre: build
       - get: golang-image
         params: {save: true}
     - aggregate:
@@ -201,6 +196,9 @@ jobs:
         params: {file: pack-windows-release/pack-*-windows}
       - put: pack-darwin-binary
         params: {file: pack-darwin-release/pack-*-darwin}
+      - put: pack-version
+        params:
+          file: pack-version/version
 
   - name: acceptance
     plan:

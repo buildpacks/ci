@@ -4,17 +4,17 @@ inputs:
 
 run:
   dir: pack-repo
-    path: c:\Go\bin\go.exe
-    args:
-      - test
-      - -mod=vendor
-      - -v
-      - -count=1
-      - -parallel=1
-      - github.com/buildpack/pack
-      - github.com/buildpack/pack/build
-      - github.com/buildpack/pack/cache
-      - github.com/buildpack/pack/commands
-      - github.com/buildpack/pack/config
-      - github.com/buildpack/pack/fs
-      - github.com/buildpack/pack/logging
+  path: c:\Go\bin\go.exe
+  args:
+    - test
+    - -mod=vendor
+    - -v
+    - -count=1
+    - -parallel=1
+    - github.com/buildpack/pack
+    - github.com/buildpack/pack/build
+    - github.com/buildpack/pack/cache
+    - github.com/buildpack/pack/commands
+    - github.com/buildpack/pack/config
+    - github.com/buildpack/pack/fs
+    - github.com/buildpack/pack/logging

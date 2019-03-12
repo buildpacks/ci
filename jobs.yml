@@ -154,26 +154,7 @@ jobs:
           params:
             submodules: none
       - task: unit
-        config:
-          inputs:
-          - name: pack-repo
-          platform: windows
-          run:
-            dir: pack-repo
-            path: c:\Go\bin\go.exe
-            args:
-            - test
-            - -mod=vendor
-            - -v
-            - -count=1
-            - -parallel=1
-            - github.com/buildpack/pack
-            - github.com/buildpack/pack/build
-            - github.com/buildpack/pack/cache
-            - github.com/buildpack/pack/commands
-            - github.com/buildpack/pack/config
-            - github.com/buildpack/pack/fs
-            - github.com/buildpack/pack/logging
+        file: ci/tasks/run-pack-unit-windows/task.yml
         tags: [windows]
 
   - name: pack-build
@@ -181,13 +162,17 @@ jobs:
     - aggregate:
       - get: pack-repo
         version: every
-        passed: [pack-unit]
+        passed:
+          - pack-unit
+          - pack-unit-windows
       - get: ci
         params:
           submodules: none
       - get: pack-version
         trigger: true
-        passed: [pack-unit]
+        passed:
+        - pack-unit
+        - pack-unit-windows
       - get: golang-image
         params: {save: true}
     - aggregate:

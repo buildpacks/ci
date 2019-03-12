@@ -202,7 +202,7 @@ jobs:
 
   - name: acceptance
     plan:
-      - aggregate:
+      - aggregate: &acceptance-resources
         # Versions
         - get: pack-version
           passed: [pack-build]
@@ -272,6 +272,13 @@ jobs:
         params:
           file: binaries-archive/lifecycle-binaries-latest.tgz
           content_type: application/gzip # there's no distinct tgz mimetype
+
+
+  - name: acceptance-windows
+    plan:
+      - aggregate: *acceptance-resources
+      - task: acceptance
+        file: ci/tasks/run-acceptance-windows/task.yml
 
   - name: release
     plan:

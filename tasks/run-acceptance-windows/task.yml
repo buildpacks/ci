@@ -1,0 +1,13 @@
+platform: windows
+
+inputs:
+  - name: pack-repo
+  - name: pack-windows-binary
+  - name: ci
+  - name: packs-samples-image
+  - name: packs-build-image
+  - name: packs-run-image
+  - name: golang-image
+
+run:
+  path: ci/tasks/run-acceptance-windows/run.ps1

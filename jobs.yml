@@ -279,6 +279,8 @@ jobs:
       - aggregate: *acceptance-resources
       - task: acceptance
         file: ci/tasks/run-acceptance-windows/task.yml
+        tags:
+          - windows
 
   - name: release
     plan:

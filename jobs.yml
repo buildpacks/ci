@@ -162,6 +162,7 @@ jobs:
         passed:
           - pack-unit
           - pack-unit-windows
+        trigger: true
       - get: ci
         params:
           submodules: none

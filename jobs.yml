@@ -147,6 +147,8 @@ jobs:
       - aggregate:
         - get: pack-repo
           resource: pack-repo
+          trigger: true
+          version: every
         - get: ci
           params:
             submodules: none

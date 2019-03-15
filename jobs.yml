@@ -127,16 +127,21 @@ jobs:
       - get: pack-linux-binary
       - get: samples
       - get: ci
+        params:
+          submodules: none
       - get: lifecycle-version
+        passed: [build-stack-images]
     - task: calculate-lifecycle-version
       file: ci/tasks/calculate-lifecycle-version/task.yml
     - task: create
       file: ci/tasks/create-samples-builder/task.yml
+      privileged: true
       input_mapping:
         version: calculated-lifecycle-version
     - put: packs-samples-image
       params:
-        import_file: samples-image/image.tar
+        load_file: samples-image/image.tar
+        load_repository: gcr.io/cncf-buildpacks-ci/packs/samples
         tag_file: calculated-lifecycle-version/version
 
   - name: pack-unit
@@ -270,7 +275,7 @@ jobs:
           passed: [build-stack-images]
           params: {save: true}
         - get: packs-samples-image
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
           params: {save: true}
         - get: golang-image
           params: {save: true}

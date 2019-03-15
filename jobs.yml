@@ -72,20 +72,21 @@ jobs:
           trigger: true
 
         ## Get binaries
-        - get: detector-gcs
-          passed: [build-lifecycle-binaries]
-        - get: restorer-gcs
-          passed: [build-lifecycle-binaries]
-        - get: analyzer-gcs
-          passed: [build-lifecycle-binaries]
-        - get: builder-gcs
-          passed: [build-lifecycle-binaries]
-        - get: exporter-gcs
-          passed: [build-lifecycle-binaries]
-        - get: cacher-gcs
-          passed: [build-lifecycle-binaries]
-        - get: launcher-gcs
-          passed: [build-lifecycle-binaries]
+        - aggregate:
+          - get: detector-gcs
+            passed: [build-lifecycle-binaries]
+          - get: restorer-gcs
+            passed: [build-lifecycle-binaries]
+          - get: analyzer-gcs
+            passed: [build-lifecycle-binaries]
+          - get: builder-gcs
+            passed: [build-lifecycle-binaries]
+          - get: exporter-gcs
+            passed: [build-lifecycle-binaries]
+          - get: cacher-gcs
+            passed: [build-lifecycle-binaries]
+          - get: launcher-gcs
+            passed: [build-lifecycle-binaries]
 
       ## Prep
       - aggregate:
@@ -99,32 +100,76 @@ jobs:
           version: calculated-lifecycle-version
 
       ## Docker builds
-      - put: packs-base-image
-        params:
-          build: lifecycle-binaries
-          dockerfile: ci/images/base/Dockerfile
-          tag_file: calculated-lifecycle-version/version
-          build_args:
-            base: "ubuntu:18.04"
       - aggregate:
         - put: packs-run-image
           params:
             build: ci/images/run
             tag_file: calculated-lifecycle-version/version
             build_args_file: docker-build-args/args.json
-        - do:
-          - put: packs-build-image
-            params:
-              build: ci/images/build
-              tag_file: calculated-lifecycle-version/version
-              build_args:
-                go_version: "1.11.4"
-              build_args_file: docker-build-args/args.json
-          - put: packs-samples-image
-            params:
-              build: ci/images/samples
-              tag_file: calculated-lifecycle-version/version
-              build_args_file: docker-build-args/args.json
+        - put: packs-build-image
+          params:
+            build: ci/images/build
+            tag_file: calculated-lifecycle-version/version
+            build_args:
+              go_version: "1.11.4"
+            build_args_file: docker-build-args/args.json
+
+  - name: create-samples-builder
+    plan:
+    - aggregate:
+      - get: pack-linux-binary
+        passed: [pack-build]
+      - get: samples
+      - get: ci
+        params:
+          submodules: none
+      - get: lifecycle-version
+        passed: [build-stack-images]
+        trigger: true
+
+        ### pass through
+      - get: pack-repo
+        passed: [pack-build]
+      - get: detector-gcs
+        passed: [build-stack-images]
+      - get: restorer-gcs
+        passed: [build-stack-images]
+      - get: analyzer-gcs
+        passed: [build-stack-images]
+      - get: builder-gcs
+        passed: [build-stack-images]
+      - get: exporter-gcs
+        passed: [build-stack-images]
+      - get: cacher-gcs
+        passed: [build-stack-images]
+      - get: launcher-gcs
+        passed: [build-stack-images]
+      - get: packs-build-image
+        passed: [build-stack-images]
+        params: {skip_download: true}
+      - get: packs-run-image
+        passed: [build-stack-images]
+        params: {skip_download: true}
+      - get: pack-windows-binary
+        passed: [pack-build]
+      - get: pack-darwin-binary
+        passed: [pack-build]
+      - get: pack-version
+        passed: [pack-build]
+        trigger: true
+
+    - task: calculate-lifecycle-version
+      file: ci/tasks/calculate-lifecycle-version/task.yml
+    - task: create
+      file: ci/tasks/create-samples-builder/task.yml
+      privileged: true
+      input_mapping:
+        version: calculated-lifecycle-version
+    - put: packs-samples-image
+      params:
+        load_file: samples-image/image.tar
+        load_repository: gcr.io/cncf-buildpacks-ci/packs/samples
+        tag_file: calculated-lifecycle-version/version
 
   - name: pack-unit
     plan:
@@ -208,56 +253,52 @@ jobs:
       - aggregate:
         # Versions
         - get: pack-version
-          passed: [pack-build]
+          passed: [create-samples-builder]
           trigger: true
         - get: lifecycle-version
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
           trigger: true
 
         # Repos
         - get: pack-repo
-          passed: [pack-build]
+          passed: [create-samples-builder]
         - get: ci
           params:
             submodules: none
 
         # Pack binaries
         - get: pack-linux-binary
-          passed: [pack-build]
+          passed: [create-samples-builder]
         - get: pack-windows-binary
-          passed: [pack-build]
+          passed: [create-samples-builder]
         - get: pack-darwin-binary
-          passed: [pack-build]
+          passed: [create-samples-builder]
 
         # Lifecycle binaries
         - get: detector-gcs
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
         - get: restorer-gcs
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
         - get: analyzer-gcs
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
         - get: builder-gcs
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
         - get: exporter-gcs
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
         - get: cacher-gcs
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
         - get: launcher-gcs
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
 
         # Images
-        - get: packs-base-image
-          passed: [build-stack-images]
-          params:
-             skip_download: true
         - get: packs-build-image
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
           params: {save: true}
         - get: packs-run-image
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
           params: {save: true}
         - get: packs-samples-image
-          passed: [build-stack-images]
+          passed: [create-samples-builder]
           params: {save: true}
         - get: golang-image
           params: {save: true}
@@ -317,9 +358,6 @@ jobs:
           passed: [acceptance]
 
           # Images
-        - get: packs-base-image
-          passed: [acceptance]
-          params: {save: true}
         - get: packs-run-image
           passed: [acceptance]
           params: {save: true}
@@ -345,10 +383,6 @@ jobs:
       # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - aggregate:
         # Lifecycle
-        - put: packs-base-image
-          params:
-            load: packs-base-image
-            tag_file: calculated-lifecycle-version/version
         - put: packs-run-image
           params:
             load: packs-run-image

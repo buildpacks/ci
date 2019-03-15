@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+source /opt/resource/common.sh
+start_docker 3 3
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -x
+
+version=$(cat version/version)
+
+cat << EOF >> ./samples/builder.toml
+[stack]
+  id = "io.buildpacks.stacks.bionic"
+  build-image = "gcr.io/cncf-buildpacks-ci/packs/build:$version"
+  run-image = "gcr.io/cncf-buildpacks-ci/packs/run:$version"
+EOF
+
+cat ./samples/builder.toml
+
+chmod +x ./pack-linux-binary/pack-*-linux
+./pack-linux-binary/pack-*-linux create-builder "gcr.io/cncf-buildpacks-ci/packs/samples:$version" -b ./samples/builder.toml
+
+docker save "gcr.io/cncf-buildpacks-ci/packs/samples:$version" -o samples-image/image.tar

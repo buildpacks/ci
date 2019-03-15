@@ -120,11 +120,24 @@ jobs:
               build_args:
                 go_version: "1.11.4"
               build_args_file: docker-build-args/args.json
-          - put: packs-samples-image
-            params:
-              build: ci/images/samples
-              tag_file: calculated-lifecycle-version/version
-              build_args_file: docker-build-args/args.json
+
+  - name: create-samples-builder
+    plan:
+    - aggregate:
+      - get: pack-linux-binary
+      - get: samples
+      - get: ci
+      - get: lifecycle-version
+    - task: calculate-lifecycle-version
+      file: ci/tasks/calculate-lifecycle-version/task.yml
+    - task: create
+      file: ci/tasks/create-samples-builder/task.yml
+      input_mapping:
+        version: calculated-lifecycle-version
+    - put: packs-samples-image
+      params:
+        import_file: samples-image/image.tar
+        tag_file: calculated-lifecycle-version/version
 
   - name: pack-unit
     plan:

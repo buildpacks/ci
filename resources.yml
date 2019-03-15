@@ -25,6 +25,12 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
+      branch: create-samples-builder
+
+  - name: samples
+    type: git
+    source:
+      uri: https://github.com/buildpack/samples.git
       branch: master
 
   ## Semver ##

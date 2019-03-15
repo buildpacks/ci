@@ -6,13 +6,7 @@ set -o pipefail
 
 echo Moving binaries
 
-mv detector-gcs/detector-*  lifecycle-binaries/detector
-mv restorer-gcs/restorer-*  lifecycle-binaries/restorer
-mv analyzer-gcs/analyzer-*  lifecycle-binaries/analyzer
-mv builder-gcs/builder-*    lifecycle-binaries/builder
-mv exporter-gcs/exporter-*  lifecycle-binaries/exporter
-mv cacher-gcs/cacher-*  lifecycle-binaries/cacher
-mv launcher-gcs/launcher-*  lifecycle-binaries/launcher
+pushd life
 
 echo lifecycle-binaries after moves:
 

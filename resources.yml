@@ -83,69 +83,13 @@ resources:
       tag: 1.12
 
   ## GCS Buckets ##
-
-  - name: detector-gcs
+  -
+  - name: lifecycle
     type: gcs-resource
     source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
+      bucket: cloud-native-buildpacks-lifecycle
       json_key: ((concourse-service-account-key-json))
-      regexp: development/detector-(.*)
-
-  - name: restorer-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/restorer-(.*)
-
-  - name: analyzer-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/analyzer-(.*)
-
-  - name: builder-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/builder-(.*)
-
-  - name: exporter-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/exporter-(.*)
-
-  - name: cacher-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/cacher-(.*)
-
-  - name: launcher-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/launcher-(.*)
-
-  - name: latest-lifecycle-archive-dev
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      versioned_file: development/lifecycle-binaries-latest.tgz
-
-  - name: latest-lifecycle-archive-prod
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      versioned_file: release/lifecycle-binaries-latest.tgz
+      regexp: lifecycle-(.*)+linux.x86.64.tgz
 
   - name: pack-linux-binary
     type: gcs-resource

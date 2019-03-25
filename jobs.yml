@@ -263,10 +263,6 @@ jobs:
         file: ci/tasks/assemble-binary-archive/task.yml
         input_mapping:
           version: calculated-lifecycle-version
-      - put: latest-lifecycle-archive-dev
-        params:
-          file: binaries-archive/lifecycle-binaries-latest.tgz
-          content_type: application/gzip # there's no distinct tgz mimetype
 
   - name: release
     plan:
@@ -313,10 +309,6 @@ jobs:
         file: ci/tasks/assemble-binary-archive/task.yml
         input_mapping:
           version: calculated-lifecycle-version
-      - put: latest-lifecycle-archive-prod
-        params:
-          file: binaries-archive/lifecycle-binaries-latest.tgz
-          content_type: application/gzip # there's no distinct tgz mimetype
 
       ## Create artifacts
       # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline

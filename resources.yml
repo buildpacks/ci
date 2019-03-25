@@ -25,7 +25,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: master
+      branch: lifecycle-archive
 
   - name: samples
     type: git
@@ -83,7 +83,6 @@ resources:
       tag: 1.12
 
   ## GCS Buckets ##
-  -
   - name: lifecycle
     type: gcs-resource
     source:
@@ -121,5 +120,4 @@ resources:
       repository: ci # TODO: Point to buildpack/pack later
       drafts: true
       access_token: ((pack-github-release-token)) # TODO: Make bot user
-
 

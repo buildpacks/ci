@@ -9,6 +9,9 @@ RUN go get github.com/Azure/acr-docker-credential-helper/src/docker-credential-a
 
 FROM ${base_image}
 
+COPY ./* /lifecycle/
+RUN chmod +x /lifecycle/*
+
 COPY --from=helpers /go/bin /usr/local/bin
 ARG stack_id="io.buildpacks.stacks.bionic"
 

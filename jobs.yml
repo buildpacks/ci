@@ -29,7 +29,7 @@ jobs:
         - get: ci
           params:
             submodules: none
-        - put: lifecycle-version
+        - get: lifecycle-version
           params:
             pre: build
         - get: golang-image
@@ -41,9 +41,12 @@ jobs:
         file: ci/tasks/build-lifecycle/task.yml
         input_mapping:
           version: calculated-lifecycle-version
-      - aggregate:
-        - put: lifecycle
-          params: {file: lifecycle/lifecycle-*}
+      - put: lifecycle
+        params: {file: lifecycle/lifecycle-*}
+      - put: lifecycle-version
+        params:
+          file: lifeycle-version/version
+
 
   - name: build-stack-images
     plan:
@@ -106,7 +109,7 @@ jobs:
       - get: pack-repo
         passed: [pack-build]
       - get: lifecycle
-        passed: [build-lifecycle]
+        passed: [build-stack-images]
       - get: packs-build-image
         passed: [build-stack-images]
         params: {skip_download: true}

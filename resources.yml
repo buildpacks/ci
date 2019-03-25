@@ -86,9 +86,9 @@ resources:
   - name: lifecycle
     type: gcs-resource
     source:
-      bucket: cloud-native-buildpacks-lifecycle
+      bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: lifecycle-(.*)+linux.x86.64.tgz
+      regexp: lifecycle-(.*)\+linux.x86.64.tgz
 
   - name: pack-linux-binary
     type: gcs-resource

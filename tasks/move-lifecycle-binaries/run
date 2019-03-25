@@ -6,8 +6,8 @@ set -o pipefail
 
 echo Moving binaries
 
-pushd lifeyclce-binaries
- tar xzf ../lifecycle/lifecycle-*.tar --strip-components 1
+pushd lifecycle-binaries
+ tar xzf ../lifecycle/lifecycle-*.tgz --strip-components 1
 popd
 
 echo lifecycle-binaries after moves:

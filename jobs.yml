@@ -78,6 +78,13 @@ jobs:
           version: calculated-lifecycle-version
 
       ## Docker builds
+      - put: packs-base-image
+        params:
+          build: lifecycle-binaries
+          dockerfile: ci/images/base/Dockerfile
+          tag_file: calculated-lifecycle-version/version
+          build_args:
+            base: "ubuntu:18.04"
       - aggregate:
         - put: packs-run-image
           params:
@@ -262,10 +269,6 @@ jobs:
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
-      - task: assemble-binary-archive
-        file: ci/tasks/assemble-binary-archive/task.yml
-        input_mapping:
-          version: calculated-lifecycle-version
 
   - name: release
     plan:
@@ -308,10 +311,6 @@ jobs:
 
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml
-      - task: assemble-binary-archive
-        file: ci/tasks/assemble-binary-archive/task.yml
-        input_mapping:
-          version: calculated-lifecycle-version
 
       ## Create artifacts
       # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline

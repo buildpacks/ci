@@ -55,6 +55,13 @@ resources:
 
   ## Docker Images ##
 
+  - name: packs-base-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/base # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
   - name: packs-run-image
     type: docker-image
     source:

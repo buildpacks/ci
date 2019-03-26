@@ -7,13 +7,7 @@ image_resource:
 
 inputs:
 - name: ci
-- name: detector-gcs
-- name: restorer-gcs
-- name: analyzer-gcs
-- name: builder-gcs
-- name: exporter-gcs
-- name: cacher-gcs
-- name: launcher-gcs
+- name: lifecycle
 
 outputs:
 - name: lifecycle-binaries

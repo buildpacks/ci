@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -x
+
+
+export GO111MODULE=on
+export GOOS=linux
+export GOARCH=amd64
+export CGO_ENABLED=0
+
+version="$(cat version/version)"
+
+echo Building lifecycle binaries
+echo Version "$version"
+
+mkdir "lifecycle-$version"
+
+pushd ./lifecycle-repo
+  go build -mod=vendor -o "../lifecycle-$version/detector"  -a ./cmd/detector/main.go
+  go build -mod=vendor -o "../lifecycle-$version/restorer"  -a ./cmd/restorer/main.go
+  go build -mod=vendor -o "../lifecycle-$version/analyzer"  -a ./cmd/analyzer/main.go
+  go build -mod=vendor -o "../lifecycle-$version/builder"   -a ./cmd/builder/main.go
+  go build -mod=vendor -o "../lifecycle-$version/exporter"  -a ./cmd/exporter/main.go
+  go build -mod=vendor -o "../lifecycle-$version/cacher"  -a ./cmd/cacher/main.go
+  go build -mod=vendor -o "../lifecycle-$version/launcher"  -a ./cmd/launcher/main.go
+popd
+
+echo Built:
+ls -al "lifecycle-$version/"
+
+echo Generating Archive "lifecycle-$version+linux.x86.64.tgz"
+tar \
+    --sort=name \
+    --mtime='1970-01-01 00:00:00' \
+    --owner=0 --group=0 --numeric-owner \
+    -czvf "lifecycle/lifecycle-$version+linux.x86.64.tgz" ./"lifecycle-$version"
+
+echo Archive SHAs:
+  sha256sum "lifecycle/lifecycle-$version+linux.x86.64.tgz"
+  sha512sum "lifecycle/lifecycle-$version+linux.x86.64.tgz"
+
+echo DONE
+
+

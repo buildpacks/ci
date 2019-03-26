@@ -19,7 +19,7 @@ jobs:
           privileged: true
           file: ci/tasks/run-lifecycle-unit/task.yml
 
-  - name: build-lifecycle-binaries
+  - name: build-lifecycle
     max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
       - aggregate:
@@ -29,7 +29,7 @@ jobs:
         - get: ci
           params:
             submodules: none
-        - put: lifecycle-version
+        - get: lifecycle-version
           params:
             pre: build
         - get: golang-image
@@ -38,24 +38,15 @@ jobs:
         file: ci/tasks/calculate-lifecycle-version/task.yml
       - task: build-binaries
         image: golang-image
-        file: ci/tasks/build-lifecycle-binaries/task.yml
+        file: ci/tasks/build-lifecycle/task.yml
         input_mapping:
           version: calculated-lifecycle-version
-      - aggregate:
-        - put: detector-gcs
-          params: {file: lifecycle-binaries/detector-*}
-        - put: restorer-gcs
-          params: {file: lifecycle-binaries/restorer-*}
-        - put: analyzer-gcs
-          params: {file: lifecycle-binaries/analyzer-*}
-        - put: builder-gcs
-          params: {file: lifecycle-binaries/builder-*}
-        - put: exporter-gcs
-          params: {file: lifecycle-binaries/exporter-*}
-        - put: cacher-gcs
-          params: {file: lifecycle-binaries/cacher-*}
-        - put: launcher-gcs
-          params: {file: lifecycle-binaries/launcher-*}
+      - put: lifecycle
+        params: {file: lifecycle/lifecycle-*}
+      - put: lifecycle-version
+        params:
+          file: lifeycle-version/version
+
 
   - name: build-stack-images
     plan:
@@ -63,30 +54,17 @@ jobs:
         ## Get repos, versions
         - get: lifecycle-repo
           version: every
-          passed: [build-lifecycle-binaries]
+          passed: [build-lifecycle]
         - get: ci
           params:
             submodules: none
         - get: lifecycle-version
-          passed: [build-lifecycle-binaries]
+          passed: [build-lifecycle]
           trigger: true
 
         ## Get binaries
-        - aggregate:
-          - get: detector-gcs
-            passed: [build-lifecycle-binaries]
-          - get: restorer-gcs
-            passed: [build-lifecycle-binaries]
-          - get: analyzer-gcs
-            passed: [build-lifecycle-binaries]
-          - get: builder-gcs
-            passed: [build-lifecycle-binaries]
-          - get: exporter-gcs
-            passed: [build-lifecycle-binaries]
-          - get: cacher-gcs
-            passed: [build-lifecycle-binaries]
-          - get: launcher-gcs
-            passed: [build-lifecycle-binaries]
+        - get: lifecycle
+          passed: [build-lifecycle]
 
       ## Prep
       - aggregate:
@@ -100,6 +78,12 @@ jobs:
           version: calculated-lifecycle-version
 
       ## Docker builds
+      - put: packs-base-image
+        params:
+          build: ci/images/base
+          tag_file: calculated-lifecycle-version/version
+          build_args:
+            base: "ubuntu:18.04"
       - aggregate:
         - put: packs-run-image
           params:
@@ -108,7 +92,8 @@ jobs:
             build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
-            build: ci/images/build
+            build: lifecycle-binaries
+            dockerfile: ci/images/build/Dockerfile
             tag_file: calculated-lifecycle-version/version
             build_args:
               go_version: "1.11.4"
@@ -130,19 +115,7 @@ jobs:
         ### pass through
       - get: pack-repo
         passed: [pack-build]
-      - get: detector-gcs
-        passed: [build-stack-images]
-      - get: restorer-gcs
-        passed: [build-stack-images]
-      - get: analyzer-gcs
-        passed: [build-stack-images]
-      - get: builder-gcs
-        passed: [build-stack-images]
-      - get: exporter-gcs
-        passed: [build-stack-images]
-      - get: cacher-gcs
-        passed: [build-stack-images]
-      - get: launcher-gcs
+      - get: lifecycle
         passed: [build-stack-images]
       - get: packs-build-image
         passed: [build-stack-images]
@@ -275,19 +248,7 @@ jobs:
           passed: [create-samples-builder]
 
         # Lifecycle binaries
-        - get: detector-gcs
-          passed: [create-samples-builder]
-        - get: restorer-gcs
-          passed: [create-samples-builder]
-        - get: analyzer-gcs
-          passed: [create-samples-builder]
-        - get: builder-gcs
-          passed: [create-samples-builder]
-        - get: exporter-gcs
-          passed: [create-samples-builder]
-        - get: cacher-gcs
-          passed: [create-samples-builder]
-        - get: launcher-gcs
+        - get: lifecycle
           passed: [create-samples-builder]
 
         # Images
@@ -308,14 +269,6 @@ jobs:
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
-      - task: assemble-binary-archive
-        file: ci/tasks/assemble-binary-archive/task.yml
-        input_mapping:
-          version: calculated-lifecycle-version
-      - put: latest-lifecycle-archive-dev
-        params:
-          file: binaries-archive/lifecycle-binaries-latest.tgz
-          content_type: application/gzip # there's no distinct tgz mimetype
 
   - name: release
     plan:
@@ -335,19 +288,7 @@ jobs:
             bump: final
 
         # Binaries
-        - get: detector-gcs
-          passed: [acceptance]
-        - get: restorer-gcs
-          passed: [acceptance]
-        - get: analyzer-gcs
-          passed: [acceptance]
-        - get: builder-gcs
-          passed: [acceptance]
-        - get: exporter-gcs
-          passed: [acceptance]
-        - get: cacher-gcs
-          passed: [acceptance]
-        - get: launcher-gcs
+        - get: lifecycle
           passed: [acceptance]
 
         - get: pack-linux-binary
@@ -370,14 +311,6 @@ jobs:
 
       - task: calculate-lifecycle-version
         file: ci/tasks/calculate-lifecycle-version/task.yml
-      - task: assemble-binary-archive
-        file: ci/tasks/assemble-binary-archive/task.yml
-        input_mapping:
-          version: calculated-lifecycle-version
-      - put: latest-lifecycle-archive-prod
-        params:
-          file: binaries-archive/lifecycle-binaries-latest.tgz
-          content_type: application/gzip # there's no distinct tgz mimetype
 
       ## Create artifacts
       # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline

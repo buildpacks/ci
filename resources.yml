@@ -55,6 +55,13 @@ resources:
 
   ## Docker Images ##
 
+  - name: packs-base-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/base # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
   - name: packs-run-image
     type: docker-image
     source:
@@ -83,69 +90,12 @@ resources:
       tag: 1.12
 
   ## GCS Buckets ##
-
-  - name: detector-gcs
+  - name: lifecycle
     type: gcs-resource
     source:
       bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: development/detector-(.*)
-
-  - name: restorer-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/restorer-(.*)
-
-  - name: analyzer-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/analyzer-(.*)
-
-  - name: builder-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/builder-(.*)
-
-  - name: exporter-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/exporter-(.*)
-
-  - name: cacher-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/cacher-(.*)
-
-  - name: launcher-gcs
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/launcher-(.*)
-
-  - name: latest-lifecycle-archive-dev
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      versioned_file: development/lifecycle-binaries-latest.tgz
-
-  - name: latest-lifecycle-archive-prod
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      versioned_file: release/lifecycle-binaries-latest.tgz
+      regexp: lifecycle-(.*)\+linux.x86.64.tgz
 
   - name: pack-linux-binary
     type: gcs-resource
@@ -177,5 +127,4 @@ resources:
       repository: ci # TODO: Point to buildpack/pack later
       drafts: true
       access_token: ((pack-github-release-token)) # TODO: Make bot user
-
 

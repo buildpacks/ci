@@ -45,7 +45,7 @@ jobs:
         params: {file: lifecycle/lifecycle-*}
       - put: lifecycle-version
         params:
-          file: lifeycle-version/version
+          file: lifecycle-version/version
 
 
   - name: build-stack-images

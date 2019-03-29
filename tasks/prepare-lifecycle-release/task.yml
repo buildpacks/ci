@@ -1,0 +1,17 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: alpine/git
+
+inputs:
+  - name: ci
+  - name: version
+  - name: lifecycle-repo
+  - name: lifecycle
+
+outputs:
+  - name: release-artifacts
+
+run:
+  path: ci/tasks/prepare-lifecycle-release/run

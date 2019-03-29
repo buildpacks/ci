@@ -1,0 +1,8 @@
+#! /usr/bin/env sh
+
+outputs_dir="$PWD/release-artifacts"
+
+git -C lifecycle-repo rev-parse HEAD > "$outputs_dir/commit-sha"
+
+version="$(cat version/version)"
+mv lifecycle/lifecycle-*.tgz "$outputs_dir/lifecycle-$version+linux.x86.64.tgz"

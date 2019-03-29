@@ -34,13 +34,11 @@ jobs:
             pre: build
         - get: golang-image
           params: {save: true}
-      - task: calculate-lifecycle-version
-        file: ci/tasks/calculate-lifecycle-version/task.yml
       - task: build-binaries
         image: golang-image
         file: ci/tasks/build-lifecycle/task.yml
         input_mapping:
-          version: calculated-lifecycle-version
+          version: lifecycle-version
       - put: lifecycle
         params: {file: lifecycle/lifecycle-*}
       - put: lifecycle-version
@@ -68,33 +66,31 @@ jobs:
 
       ## Prep
       - aggregate:
-        - task: calculate-lifecycle-version
-          file: ci/tasks/calculate-lifecycle-version/task.yml
         - task: move-lifecycle-binaries-for-docker
           file: ci/tasks/move-lifecycle-binaries/task.yml
       - task: generate-docker-build-args
         file: ci/tasks/generate-docker-build-args/task.yml
         input_mapping:
-          version: calculated-lifecycle-version
+          version: lifecycle-version
 
       ## Docker builds
       - put: packs-base-image
         params:
           build: ci/images/base
-          tag_file: calculated-lifecycle-version/version
+          tag_file: lifecycle-version/version
           build_args:
             base: "ubuntu:18.04"
       - aggregate:
         - put: packs-run-image
           params:
             build: ci/images/run
-            tag_file: calculated-lifecycle-version/version
+            tag_file: lifecycle-version/version
             build_args_file: docker-build-args/args.json
         - put: packs-build-image
           params:
             build: lifecycle-binaries
             dockerfile: ci/images/build/Dockerfile
-            tag_file: calculated-lifecycle-version/version
+            tag_file: lifecycle-version/version
             build_args:
               go_version: "1.11.4"
             build_args_file: docker-build-args/args.json
@@ -131,18 +127,16 @@ jobs:
         passed: [pack-build]
         trigger: true
 
-    - task: calculate-lifecycle-version
-      file: ci/tasks/calculate-lifecycle-version/task.yml
     - task: create
       file: ci/tasks/create-samples-builder/task.yml
       privileged: true
       input_mapping:
-        version: calculated-lifecycle-version
+        version: lifecycle-version
     - put: packs-samples-image
       params:
         load_file: samples-image/image.tar
         load_repository: gcr.io/cncf-buildpacks-ci/packs/samples
-        tag_file: calculated-lifecycle-version/version
+        tag_file: lifecycle-version/version
 
   - name: pack-unit
     plan:
@@ -264,8 +258,6 @@ jobs:
         - get: golang-image
           params: {save: true}
 
-      - task: calculate-lifecycle-version
-        file: ci/tasks/calculate-lifecycle-version/task.yml
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
@@ -309,9 +301,6 @@ jobs:
           passed: [acceptance]
           params: {save: true}
 
-      - task: calculate-lifecycle-version
-        file: ci/tasks/calculate-lifecycle-version/task.yml
-
       ## Create artifacts
       # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
       - aggregate:
@@ -319,22 +308,22 @@ jobs:
         - put: packs-run-image
           params:
             load: packs-run-image
-            tag_file: calculated-lifecycle-version/version
+            tag_file: lifecycle-version/version
         - put: packs-build-image
           params:
             load: packs-build-image
-            tag_file: calculated-lifecycle-version/version
+            tag_file: lifecycle-version/version
         - do:
           - task: generate-docker-release-args
             file: ci/tasks/generate-docker-release-args/task.yml
             input_mapping:
-              version: calculated-lifecycle-version
+              version: lifecycle-version
           - put: packs-samples-image
             params:
               load_base: packs-samples-image
               build: ci/images/samples
               dockerfile: ci/images/samples/Dockerfile.release
-              tag_file: calculated-lifecycle-version/version
+              tag_file: lifecycle-version/version
               build_args_file: docker-release-args/args.json
 
         # Pack

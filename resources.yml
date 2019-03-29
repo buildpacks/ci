@@ -38,7 +38,7 @@ resources:
   - name: lifecycle-version
     type: semver
     source:
-      initial_version: 0.0.3
+      initial_version: 0.1.0
       driver: gcs
       bucket: cloud-native-buildpacks-versions
       key: lifecycle-version

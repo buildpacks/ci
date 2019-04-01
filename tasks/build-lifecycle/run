@@ -11,8 +11,8 @@ export GOOS=linux
 export GOARCH=amd64
 export CGO_ENABLED=0
 
-version="$(cat version/version )"
-release_version="$(cat version/version | cut -d - -f 1)"
+version="v$(cat version/version )"
+release_version="v$(cat version/version | cut -d - -f 1)"
 
 echo Building lifecycle binaries
 echo Version "$version"

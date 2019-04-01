@@ -294,29 +294,31 @@ jobs:
             passed: [acceptance]
             params: {save: true}
 
-        ## Create artifacts
-        # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
-        - task: prepare-lifecycle-release
-          file: ci/tasks/prepare-lifecycle-release/task.yml
-        - aggregate:
-            - put: packs-run-image
-              params:
-                load: packs-run-image
-                tag_file: lifecycle-version/version
-            - put: packs-build-image
-              params:
-                load: packs-build-image
-                tag_file: lifecycle-version/version
-        - put: lifecycle-github-release
-          params:
-            drafts: true
-            name: lifecycle-version/version
-            tag: lifecycle-version/version
-            tag_prefix: v
-            commitish: release-artifacts/commit-sha
-            globs:
-              - release-artifacts/lifecycle-*.tgz
-        # Bump Versions
-        - put: lifecycle-version
-          params:
-            bump: patch
+      ## Create artifacts
+      # TODO: These images should be published to DockerHub, not GCR, when we're happy with this pipeline
+      - task: prepare-lifecycle-release
+        file: ci/tasks/prepare-lifecycle-release/task.yml
+        input_mapping:
+          version: lifecycle-version
+      - aggregate:
+          - put: packs-run-image
+            params:
+              load: packs-run-image
+              tag_file: lifecycle-version/version
+          - put: packs-build-image
+            params:
+              load: packs-build-image
+              tag_file: lifecycle-version/version
+      - put: lifecycle-github-release
+        params:
+          drafts: true
+          name: lifecycle-version/version
+          tag: lifecycle-version/version
+          tag_prefix: v
+          commitish: release-artifacts/commit-sha
+          globs:
+            - release-artifacts/lifecycle-*.tgz
+      # Bump Versions
+      - put: lifecycle-version
+        params:
+          bump: patch

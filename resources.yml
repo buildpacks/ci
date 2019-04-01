@@ -120,14 +120,6 @@ resources:
 
   ## Github Releases ##
 
-  - name: pack-github-release
-    type: github-release
-    source:
-      owner: buildpack
-      repository: ci # TODO: Point to buildpack/pack later
-      drafts: true
-      access_token: ((pack-github-release-token)) # TODO: Make bot user
-
   - name: lifecycle-github-release
     type: github-release
     source:

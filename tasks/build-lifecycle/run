@@ -17,16 +17,16 @@ release_version="v$(cat version/version | cut -d - -f 1)"
 echo Building lifecycle binaries
 echo Version "$version"
 
-mkdir "lifecycle-$version"
+mkdir "lifecycle-$version+linux.x86.64"
 
 pushd ./lifecycle-repo
-  go build -mod=vendor -o "../lifecycle-$release_version/detector"  -a ./cmd/detector/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version/restorer"  -a ./cmd/restorer/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version/analyzer"  -a ./cmd/analyzer/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version/builder"   -a ./cmd/builder/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version/exporter"  -a ./cmd/exporter/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version/cacher"  -a ./cmd/cacher/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version/launcher"  -a ./cmd/launcher/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/detector"  -a ./cmd/detector/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/restorer"  -a ./cmd/restorer/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/analyzer"  -a ./cmd/analyzer/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/builder"   -a ./cmd/builder/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/exporter"  -a ./cmd/exporter/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/cacher"  -a ./cmd/cacher/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/launcher"  -a ./cmd/launcher/main.go
 popd
 
 echo Built:

@@ -17,7 +17,7 @@ release_version="v$(cat version/version | cut -d - -f 1)"
 echo Building lifecycle binaries
 echo Version "$version"
 
-mkdir "lifecycle-$version+linux.x86.64"
+mkdir "lifecycle-$release_version+linux.x86.64"
 
 pushd ./lifecycle-repo
   go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/detector"  -a ./cmd/detector/main.go
@@ -30,14 +30,14 @@ pushd ./lifecycle-repo
 popd
 
 echo Built:
-ls -al "lifecycle-$release_version/"
+ls -al "lifecycle-$release_version+linux.x86.64/"
 
 echo Generating Archive "lifecycle-$version+linux.x86.64.tgz"
 tar \
     --sort=name \
     --mtime='1970-01-01 00:00:00' \
     --owner=0 --group=0 --numeric-owner \
-    -czvf "lifecycle/lifecycle-$version+linux.x86.64.tgz" ./"lifecycle-$release_version"
+    -czvf "lifecycle/lifecycle-$version+linux.x86.64.tgz" ./"lifecycle-$release_version+linux.x86.64"
 
 echo Archive SHAs:
   sha256sum "lifecycle/lifecycle-$version+linux.x86.64.tgz"

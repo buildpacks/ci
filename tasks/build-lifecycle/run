@@ -13,35 +13,36 @@ export CGO_ENABLED=0
 
 version="v$(cat version/version )"
 release_version="v$(cat version/version | cut -d - -f 1)"
+arch=linux.x86-64
 
 echo Building lifecycle binaries
 echo Version "$version"
 
-mkdir "lifecycle-$release_version+linux.x86.64"
+mkdir "lifecycle-$release_version+$arch"
 
 pushd ./lifecycle-repo
-  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/detector"  -a ./cmd/detector/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/restorer"  -a ./cmd/restorer/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/analyzer"  -a ./cmd/analyzer/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/builder"   -a ./cmd/builder/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/exporter"  -a ./cmd/exporter/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/cacher"  -a ./cmd/cacher/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+linux.x86.64/launcher"  -a ./cmd/launcher/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+$arch/detector"  -a ./cmd/detector/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+$arch/restorer"  -a ./cmd/restorer/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+$arch/analyzer"  -a ./cmd/analyzer/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+$arch/builder"   -a ./cmd/builder/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+$arch/exporter"  -a ./cmd/exporter/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+$arch/cacher"  -a ./cmd/cacher/main.go
+  go build -mod=vendor -o "../lifecycle-$release_version+$arch/launcher"  -a ./cmd/launcher/main.go
 popd
 
 echo Built:
-ls -al "lifecycle-$release_version+linux.x86.64/"
+ls -al "lifecycle-$release_version+$arch/"
 
-echo Generating Archive "lifecycle-$version+linux.x86.64.tgz"
+echo Generating Archive "lifecycle-$version+$arch.tgz"
 tar \
     --sort=name \
     --mtime='1970-01-01 00:00:00' \
     --owner=0 --group=0 --numeric-owner \
-    -czvf "lifecycle/lifecycle-$version+linux.x86.64.tgz" ./"lifecycle-$release_version+linux.x86.64"
+    -czvf "lifecycle/lifecycle-$version+$arch.tgz" ./"lifecycle-$release_version+$arch"
 
 echo Archive SHAs:
-  sha256sum "lifecycle/lifecycle-$version+linux.x86.64.tgz"
-  sha512sum "lifecycle/lifecycle-$version+linux.x86.64.tgz"
+  sha256sum "lifecycle/lifecycle-$version+$arch.tgz"
+  sha512sum "lifecycle/lifecycle-$version+$arch.tgz"
 
 echo DONE
 

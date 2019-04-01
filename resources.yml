@@ -25,7 +25,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: lifecycle-release
+      branch: master
 
   - name: samples
     type: git

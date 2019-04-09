@@ -27,12 +27,6 @@ resources:
       uri: https://github.com/buildpack/ci.git
       branch: master
 
-  - name: samples
-    type: git
-    source:
-      uri: https://github.com/buildpack/samples.git
-      branch: master
-
   ## Semver ##
 
   - name: lifecycle-version
@@ -76,13 +70,6 @@ resources:
       username: _json_key
       password: ((concourse-service-account-key-json))
 
-  - name: packs-samples-image
-    type: docker-image
-    source:
-      repository: gcr.io:443/cncf-buildpacks-ci/packs/samples # port needed for private repos
-      username: _json_key
-      password: ((concourse-service-account-key-json))
-
   - name: golang-image
     type: docker-image
     source:
@@ -118,13 +105,4 @@ resources:
       json_key: ((concourse-service-account-key-json))
       regexp: development/pack-(.*)-windows
 
-  ## Github Releases ##
-
-  - name: lifecycle-github-release
-    type: github-release
-    source:
-      owner: buildpack
-      repository: lifecycle # TODO: Point to buildpack/pack later
-      drafts: true
-      access_token: ((pack-github-release-token)) # TODO: Make bot user
-
+  ## leave a new line so we can concatenate jobs.yml

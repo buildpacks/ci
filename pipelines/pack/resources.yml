@@ -104,5 +104,3 @@ resources:
       bucket: cloud-native-buildpacks-pack-binaries
       json_key: ((concourse-service-account-key-json))
       regexp: development/pack-(.*)-windows
-
-  ## leave a new line so we can concatenate jobs.yml

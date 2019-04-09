@@ -6,14 +6,9 @@ image_resource:
 
 inputs:
 - name: pack-linux-binary
-- name: samples
+- name: samples-repo
+- name: sample-java-app
 - name: ci
-- name: lifecycle-version
-- name: version
-  
-outputs:
-- name: samples-image
-  
 
 run:
-  path: ci/tasks/create-samples-builder/run
+  path: ci/tasks/test-samples-builder/run

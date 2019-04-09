@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+source /opt/resource/common.sh
+start_docker 3 3
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+function waitForContainer() {
+    container_id=$1
+    health=$(docker container inspect $container_id --format "{{.State.Health.Status}}")
+    if [[ $health == "healthy" ]]; then
+      echo container status: "$health"
+      return
+    else
+      echo container status: "$health"
+    fi
+    sleep 3
+    waitForContainer "$container_id"
+}
+
+chmod +x ./pack-linux-binary/pack-*-linux
+echo "pack create-builder "packs/samples:dev" -b ./samples-repo/builder.toml"
+./pack-linux-binary/pack-*-linux create-builder "packs/samples:dev" -b ./samples-repo/builder.toml
+echo "pack build --builder "packs/samples:dev" -p ./sample-java-app packs/sample-java-app"
+./pack-linux-binary/pack-*-linux build --builder "packs/samples:dev" -p ./sample-java-app packs/sample-java-app
+
+echo "docker run -d --rm -p 8080:8080 packs/sample-java-app"
+container_id=$(docker run -d --rm -p 8080:8080 packs/sample-java-app)
+trap "docker kill $container_id" EXIT
+
+apk update
+apk add curl
+
+waitForContainer "$container_id"
+
+echo "curling localhost:8080"
+curl -o /dev/null --fail localhost:8080

@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+if [[ -z $1 ]]; then
+  echo "USAGE: set-pipeline.sh <pipeline-name>"
+  exit 1
+fi
+
+pipeline=$1
+
 lpass_note() {
   lpass show --notes "Shared-Build Service/$1"
 }
@@ -9,10 +16,10 @@ dir="$(cd "$(dirname "$0")" && pwd)"
 concourse_service_account_key=$(lpass_note 'cncf-concourse-service-account-json-key')
 pack_github_release_token=$(lpass_note 'buildpack-pack-cli-github-release-token')
 
-cat <(cat $dir/resources.yml && cat $dir/jobs.yml) | pbcopy
+cat <(cat "$dir/pipelines/$pipeline/resources.yml" && echo "" && cat "$dir/pipelines/$pipeline/jobs.yml") | pbcopy
 
 fly -t buildpacksio set-pipeline \
-  -p buildpack \
+  -p "$pipeline" \
   --var concourse-service-account-key-json="$concourse_service_account_key" \
   --var pack-github-release-token="$pack_github_release_token" \
-  -c <(cat $dir/resources.yml && cat $dir/jobs.yml)
+  -c <(cat "$dir/pipelines/$pipeline/resources.yml" && echo "" && cat "$dir/pipelines/$pipeline/jobs.yml")

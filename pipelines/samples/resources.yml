@@ -1,0 +1,28 @@
+resources:
+
+  ## Git Repos ##
+  - name: samples-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/samples.git
+      branch: master
+
+  - name: sample-java-app
+    type: git
+    source:
+      uri: https://github.com/buildpack/sample-java-app.git
+      branch: master
+      
+  - name: ci
+    type: git
+    source:
+      uri: https://github.com/buildpack/ci.git
+      branch: master
+
+  ## GCS Buckets ##
+  - name: pack-linux-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-linux

@@ -1,0 +1,14 @@
+jobs:
+  - name: test-samples-builder
+    public: true
+    plan:
+      - aggregate:
+          - get: pack-linux-binary
+          - get: samples-repo
+          - get: sample-java-app
+          - get: ci
+            params:
+              submodules: none
+      - task: create
+        file: ci/tasks/test-samples-builder/task.yml
+        privileged: true

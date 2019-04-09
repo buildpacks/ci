@@ -5,7 +5,9 @@ jobs:
       - aggregate:
           - get: pack-linux-binary
           - get: samples-repo
+            trigger: true
           - get: sample-java-app
+            trigger: true
           - get: ci
             params:
               submodules: none

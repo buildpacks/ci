@@ -8,7 +8,7 @@ fi
 pipeline=$1
 
 lpass_note() {
-  lpass show --notes "Shared-Build Service/$1"
+  lpass show --notes "Shared-Cloud Native Buildpacks/$1"
 }
 
 dir="$(cd "$(dirname "$0")" && pwd)"

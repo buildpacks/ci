@@ -7,8 +7,13 @@ image_resource:
 inputs:
   - name: pack-repo
   - name: pack-linux-binary
+  - name: lifecycle
+    optional: true
   - name: ci
   - name: golang-image
 
 run:
   path: ci/tasks/run-acceptance/run
+
+params:
+  USE_DEFAULT_LIFECYCLE:

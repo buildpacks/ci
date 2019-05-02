@@ -49,27 +49,6 @@ resources:
 
   ## Docker Images ##
 
-  - name: packs-base-image
-    type: docker-image
-    source:
-      repository: gcr.io:443/cncf-buildpacks-ci/packs/base # port needed for private repos
-      username: _json_key
-      password: ((concourse-service-account-key-json))
-
-  - name: packs-run-image
-    type: docker-image
-    source:
-      repository: gcr.io:443/cncf-buildpacks-ci/packs/run # port needed for private repos
-      username: _json_key
-      password: ((concourse-service-account-key-json))
-
-  - name: packs-build-image
-    type: docker-image
-    source:
-      repository: gcr.io:443/cncf-buildpacks-ci/packs/build # port needed for private repos
-      username: _json_key
-      password: ((concourse-service-account-key-json))
-
   - name: golang-image
     type: docker-image
     source:
@@ -77,12 +56,13 @@ resources:
       tag: 1.12
 
   ## GCS Buckets ##
+
   - name: lifecycle
     type: gcs-resource
     source:
       bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
-      regexp: lifecycle-v(.*)\+linux.x86.64.tgz
+      regexp: lifecycle-v(.*)\+linux\.x86-64\.tgz
 
   - name: pack-linux-binary
     type: gcs-resource

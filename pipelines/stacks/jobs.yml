@@ -1,0 +1,46 @@
+jobs:
+  - name: build-bionic-stack
+    plan:
+      - aggregate:
+        ## Get repos, versions
+        - get: stacks-repo
+          version: every
+        - get: ci
+          params:
+            submodules: none
+        - get: bionic-stack-version
+          params:
+            bump: patch
+
+      ## Prep
+      - task: generate-docker-build-args
+        file: ci/tasks/generate-docker-build-args/task.yml
+        input_mapping:
+          version: bionic-stack-version
+
+      ## Docker builds
+      - put: bionic-base-image
+        params:
+          build: stacks-repo/bionic/base
+          tag_file: bionic-stack-version/version
+          tag_as_latest: true
+          build_args:
+            base: "ubuntu:18.04"
+      - aggregate:
+        - put: bionic-run-image
+          params:
+            build: stacks-repo/bionic/run
+            tag_file: bionic-stack-version/version
+            tag_as_latest: true
+            build_args_file: docker-build-args/args.json
+        - put: bionic-build-image
+          params:
+            build: stacks-repo/bionic/build
+            tag_file: bionic-stack-version/version
+            tag_as_latest: true
+            build_args_file: docker-build-args/args.json
+            build_args:
+              go_version: "1.12"
+      - put: bionic-stack-version
+        params:
+          file: bionic-stack-version/version

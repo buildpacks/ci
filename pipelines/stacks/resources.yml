@@ -1,0 +1,51 @@
+---
+
+resources:
+
+  ## Git Repos ##
+
+  - name: stacks-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/stacks.git
+      branch: master
+
+  - name: ci
+    type: git
+    source:
+      uri: https://github.com/buildpack/ci.git
+      branch: master
+
+  ## Semver ##
+
+  - name: bionic-stack-version
+    type: semver
+    source:
+      initial_version: 0.0.1
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: bionic-stack-version
+      json_key: ((concourse-service-account-key-json))
+
+  ## Docker Images ##
+
+  - name: bionic-base-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/base # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
+  - name: bionic-run-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/run # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))
+
+  - name: bionic-build-image
+    type: docker-image
+    source:
+      repository: gcr.io:443/cncf-buildpacks-ci/packs/build # port needed for private repos
+      username: _json_key
+      password: ((concourse-service-account-key-json))

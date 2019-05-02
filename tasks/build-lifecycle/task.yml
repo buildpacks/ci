@@ -11,7 +11,7 @@ inputs:
   - name: version
 
 outputs:
-  - name: lifecycle
+  - name: built-lifecycle
 
 run:
   path: ci/tasks/build-lifecycle/run

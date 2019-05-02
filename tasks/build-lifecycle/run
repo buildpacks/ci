@@ -5,45 +5,27 @@ set -o nounset
 set -o pipefail
 set -x
 
-
-export GO111MODULE=on
-export GOOS=linux
-export GOARCH=amd64
-export CGO_ENABLED=0
-
 version="v$(cat version/version )"
 release_version="v$(cat version/version | cut -d - -f 1)"
 arch=linux.x86-64
 
 echo Building lifecycle binaries
-echo Version "$version"
+echo RC Version "$version"
+echo Release Version "$release_version"
 
-mkdir "lifecycle-$release_version+$arch"
+pushd lifecycle-repo
+    LIFECYCLE_VERSION="$release_version" make build
+    LIFECYCLE_VERSION="$release_version" make package
 
-pushd ./lifecycle-repo
-  go build -mod=vendor -o "../lifecycle-$release_version+$arch/detector"  -a ./cmd/detector/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+$arch/restorer"  -a ./cmd/restorer/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+$arch/analyzer"  -a ./cmd/analyzer/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+$arch/builder"   -a ./cmd/builder/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+$arch/exporter"  -a ./cmd/exporter/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+$arch/cacher"  -a ./cmd/cacher/main.go
-  go build -mod=vendor -o "../lifecycle-$release_version+$arch/launcher"  -a ./cmd/launcher/main.go
+    # Note: We're renaming to the RC version during the move, so the archive can be easily promoted
+    mv out/"lifecycle-$release_version+$arch.tgz" ../built-lifecycle/"lifecycle-$version+$arch.tgz"
 popd
 
-echo Built:
-ls -al "lifecycle-$release_version+$arch/"
-
-echo Generating Archive "lifecycle-$version+$arch.tgz"
-tar \
-    --sort=name \
-    --mtime='1970-01-01 00:00:00' \
-    --owner=0 --group=0 --numeric-owner \
-    -czvf "lifecycle/lifecycle-$version+$arch.tgz" ./"lifecycle-$release_version+$arch"
+echo Built
+ls -al built-lifecycle/
 
 echo Archive SHAs:
-  sha256sum "lifecycle/lifecycle-$version+$arch.tgz"
-  sha512sum "lifecycle/lifecycle-$version+$arch.tgz"
+  sha256sum "built-lifecycle/lifecycle-$version+$arch.tgz"
+  sha512sum "built-lifecycle/lifecycle-$version+$arch.tgz"
 
 echo DONE
-
-

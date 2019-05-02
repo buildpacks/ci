@@ -15,5 +15,21 @@ mv pack-linux-binary/pack-*-linux pack-linux-binary/pack
 pack_path=$PWD/pack-linux-binary/pack
 chmod +x ${pack_path}
 
-cd pack-repo
-docker_run -e "PACK_PATH=/tmp/pack" -v "$pack_path":/tmp/pack golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+if [ "$USE_DEFAULT_LIFECYCLE" != "true" ]; then
+    mv lifecycle/lifecycle-*.tgz lifecycle/lifecycle.tgz
+    lifecycle_path=$PWD/lifecycle/lifecycle.tgz
+    cd pack-repo
+    docker_run \
+        -e "PACK_PATH=/tmp/pack" \
+        -v "$pack_path":/tmp/pack \
+        -e "LIFECYCLE_PATH=/tmp/lifecycle.tgz" \
+        -v "$lifecycle_path":/tmp/lifecycle.tgz \
+        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+else
+    cd pack-repo
+    docker_run \
+        -e "PACK_PATH=/tmp/pack" \
+        -v "$pack_path":/tmp/pack \
+        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+fi
+

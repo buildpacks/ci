@@ -23,7 +23,6 @@ jobs:
         params:
           build: stacks-repo/bionic/base
           tag_file: bionic-stack-version/version
-          tag_as_latest: true
       - aggregate:
         - put: bionic-run-image
           params:

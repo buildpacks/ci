@@ -4,13 +4,13 @@ jobs:
       - aggregate:
         ## Get repos, versions
         - get: stacks-repo
-          version: every
+          trigger: true
         - get: ci
           params:
             submodules: none
         - get: bionic-stack-version
           params:
-            bump: patch
+            pre: rc
 
       ## Prep
       - task: generate-docker-build-args
@@ -24,20 +24,16 @@ jobs:
           build: stacks-repo/bionic/base
           tag_file: bionic-stack-version/version
           tag_as_latest: true
-          build_args:
-            base: "ubuntu:18.04"
       - aggregate:
         - put: bionic-run-image
           params:
             build: stacks-repo/bionic/run
             tag_file: bionic-stack-version/version
-            tag_as_latest: true
             build_args_file: docker-build-args/args.json
         - put: bionic-build-image
           params:
             build: stacks-repo/bionic/build
             tag_file: bionic-stack-version/version
-            tag_as_latest: true
             build_args_file: docker-build-args/args.json
             build_args:
               go_version: "1.12"

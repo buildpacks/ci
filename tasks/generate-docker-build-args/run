@@ -10,7 +10,7 @@ version=$(cat version/version)
 
 cat << EOF > docker-build-args/args.json
   {
-    "base_image":   "gcr.io:443/cncf-buildpacks-ci/packs/base:${version}"
+    "base_image":   "cnbs/base:${version}"
   }
 EOF
 

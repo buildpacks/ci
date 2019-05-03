@@ -15,6 +15,7 @@ dir="$(cd "$(dirname "$0")" && pwd)"
 
 concourse_service_account_key=$(lpass_note 'cncf-concourse-service-account-json-key')
 pack_github_release_token=$(lpass_note 'buildpack-pack-cli-github-release-token')
+cnbs_dockerhub_password=$(lpass_note 'cnbs-dockerhub-password')
 
 cat <(cat "$dir/pipelines/$pipeline/resources.yml" && echo "" && cat "$dir/pipelines/$pipeline/jobs.yml") | pbcopy
 
@@ -22,4 +23,5 @@ fly -t buildpacksio set-pipeline \
   -p "$pipeline" \
   --var concourse-service-account-key-json="$concourse_service_account_key" \
   --var pack-github-release-token="$pack_github_release_token" \
+  --var cnbs-dockerhub-password="$cnbs_dockerhub_password" \
   -c <(cat "$dir/pipelines/$pipeline/resources.yml" && echo "" && cat "$dir/pipelines/$pipeline/jobs.yml")

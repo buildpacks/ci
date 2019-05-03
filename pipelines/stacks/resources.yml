@@ -32,20 +32,20 @@ resources:
   - name: bionic-base-image
     type: docker-image
     source:
-      repository: gcr.io:443/cncf-buildpacks-ci/packs/base # port needed for private repos
-      username: _json_key
-      password: ((concourse-service-account-key-json))
+      repository: cnbs/base
+      username: cnbs
+      password: ((cnbs-dockerhub-password))
 
   - name: bionic-run-image
     type: docker-image
     source:
-      repository: gcr.io:443/cncf-buildpacks-ci/packs/run # port needed for private repos
-      username: _json_key
-      password: ((concourse-service-account-key-json))
+      repository: cnbs/run
+      username: cnbs
+      password: ((cnbs-dockerhub-password))
 
   - name: bionic-build-image
     type: docker-image
     source:
-      repository: gcr.io:443/cncf-buildpacks-ci/packs/build # port needed for private repos
-      username: _json_key
-      password: ((concourse-service-account-key-json))
+      repository: cnbs/build
+      username: cnbs
+      password: ((cnbs-dockerhub-password))

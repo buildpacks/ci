@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+source ci/scripts/common.sh
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+function finish {
+  /etc/init.d/docker stop
+}
+trap finish EXIT
+
+BUILD_IMAGE_DIGEST="$(cat bionic-build-image/digest)"
+RUN_IMAGE_DIGEST="$(cat bionic-run-image/digest)"
+LIFECYCLE_BINARIES=$PWD/$(ls lifecycle/*.tgz)
+
+# Install docker
+apt update
+apt install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common -y
+curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable"
+apt update
+apt install docker-ce docker-ce-cli containerd.io -y
+/etc/init.d/docker start
+
+# install kubectl
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+cp kubectl /usr/local/bin
+
+# install pack
+chmod +x pack/pack*
+cp pack/pack* /usr/local/bin/pack
+
+# install gcloud
+curl -LO https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-245.0.0-linux-x86_64.tar.gz
+tar -xvf google-cloud-sdk-245.0.0-linux-x86_64.tar.gz
+./google-cloud-sdk/install.sh --quiet
+
+echo $CONCOURSE_SERVICE_ACCOUNT_KEY >> service_account_key
+./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file service_account_key
+
+export PATH=$PATH:$PWD/google-cloud-sdk/bin
+
+# auth/connect to GKE cluster
+./google-cloud-sdk/bin/gcloud container clusters get-credentials test-cluster --zone us-central1-a --project cncf-buildpacks-ci
+./google-cloud-sdk/bin/gcloud components install docker-credential-gcr --quiet
+./google-cloud-sdk/bin/gcloud auth configure-docker --quiet
+
+
+cd cnb-template-repo/test
+
+cat <<EOF >> fixtures/builder.toml
+run-image = "cnbs/run@$RUN_IMAGE_DIGEST"
+build-image = "cnbs/build@$BUILD_IMAGE_DIGEST"
+
+[lifecycle]
+uri = "file://$LIFECYCLE_BINARIES"
+EOF
+
+go test -v

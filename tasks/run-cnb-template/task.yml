@@ -1,0 +1,22 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: '1.12'
+
+
+inputs:
+  - name: ci
+  - name: cnb-template-repo
+  - name: bionic-run-image
+  - name: bionic-build-image
+  - name: pack
+  - name: lifecycle
+
+run:
+  path: ci/tasks/run-cnb-template/run
+
+params:
+  CONCOURSE_SERVICE_ACCOUNT_KEY:

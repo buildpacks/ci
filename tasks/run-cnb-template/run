@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+source ci/scripts/common.sh
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+
+LIFECYCLE_VERSION="$(cat lifecycle-version/version )"
+
+cd cnb-template-repo/test
+
+cat <<EOF >> fixtures/builder.toml
+run-image = "gcr.io/cncf-buildpacks-ci/packs/run:$LIFECYCLE_VERSION"
+build-image = "gcr.io/cncf-buildpacks-ci/packs/build:$LIFECYCLE_VERSION"
+EOF
+
+docker load -i golang-image/image
+docker tag "$(cat golang-image/image-id)" "golang"
+docker_run golang go test -v

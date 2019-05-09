@@ -10,8 +10,8 @@ set -x
 
 LIFECYCLE_VERSION="$(cat lifecycle-version/version )"
 
-#apk add curl
-#apk add python
+apk add curl
+apk add python
 
 # install kubectl
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -37,6 +37,6 @@ run-image = "gcr.io/cncf-buildpacks-ci/packs/run:$LIFECYCLE_VERSION"
 build-image = "gcr.io/cncf-buildpacks-ci/packs/build:$LIFECYCLE_VERSION"
 EOF
 
-#docker load -i ../../golang-image/image
-#docker tag "$(cat ../../golang-image/image-id)" "golang"
-go test -v
+docker load -i ../../golang-image/image
+docker tag "$(cat ../../golang-image/image-id)" "golang"
+docker_run golang go test -v

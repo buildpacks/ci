@@ -27,7 +27,7 @@ echo $CONCOURSE_SERVICE_ACCOUNT_KEY >> service_account_key
 ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file service_account_key
 
 # auth/connect to GKE cluster
-gcloud container clusters get-credentials test-cluster --zone us-central1-a --project cncf-buildpacks-ci
+./google-cloud-sdk/bin/gcloud container clusters get-credentials test-cluster --zone us-central1-a --project cncf-buildpacks-ci
 
 
 cd cnb-template-repo/test

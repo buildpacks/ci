@@ -10,6 +10,23 @@ set -x
 
 LIFECYCLE_VERSION="$(cat lifecycle-version/version )"
 
+# install kubectl
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+cp kubectl /usr/local/bin
+
+# install gcloud
+curl -LO https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-245.0.0-linux-x86_64.tar.gz
+tar -xvf google-cloud-sdk-245.0.0-linux-x86_64.tar.gz
+./google-cloud-sdk/install.sh --quiet
+
+echo $CONCOURSE_SERVICE_ACCOUNT_KEY >> service_account_key
+./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file service_account_key
+
+# auth/connect to GKE cluster
+gcloud container clusters get-credentials test-cluster --zone us-central1-a --project cncf-buildpacks-ci
+
+
 cd cnb-template-repo/test
 
 cat <<EOF >> fixtures/builder.toml

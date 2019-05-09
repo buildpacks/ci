@@ -13,3 +13,6 @@ inputs:
 
 run:
   path: ci/tasks/run-cnb-template/run
+
+params:
+  CONCOURSE_SERVICE_ACCOUNT_KEY:

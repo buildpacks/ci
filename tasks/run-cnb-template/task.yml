@@ -13,6 +13,7 @@ inputs:
   - name: bionic-run-image
   - name: bionic-build-image
   - name: pack
+  - name: lifecycle
 
 run:
   path: ci/tasks/run-cnb-template/run

@@ -203,6 +203,8 @@ jobs:
           params:
             submodules: none
 
+        - get: lifecycle
+
         # Images
         - get: bionic-run-image
           params: {skip_download: true}

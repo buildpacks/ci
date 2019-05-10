@@ -8,8 +8,10 @@ set -o pipefail
 
 set -x
 
+LIFECYCLE_VERSION="$(cat lifecycle-version/version)"
 BUILD_IMAGE_DIGEST="$(cat bionic-build-image/digest)"
 RUN_IMAGE_DIGEST="$(cat bionic-run-image/digest)"
+LIFECYCLE_BINARIES=$PWD/lifecycle/
 
 # Install docker
 apt update
@@ -59,6 +61,9 @@ cd cnb-template-repo/test
 cat <<EOF >> fixtures/builder.toml
 run-image = "cnbs/run@$RUN_IMAGE_DIGEST"
 build-image = "cnbs/build@$BUILD_IMAGE_DIGEST"
+
+[lifecycle]
+uri = "$LIFECYCLE_BINARIES"
 EOF
 
 go test -v

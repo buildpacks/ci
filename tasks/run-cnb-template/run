@@ -57,8 +57,8 @@ export PATH=$PATH:$PWD/google-cloud-sdk/bin
 cd cnb-template-repo/test
 
 cat <<EOF >> fixtures/builder.toml
-run-image = "gcr.io/cncf-buildpacks-ci/packs/run:$RUN_IMAGE_DIGEST"
-build-image = "gcr.io/cncf-buildpacks-ci/packs/build:$BUILD_IMAGE_DIGEST"
+run-image = "cnbs/run@$RUN_IMAGE_DIGEST"
+build-image = "cnbs/build@$BUILD_IMAGE_DIGEST"
 EOF
 
 go test -v

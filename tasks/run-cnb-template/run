@@ -8,6 +8,11 @@ set -o pipefail
 
 set -x
 
+function finish {
+  /etc/init.d/docker stop
+}
+trap finish EXIT
+
 LIFECYCLE_VERSION="$(cat lifecycle-version/version)"
 BUILD_IMAGE_DIGEST="$(cat bionic-build-image/digest)"
 RUN_IMAGE_DIGEST="$(cat bionic-run-image/digest)"

@@ -10,6 +10,23 @@ set -x
 
 LIFECYCLE_VERSION="$(cat lifecycle-version/version )"
 
+# Install docker
+apt update
+apt install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common -y
+curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable"
+apt update
+apt install docker-ce docker-ce-cli containerd.io -y
+/etc/init.d/docker start
+
 # install kubectl
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 chmod +x ./kubectl
@@ -27,9 +44,12 @@ tar -xvf google-cloud-sdk-245.0.0-linux-x86_64.tar.gz
 echo $CONCOURSE_SERVICE_ACCOUNT_KEY >> service_account_key
 ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file service_account_key
 
+export PATH=$PATH:$PWD/google-cloud-sdk/bin
+
 # auth/connect to GKE cluster
 ./google-cloud-sdk/bin/gcloud container clusters get-credentials test-cluster --zone us-central1-a --project cncf-buildpacks-ci
 
+./google-cloud-sdk/bin/gcloud components install docker-credential-gcr --quiet
 ./google-cloud-sdk/bin/gcloud auth configure-docker --quiet
 
 

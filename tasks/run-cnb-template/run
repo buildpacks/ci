@@ -11,7 +11,7 @@ set -x
 LIFECYCLE_VERSION="$(cat lifecycle-version/version)"
 BUILD_IMAGE_DIGEST="$(cat bionic-build-image/digest)"
 RUN_IMAGE_DIGEST="$(cat bionic-run-image/digest)"
-LIFECYCLE_BINARIES=$PWD/lifecycle/${LIFECYCLE_VERSION}.tgz
+LIFECYCLE_BINARIES=$PWD/$(ls lifecycle/*.tgz)
 
 # Install docker
 apt update
@@ -63,7 +63,7 @@ run-image = "cnbs/run@$RUN_IMAGE_DIGEST"
 build-image = "cnbs/build@$BUILD_IMAGE_DIGEST"
 
 [lifecycle]
-uri = "$LIFECYCLE_BINARIES"
+uri = "file://$LIFECYCLE_BINARIES"
 EOF
 
 go test -v

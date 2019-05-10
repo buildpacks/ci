@@ -10,8 +10,8 @@ image_resource:
 inputs:
   - name: ci
   - name: cnb-template-repo
-  - name: golang-image
-  - name: lifecycle-version
+  - name: bionic-run-image
+  - name: bionic-build-image
   - name: pack
 
 run:

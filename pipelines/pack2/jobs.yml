@@ -192,12 +192,9 @@ jobs:
   - name: acceptance-cnb-template
     plan:
       - aggregate:
-        # Lifecycle Versions
-        - get: lifecycle-version
-#          passed: [lifecycle-build]
-          trigger: true
         - get: pack-linux-binary
 #          passed: [pack-build]
+          trigger: true
 
         # Repos
         - get: cnb-template-repo
@@ -207,8 +204,10 @@ jobs:
             submodules: none
 
         # Images
-        - get: golang-image
-          params: {save: true}
+        - get: bionic-run-image
+          params: {skip_download: true}
+        - get: bionic-build-image
+          params: {skip_download: true}
 
       - task: acceptance
         privileged: true

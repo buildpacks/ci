@@ -192,6 +192,7 @@ jobs:
   - name: acceptance-cnb-template
     plan:
       - aggregate:
+        - get: lifecycle-version
         - get: pack-linux-binary
 #          passed: [pack-build]
           trigger: true

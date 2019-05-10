@@ -11,7 +11,7 @@ set -x
 LIFECYCLE_VERSION="$(cat lifecycle-version/version)"
 BUILD_IMAGE_DIGEST="$(cat bionic-build-image/digest)"
 RUN_IMAGE_DIGEST="$(cat bionic-run-image/digest)"
-LIFECYCLE_BINARIES=$PWD/lifecycle/
+LIFECYCLE_BINARIES=$PWD/lifecycle/${LIFECYCLE_VERSION}.tgz
 
 # Install docker
 apt update

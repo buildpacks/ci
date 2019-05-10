@@ -14,6 +14,7 @@ inputs:
   - name: bionic-build-image
   - name: pack
   - name: lifecycle
+  - name: lifecycle-version
 
 run:
   path: ci/tasks/run-cnb-template/run

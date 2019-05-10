@@ -196,6 +196,8 @@ jobs:
         - get: lifecycle-version
 #          passed: [lifecycle-build]
           trigger: true
+        - get: pack-linux-binary
+#          passed: [pack-build]
 
         # Repos
         - get: cnb-template-repo
@@ -211,5 +213,7 @@ jobs:
       - task: acceptance
         privileged: true
         file: ci/tasks/run-cnb-template/task.yml
+        input_mapping:
+          pack: pack-linux-binary
         params:
           CONCOURSE_SERVICE_ACCOUNT_KEY: ((concourse-service-account-key-json))

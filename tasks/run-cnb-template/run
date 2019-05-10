@@ -10,13 +10,14 @@ set -x
 
 LIFECYCLE_VERSION="$(cat lifecycle-version/version )"
 
-#apk add curl
-#apk add python
-
 # install kubectl
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 chmod +x ./kubectl
 cp kubectl /usr/local/bin
+
+# install pack
+chmod +x pack/pack*
+cp pack/pack* /usr/local/bin/pack
 
 # install gcloud
 curl -LO https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-245.0.0-linux-x86_64.tar.gz
@@ -37,6 +38,4 @@ run-image = "gcr.io/cncf-buildpacks-ci/packs/run:$LIFECYCLE_VERSION"
 build-image = "gcr.io/cncf-buildpacks-ci/packs/build:$LIFECYCLE_VERSION"
 EOF
 
-#docker load -i ../../golang-image/image
-#docker tag "$(cat ../../golang-image/image-id)" "golang"
 go test -v

@@ -12,6 +12,7 @@ inputs:
   - name: cnb-template-repo
   - name: golang-image
   - name: lifecycle-version
+  - name: pack
 
 run:
   path: ci/tasks/run-cnb-template/run

@@ -193,6 +193,7 @@ jobs:
     plan:
       - aggregate:
         - get: pack-linux-binary
+          passed: [acceptance-lifecycle-master]
 
         # Repos
         - get: cnb-template-repo

@@ -1,0 +1,92 @@
+---
+resource_types:
+  - name: gcs-resource
+    type: docker-image
+    source:
+      repository: frodenas/gcs-resource
+
+resources:
+
+  ## Git Repos ##
+
+  - name: lifecycle-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/lifecycle.git
+      branch: master
+
+  - name: pack-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/pack.git
+      branch: master
+
+  - name: ci
+    type: git
+    source:
+      uri: https://github.com/buildpack/ci.git
+      branch: run-cnb-template
+
+  - name: cnb-template-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/knative-integration.git
+      branch: cache-update
+
+  ## Semver ##
+
+  - name: lifecycle-version
+    type: semver
+    source:
+      initial_version: 0.1.0
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: lifecycle-version
+      json_key: ((concourse-service-account-key-json))
+
+  - name: pack-version
+    type: semver
+    source:
+      initial_version: 0.1.0
+      driver: gcs
+      bucket: cloud-native-buildpacks-versions
+      key: pack-version
+      json_key: ((concourse-service-account-key-json))
+
+  ## Docker Images ##
+
+  - name: golang-image
+    type: docker-image
+    source:
+      repository: golang
+      tag: 1.12
+
+  ## GCS Buckets ##
+
+  - name: lifecycle
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: lifecycle-v(.*)\+linux\.x86-64\.tgz
+
+  - name: pack-linux-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-linux
+
+  - name: pack-darwin-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-darwin
+
+  - name: pack-windows-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-windows

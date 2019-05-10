@@ -1,0 +1,215 @@
+jobs:
+  - name: lifecycle-unit
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
+    plan:
+      - aggregate:
+        - get: lifecycle-repo
+          trigger: true
+          version: every
+        - get: ci
+          params:
+            submodules: none
+        - get: golang-image
+          params: {save: true}
+      - task: run-unit-tests
+        privileged: true
+        file: ci/tasks/run-lifecycle-unit/task.yml
+
+  - name: lifecycle-build
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
+    plan:
+      - aggregate:
+        - get: lifecycle-repo
+          passed: [lifecycle-unit]
+          trigger: true
+        - get: ci
+          params:
+            submodules: none
+        - get: lifecycle-version
+          params:
+            pre: build
+        - get: golang-image
+          params: {save: true}
+      - task: build-binaries
+        image: golang-image
+        file: ci/tasks/build-lifecycle/task.yml
+        input_mapping:
+          version: lifecycle-version
+      - put: lifecycle
+        params: {file: built-lifecycle/lifecycle-*}
+      - put: lifecycle-version
+        params:
+          file: lifecycle-version/version
+
+  - name: pack-unit
+    plan:
+      - aggregate:
+        - get: pack-repo
+          resource: pack-repo
+          trigger: true
+          version: every
+        - get: ci
+          params:
+            submodules: none
+        - get: golang-image
+          params: {save: true}
+      - task: run-unit-tests
+        privileged: true
+        file: ci/tasks/run-pack-unit/task.yml
+
+  - name: pack-unit-windows
+    plan:
+      - aggregate:
+        - get: pack-repo
+          resource: pack-repo
+          trigger: true
+          version: every
+        - get: ci
+          params:
+            submodules: none
+      - task: unit
+        file: ci/tasks/run-pack-unit-windows/task.yml
+        tags: [windows]
+
+  - name: pack-build
+    plan:
+    - aggregate:
+      - get: pack-repo
+        version: every
+        passed:
+          - pack-unit
+          - pack-unit-windows
+        trigger: true
+      - get: ci
+        params:
+          submodules: none
+      - get: pack-version
+        params:
+          pre: build
+      - get: golang-image
+        params: {save: true}
+    - aggregate:
+      - task: build-pack-cli-linux
+        image: golang-image
+        file: ci/tasks/build-pack-cli/task.yml
+        output_mapping: {pack-release: pack-linux-release}
+        params:
+          OS_NAME: linux
+      - task: build-pack-cli-darwin
+        image: golang-image
+        file: ci/tasks/build-pack-cli/task.yml
+        output_mapping: {pack-release: pack-darwin-release}
+        params:
+          OS_NAME: darwin
+      - task: build-pack-cli-windows
+        image: golang-image
+        file: ci/tasks/build-pack-cli/task.yml
+        output_mapping: {pack-release: pack-windows-release}
+        params:
+          OS_NAME: windows
+    - aggregate:
+      - put: pack-linux-binary
+        params: {file: pack-linux-release/pack-*-linux}
+      - put: pack-windows-binary
+        params: {file: pack-windows-release/pack-*-windows}
+      - put: pack-darwin-binary
+        params: {file: pack-darwin-release/pack-*-darwin}
+      - put: pack-version
+        params:
+          file: pack-version/version
+
+  - name: acceptance-lifecycle-master
+    plan:
+      - aggregate:
+        # Versions
+        - get: pack-version
+          passed: [pack-build]
+          trigger: true
+        - get: lifecycle-version
+          passed: [lifecycle-build]
+          trigger: true
+
+        # Repos
+        - get: pack-repo
+          passed: [pack-build]
+        - get: ci
+          params:
+            submodules: none
+
+        # Pack binaries
+        - get: pack-linux-binary
+          passed: [pack-build]
+        - get: pack-windows-binary
+          passed: [pack-build]
+        - get: pack-darwin-binary
+          passed: [pack-build]
+
+        # Lifecycle binaries
+        - get: lifecycle
+          passed: [lifecycle-build]
+
+        # Images
+        - get: golang-image
+          params: {save: true}
+
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance/task.yml
+
+  - name: acceptance-default-lifecycle
+    plan:
+      - aggregate:
+        # Versions
+        - get: pack-version
+          passed: [pack-build]
+          trigger: true
+
+        # Repos
+        - get: pack-repo
+          passed: [pack-build]
+        - get: ci
+          params:
+            submodules: none
+
+        # Pack binaries
+        - get: pack-linux-binary
+          passed: [pack-build]
+        - get: pack-windows-binary
+          passed: [pack-build]
+        - get: pack-darwin-binary
+          passed: [pack-build]
+
+        # Images
+        - get: golang-image
+          params: {save: true}
+
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance/task.yml
+        params:
+          USE_DEFAULT_LIFECYCLE: true
+
+  - name: acceptance-cnb-template
+    plan:
+      - aggregate:
+        # Lifecycle Versions
+        - get: lifecycle-version
+#          passed: [lifecycle-build]
+          trigger: true
+
+        # Repos
+        - get: cnb-template-repo
+
+        - get: ci
+          params:
+            submodules: none
+
+        # Images
+        - get: golang-image
+          params: {save: true}
+
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-cnb-template/task.yml
+        params:
+          CONCOURSE_SERVICE_ACCOUNT_KEY: ((concourse-service-account-key-json))

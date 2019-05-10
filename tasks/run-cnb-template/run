@@ -6,8 +6,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 function finish {
   /etc/init.d/docker stop
 }

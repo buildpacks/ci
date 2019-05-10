@@ -27,6 +27,12 @@ resources:
       uri: https://github.com/buildpack/ci.git
       branch: master
 
+  - name: cnb-template-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/knative-integration.git
+      branch: master
+
   ## Semver ##
 
   - name: lifecycle-version
@@ -54,6 +60,20 @@ resources:
     source:
       repository: golang
       tag: 1.12
+
+  - name: bionic-run-image
+    type: docker-image
+    source:
+      repository: cnbs/run
+      username: cnbs
+      password: ((cnbs-dockerhub-password))
+
+  - name: bionic-build-image
+    type: docker-image
+    source:
+      repository: cnbs/build
+      username: cnbs
+      password: ((cnbs-dockerhub-password))
 
   ## GCS Buckets ##
 

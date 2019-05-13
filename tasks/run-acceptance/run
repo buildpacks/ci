@@ -23,7 +23,7 @@ if [ "$USE_DEFAULT_LIFECYCLE" != "true" ]; then
         -e "PACK_PATH=/tmp/pack" \
         -v "$pack_path":/tmp/pack \
         -e "LIFECYCLE_PATH=/tmp/lifecycle.tgz" \
-        -e "LIFECYCLE_VERSION=${cat lifecycle-version/version}" \
+        -e "LIFECYCLE_VERSION=$(cat lifecycle-version/version)" \
         -v "$lifecycle_path":/tmp/lifecycle.tgz \
         golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
 else

@@ -11,6 +11,7 @@ inputs:
     optional: true
   - name: ci
   - name: golang-image
+  - name: lifecycle-version
 
 run:
   path: ci/tasks/run-acceptance/run

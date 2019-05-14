@@ -25,7 +25,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: release-lifecycle
+      branch: master
 
   - name: cnb-template-repo
     type: git

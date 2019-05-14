@@ -135,6 +135,8 @@ jobs:
         - get: ci
           params:
             submodules: none
+        - get: lifecycle-repo
+          passed: [lifecycle-build]
 
         # Pack binaries
         - get: pack-linux-binary
@@ -195,6 +197,10 @@ jobs:
         - get: pack-linux-binary
           passed: [acceptance-lifecycle-master]
 
+        - get: lifecycle
+          passed: [acceptance-lifecycle-master]
+          trigger: true
+          
         # Repos
         - get: cnb-template-repo
 
@@ -202,9 +208,8 @@ jobs:
           params:
             submodules: none
 
-        - get: lifecycle
+        - get: lifecycle-repo
           passed: [acceptance-lifecycle-master]
-          trigger: true
 
         # Images
         - get: bionic-run-image
@@ -219,3 +224,38 @@ jobs:
           pack: pack-linux-binary
         params:
           CONCOURSE_SERVICE_ACCOUNT_KEY: ((concourse-service-account-key-json))
+
+  - name: lifecycle-release
+    plan:
+      - aggregate:
+
+        # Repos
+        - get: ci
+          params:
+            submodules: none
+            
+        - get: lifecycle
+          passed: [acceptance-cnb-template]
+          
+        - get: lifecycle-repo
+          passed: [acceptance-cnb-template]
+          
+        # Versions
+        - get: lifecycle-version
+          params:
+            bump: final
+          
+      - task: prepare-release
+        file: ci/tasks/prepare-lifecycle-release/task.yml
+      - put: lifecycle-github-release
+        params:
+          name: release-artifacts/name
+          tag: release-artifacts/tag
+          commitish: release-artifacts/commit-sha
+          globs: [release-artifacts/*.tgz]
+      - put: lifecycle-version
+        params:
+          bump: minor
+
+          
+          

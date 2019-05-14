@@ -6,7 +6,7 @@ image_resource:
 
 inputs:
   - name: ci
-  - name: version
+  - name: lifecycle-version
   - name: lifecycle-repo
   - name: lifecycle
 

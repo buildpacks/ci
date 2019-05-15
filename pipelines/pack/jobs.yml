@@ -189,7 +189,41 @@ jobs:
         privileged: true
         file: ci/tasks/run-acceptance/task.yml
         params:
-          USE_DEFAULT_LIFECYCLE: true
+          SELECT_LIFECYCLE: default
+
+  - name: acceptance-lifecycle-N-1
+    plan:
+      - aggregate:
+          # Versions
+          - get: pack-version
+            passed: [pack-build]
+            trigger: true
+
+          # Repos
+          - get: pack-repo
+            passed: [pack-build]
+          - get: lifecycle-repo
+          - get: ci
+            params:
+              submodules: none
+
+          # Pack binaries
+          - get: pack-linux-binary
+            passed: [pack-build]
+          - get: pack-windows-binary
+            passed: [pack-build]
+          - get: pack-darwin-binary
+            passed: [pack-build]
+
+          # Images
+          - get: golang-image
+            params: {save: true}
+
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance/task.yml
+        params:
+          SELECT_LIFECYCLE: last
 
   - name: acceptance-cnb-template
     plan:
@@ -257,5 +291,42 @@ jobs:
         params:
           bump: minor
 
-          
-          
+  - name: pack-release
+    plan:
+      - aggregate:
+
+          # Repos
+          - get: ci
+            params:
+              submodules: none
+
+          - get: pack-repo
+            passed: [acceptance-lifecycle-master, acceptance-default-lifecycle, acceptance-lifecycle-N-1]
+
+          # Binaries
+
+          - get: pack-windows-binary
+            passed: [acceptance-lifecycle-master, acceptance-default-lifecycle, acceptance-lifecycle-N-1]
+
+          - get: pack-darwin-binary
+            passed: [acceptance-lifecycle-master, acceptance-default-lifecycle, acceptance-lifecycle-N-1]
+
+          - get: pack-linux-binary
+            passed: [acceptance-lifecycle-master, acceptance-default-lifecycle, acceptance-lifecycle-N-1]
+
+          # Versions
+          - get: pack-version
+            params:
+              bump: final
+
+      - task: prepare-release
+        file: ci/tasks/prepare-pack-release/task.yml
+      - put: pack-github-release
+        params:
+          name: release-artifacts/name
+          tag: release-artifacts/tag
+          commitish: release-artifacts/commit-sha
+          globs: [release-artifacts/*.tgz, release-artifacts/*.zip]
+      - put: pack-version
+        params:
+          bump: minor

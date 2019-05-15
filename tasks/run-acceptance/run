@@ -15,23 +15,40 @@ mv pack-linux-binary/pack-*-linux pack-linux-binary/pack
 pack_path=$PWD/pack-linux-binary/pack
 chmod +x ${pack_path}
 
-if [ "$USE_DEFAULT_LIFECYCLE" != "true" ]; then
-    lifecycle_version=$(cat lifecycle-version/version | cut -f1 -d"-")
+if [ "$SELECT_LIFECYCLE" == "default" ]; then
+    cd pack-repo
+    docker_run \
+        -e "PACK_PATH=/tmp/pack" \
+        -v "$pack_path":/tmp/pack \
+        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+elif [ "$SELECT_LIFECYCLE" == "previous" ]; then
+    apk add git
+
+    pushd lifecycle-repo
+        lifecycle_version="$(git tag --sort=-creatordate | sed -n 2p | cut -c2-)"
+    popd
+
+    cd pack-repo
+    docker_run \
+        -e "PACK_PATH=/tmp/pack" \
+        -v "$pack_path":/tmp/pack \
+        -e "LIFECYCLE_VERSION=$lifecycle_version" \
+        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+else
     mv lifecycle/lifecycle-*.tgz lifecycle/lifecycle.tgz
     lifecycle_path=$PWD/lifecycle/lifecycle.tgz
+
+    lifecycle_version="$(cat lifecycle-version/version | cut -f1 -d"-")"
+
     cd pack-repo
     docker_run \
         -e "PACK_PATH=/tmp/pack" \
         -v "$pack_path":/tmp/pack \
         -e "LIFECYCLE_PATH=/tmp/lifecycle.tgz" \
-        -e "LIFECYCLE_VERSION=$lifecycle_version" \
         -v "$lifecycle_path":/tmp/lifecycle.tgz \
-        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
-else
-    cd pack-repo
-    docker_run \
-        -e "PACK_PATH=/tmp/pack" \
-        -v "$pack_path":/tmp/pack \
+        -e "LIFECYCLE_VERSION=$lifecycle_version" \
         golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
 fi
 
+
+# git tag --sort=-creatordate | head -n 1

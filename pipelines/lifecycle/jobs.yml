@@ -1,0 +1,155 @@
+jobs:
+  - name: lifecycle-unit
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
+    plan:
+      - aggregate:
+        # Repos
+        - get: lifecycle-repo
+          trigger: true
+          version: every
+        - get: ci
+          params:
+            submodules: none
+
+        # Images
+        - get: golang-image
+          params: {save: true}
+
+      - task: run-unit-tests
+        privileged: true
+        file: ci/tasks/run-lifecycle-unit/task.yml
+
+  - name: lifecycle-build
+    max_in_flight: 1 # prevent accidental reuse of our compound version numbers
+    plan:
+      - aggregate:
+        # Repos
+        - get: lifecycle-repo
+          passed: [lifecycle-unit]
+          trigger: true
+        - get: ci
+          params:
+            submodules: none
+
+        # Versions
+        - get: lifecycle-version
+          params:
+            pre: build
+
+        # Images
+        - get: golang-image
+          params: {save: true}
+
+      - task: build-binaries
+        image: golang-image
+        file: ci/tasks/build-lifecycle/task.yml
+        input_mapping:
+          version: lifecycle-version
+      - put: lifecycle
+        params: {file: built-lifecycle/lifecycle-*}
+      - put: lifecycle-version
+        params:
+          file: lifecycle-version/version
+
+  - name: acceptance-pack-latest
+    plan:
+      - aggregate:
+        # Versions
+        - get: lifecycle-version
+          passed: [lifecycle-build]
+          trigger: true
+
+        # Repos
+        - get: ci
+          params:
+            submodules: none
+        - get: lifecycle-repo
+          passed: [lifecycle-build]
+
+        # Pack Release
+        - get: pack-github-release
+          params:
+            globs: [pack-*-linux.tgz]
+            include_source_tarball: true
+
+        # Lifecycle binaries
+        - get: lifecycle
+          passed: [lifecycle-build]
+
+        # Images
+        - get: golang-image
+          params: {save: true}
+
+      - task: extract-pack-release
+        file: ci/tasks/extract-pack-release/task.yml
+        params:
+          GET_SOURCE: true
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance/task.yml
+
+  - name: acceptance-cnb-template
+    plan:
+      - aggregate:
+        # Binaries
+        - get: lifecycle
+          passed: [acceptance-pack-latest]
+          trigger: true
+          
+        # Repos
+        - get: cnb-template-repo
+        - get: ci
+          params:
+            submodules: none
+        - get: lifecycle-repo
+          passed: [acceptance-pack-latest]
+
+        # Pack Release
+        - get: pack-github-release
+          params:
+            globs: [pack-*-linux.tgz]
+
+        # Images
+        - get: bionic-run-image
+          params: {skip_download: true}
+        - get: bionic-build-image
+          params: {skip_download: true}
+
+      - task: extract-pack-release
+        file: ci/tasks/extract-pack-release/task.yml
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-cnb-template/task.yml
+        input_mapping:
+          pack: pack-linux-binary
+        params:
+          CONCOURSE_SERVICE_ACCOUNT_KEY: ((concourse-service-account-key-json))
+
+  - name: lifecycle-release
+    plan:
+      - aggregate:
+        # Repos
+        - get: ci
+          params:
+            submodules: none
+        - get: lifecycle
+          passed: [acceptance-cnb-template]
+        - get: lifecycle-repo
+          passed: [acceptance-cnb-template]
+          
+        # Versions
+        - get: lifecycle-version
+          params:
+            bump: final
+          
+      - task: prepare-release
+        file: ci/tasks/prepare-lifecycle-release/task.yml
+      - put: lifecycle-github-release
+        params:
+          name: release-artifacts/name
+          tag: release-artifacts/tag
+          commitish: release-artifacts/commit-sha
+          globs: [release-artifacts/*.tgz]
+      - put: lifecycle-version
+        params:
+          bump: minor

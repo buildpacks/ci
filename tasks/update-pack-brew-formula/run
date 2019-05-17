@@ -27,6 +27,8 @@ class Pack < Formula
 end
 EOF
 
+export TERM=xterm
+
 git diff Formula/pack.rb
 
 echo Creating commit

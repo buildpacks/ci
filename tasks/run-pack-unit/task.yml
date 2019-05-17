@@ -3,6 +3,7 @@ image_resource:
   type: docker-image
   source:
     repository: concourse/docker-image-resource
+    tag: 1.3.0
 
 inputs:
   - name: pack-repo

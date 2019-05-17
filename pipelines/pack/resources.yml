@@ -88,10 +88,10 @@ resources:
       
   ## Github Releases ##
 
-  - name: pack-github-release
-    type: github-release
-    source:
-      owner: buildpack
-      repository: pack
-      access_token: ((buildpack-github-release-token))
-      drafts: true
+  # - name: pack-github-release
+  #   type: github-release
+  #   source:
+  #     owner: buildpack
+  #     repository: pack
+  #     access_token: ((buildpack-github-release-token))
+  #     drafts: true

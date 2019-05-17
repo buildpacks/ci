@@ -11,7 +11,8 @@ echo Updating pack Homebrew Formula
 echo version: "$version"
 echo sha256: "$sha"
 
-cat << EOF >> tap/Formula/pack.rb
+cd tap
+cat << EOF >> Formula/pack.rb
 class Pack < Formula
   desc "A CLI for building apps using Cloud Native Buildpacks"
   homepage "https://github.com/buildpack/pack"
@@ -26,10 +27,10 @@ class Pack < Formula
 end
 EOF
 
-git diff tap/Formula/pack.rb
+git diff Formula/pack.rb
 
 echo Creating commit
-git add tap/Formula/pack.rb
+git add Formula/pack.rb
 git commit -m "Update formula for pack v$version"
 
 echo Done.

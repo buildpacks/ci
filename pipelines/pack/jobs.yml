@@ -178,7 +178,7 @@ jobs:
         params:
           SELECT_LIFECYCLE: previous
 
-  - name: pack-release
+  - name: pack-release-TESTING-ONLY
     plan:
       - aggregate:
 
@@ -189,6 +189,8 @@ jobs:
 
           - get: pack-repo
             passed: [acceptance-lifecycle-master, acceptance-default-lifecycle, acceptance-lifecycle-N-1]
+
+          - get: tap
 
           # Binaries
 
@@ -208,12 +210,15 @@ jobs:
 
       - task: prepare-release
         file: ci/tasks/prepare-pack-release/task.yml
-      - put: pack-github-release
-        params:
-          name: release-artifacts/name
-          tag: release-artifacts/tag
-          commitish: release-artifacts/commit-sha
-          globs: [release-artifacts/*.tgz, release-artifacts/*.zip]
-      - put: pack-version
-        params:
-          bump: minor
+      - task: update-homebrew
+        file: ci/tasks/update-pack-brew-formula
+      # - put: pack-github-release
+      #   params:
+      #     name: release-artifacts/name
+      #     tag: release-artifacts/tag
+      #     commitish: release-artifacts/commit-sha
+      #     globs: [release-artifacts/*.tgz, release-artifacts/*.zip]
+      - put: tap
+      # - put: pack-version
+      #   params:
+      #     bump: minor

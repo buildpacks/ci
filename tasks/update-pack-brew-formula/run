@@ -1,0 +1,35 @@
+#! /usr/bin/env sh 
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+version="$(cat pack-version/version)"
+sha="$(sha256sum release-artifacts/pack-v$version-macos.tgz | cut -d ' ' -f 1)"
+
+echo Updating pack Homebrew Formula
+echo version: "$version"
+echo sha256: "$sha"
+
+cat << EOF >> tap/Formula/pack.rb
+class Pack < Formula
+  desc "A CLI for building apps using Cloud Native Buildpacks"
+  homepage "https://github.com/buildpack/pack"
+  url "https://github.com/buildpack/pack/releases/download/v$version/pack-v$version-macos.tgz"
+  sha256 "$sha"
+
+  bottle :unneeded
+
+  def install
+    bin.install "pack"
+  end
+end
+EOF
+
+git diff tap/Formula/pack.rb
+
+echo Creating commit
+git add tap/Formula/pack.rb
+git commit -m "Update formula for pack v$version"
+
+echo Done.

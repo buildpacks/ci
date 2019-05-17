@@ -19,7 +19,15 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: master
+      branch: wip-brew-update #master
+  
+  - name: tap
+    type: git
+    source:
+      uri: https://github.com/buildpack/homebrew-tap.git
+      branch: wip-pipeline-test # master
+      username: cncf-buildpacks-maintainers@lists.cncf.io
+      password: ((buildpack-github-release-token))
 
   ## Semver ##
 

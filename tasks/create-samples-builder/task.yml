@@ -10,5 +10,8 @@ inputs:
 - name: sample-java-app
 - name: ci
 
+outputs:
+- name: samples-tar
+
 run:
-  path: ci/tasks/test-samples-builder/run
+  path: ci/tasks/create-samples-builder/run

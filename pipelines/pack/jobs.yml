@@ -181,7 +181,6 @@ jobs:
   - name: pack-release
     plan:
       - aggregate:
-
           # Repos
           - get: ci
             params:
@@ -205,19 +204,35 @@ jobs:
 
       - task: prepare-release
         file: ci/tasks/prepare-pack-release/task.yml
-      - task: update-homebrew
-        file: ci/tasks/update-pack-brew-formula/task.yml
-        params:
-          GITHUB_EMAIL: ((buildpack-robot-github-email))
       - put: pack-github-release
         params:
           name: release-artifacts/name
           tag: release-artifacts/tag
           commitish: release-artifacts/commit-sha
           globs: [release-artifacts/*.tgz, release-artifacts/*.zip]
-      - put: tap
-        params:
-          repository: updated-tap
       - put: pack-version
         params:
           bump: minor
+
+  - name: update-homebrew
+    plan:
+    - aggregate:
+      # Repos
+      - get: ci
+        params:
+          submodules: none
+      - get: tap
+
+      # Github Releases
+      - get: released-pack
+        trigger: true
+        params:
+          globs: [pack-*-macos.tgz]
+
+    - task: update-homebrew
+      file: ci/tasks/update-pack-brew-formula/task.yml
+      params:
+        GITHUB_EMAIL: ((buildpack-robot-github-email))
+    - put: tap
+      params:
+        repository: updated-tap

@@ -17,13 +17,13 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: master
+      branch: wip-update-brew-3
 
   - name: tap
     type: git
     source:
       uri: https://github.com/buildpack/homebrew-tap.git
-      branch: next-release
+      branch: master
       username: ((buildpack-robot-github-email))
       password: ((buildpack-github-release-token))
 
@@ -89,3 +89,10 @@ resources:
       repository: pack
       access_token: ((buildpack-github-release-token))
       drafts: true
+
+  - name: released-pack
+    type: github-release
+    source:
+      owner: buildpack
+      repository: pack
+      access_token: ((buildpack-github-release-token))

@@ -3,7 +3,10 @@ jobs:
     public: true
     plan:
       - aggregate:
-          - get: pack-linux-binary
+          - get: pack-github-release
+            trigger: true
+            params:
+                globs: [pack-*-linux.tgz]
           - get: samples-repo
             trigger: true
           - get: sample-java-app
@@ -14,7 +17,10 @@ jobs:
           - get: samples-version
             params:
               pre: rc
-      - task: create
+      - task: extract-pack
+        file: ci/tasks/extract-pack-release/task.yml
+        privileged: true
+      - task: create-builder
         file: ci/tasks/create-samples-builder/task.yml
         privileged: true
       - put: samples-image

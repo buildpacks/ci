@@ -6,7 +6,6 @@ resource_types:
       repository: frodenas/gcs-resource
 
 resources:
-
   ## Git Repos ##
   - name: samples-repo
     type: git
@@ -26,16 +25,15 @@ resources:
       uri: https://github.com/buildpack/ci.git
       branch: master
 
-  ## GCS Buckets ##
-  - name: pack-linux-binary
-    type: gcs-resource
+  ## Git Releases ##
+  - name: pack-github-release
+    type: github-release
     source:
-      bucket: cloud-native-buildpacks-pack-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/pack-(.*)-linux
+      owner: buildpack
+      repository: pack
+      access_token: ((buildpack-github-release-token))
 
   ## Semver ##
-
   - name: samples-version
     type: semver
     source:
@@ -46,7 +44,6 @@ resources:
       json_key: ((concourse-service-account-key-json))
 
   ## Docker Images ##
-
   - name: samples-image
     type: docker-image
     source:

@@ -1,5 +1,5 @@
 jobs:
-  - name: test-samples-builder
+  - name: create-samples-builder
     public: true
     plan:
       - aggregate:
@@ -11,6 +11,19 @@ jobs:
           - get: ci
             params:
               submodules: none
+          - get: samples-version
+            params:
+              pre: rc
       - task: create
-        file: ci/tasks/test-samples-builder/task.yml
+        file: ci/tasks/create-samples-builder/task.yml
         privileged: true
+      - put: samples-image
+        params:
+          load_file: samples-tar/samples.tar
+          load_repository: cnbs/samples
+          load_tag: samples-version/version
+          tag_file: samples-version/version
+          tag_as_latest: true
+      - put: samples-version
+        params:
+          file: samples-version/version

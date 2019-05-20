@@ -23,16 +23,19 @@ jobs:
         params:
           build: stacks-repo/bionic/base
           tag_file: bionic-stack-version/version
+          tag_as_latest: true
       - aggregate:
         - put: bionic-run-image
           params:
             build: stacks-repo/bionic/run
             tag_file: bionic-stack-version/version
             build_args_file: docker-build-args/args.json
+            tag_as_latest: true
         - put: bionic-build-image
           params:
             build: stacks-repo/bionic/build
             tag_file: bionic-stack-version/version
+            tag_as_latest: true
             build_args_file: docker-build-args/args.json
             build_args:
               go_version: "1.12"

@@ -21,13 +21,18 @@ function waitForContainer() {
 }
 
 chmod +x ./pack-linux-binary/pack-*-linux
-echo "pack create-builder "packs/samples:dev" -b ./samples-repo/builder.toml"
-./pack-linux-binary/pack-*-linux create-builder "packs/samples:dev" -b ./samples-repo/builder.toml
-echo "pack build --builder "packs/samples:dev" -p ./sample-java-app packs/sample-java-app"
-./pack-linux-binary/pack-*-linux build --builder "packs/samples:dev" -p ./sample-java-app packs/sample-java-app
 
-echo "docker run -d --rm -p 8080:8080 packs/sample-java-app"
-container_id=$(docker run -d --rm -p 8080:8080 packs/sample-java-app)
+echo "pack create-builder "cnbs/samples:dev" -b ./samples-repo/builder.toml"
+./pack-linux-binary/pack-*-linux create-builder "cnbs/samples:dev" -b ./samples-repo/builder.toml
+
+echo "saving "cnbs/samples:dev" to samples-tar"
+docker save cnbs/samples:dev -o ./samples-tar/samples.tar
+
+echo "pack build --builder "cnbs/samples:dev" -p ./sample-java-app cnbs/sample-java-app"
+./pack-linux-binary/pack-*-linux build --builder "cnbs/samples:dev" -p ./sample-java-app cnbs/sample-java-app
+
+echo "docker run -d --rm -p 8080:8080 cnbs/sample-java-app"
+container_id=$(docker run -d --rm -p 8080:8080 cnbs/sample-java-app)
 trap "docker kill $container_id" EXIT
 
 apk update

@@ -1,0 +1,42 @@
+#! /usr/bin/env sh 
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+version="$(cat pack-version/version)"
+sha="$(sha256sum release-artifacts/pack-v$version-macos.tgz | cut -d ' ' -f 1)"
+
+echo Updating pack Homebrew Formula
+echo version: "$version"
+echo sha256: "$sha"
+
+git clone tap updated-tap
+
+cd updated-tap
+cat << EOF > Formula/pack.rb
+class Pack < Formula
+  desc "A CLI for building apps using Cloud Native Buildpacks"
+  homepage "https://github.com/buildpack/pack"
+  url "https://github.com/buildpack/pack/releases/download/v$version/pack-v$version-macos.tgz"
+  sha256 "$sha"
+
+  bottle :unneeded
+
+  def install
+    bin.install "pack"
+  end
+end
+EOF
+
+export TERM=xterm
+
+git diff Formula/pack.rb
+
+echo Creating commit
+git config --global user.email ${GITHUB_EMAIL}
+git config --global user.name "Buildpack Robot"
+git add Formula/pack.rb
+git commit -m "Update formula for pack v$version"
+
+echo Done.

@@ -6,9 +6,7 @@ resource_types:
       repository: frodenas/gcs-resource
 
 resources:
-
   ## Git Repos ##
-
   - name: pack-repo
     type: git
     source:
@@ -21,8 +19,15 @@ resources:
       uri: https://github.com/buildpack/ci.git
       branch: master
 
-  ## Semver ##
+  - name: tap
+    type: git
+    source:
+      uri: https://github.com/buildpack/homebrew-tap.git
+      branch: next-release
+      username: ((buildpack-robot-github-email))
+      password: ((buildpack-github-release-token))
 
+  ## Semver ##
   - name: lifecycle-version
     type: semver
     source:
@@ -41,7 +46,6 @@ resources:
       json_key: ((concourse-service-account-key-json))
 
   ## Docker Images ##
-
   - name: golang-image
     type: docker-image
     source:
@@ -49,7 +53,6 @@ resources:
       tag: 1.12
 
   ## GCS Buckets ##
-
   - name: lifecycle
     type: gcs-resource
     source:
@@ -79,7 +82,6 @@ resources:
       regexp: development/pack-(.*)-windows
       
   ## Github Releases ##
-
   - name: pack-github-release
     type: github-release
     source:

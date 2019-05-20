@@ -4,8 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-version="$(cat pack-version/version)"
-sha="$(sha256sum release-artifacts/pack-v$version-macos.tgz | cut -d ' ' -f 1)"
+version="$(cat released-pack/version)"
+sha="$(sha256sum released-pack/pack-v$version-macos.tgz | cut -d ' ' -f 1)"
 
 echo Updating pack Homebrew Formula
 echo version: "$version"

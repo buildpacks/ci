@@ -7,8 +7,7 @@ image_resource:
 inputs:
   - name: ci
   - name: tap
-  - name: pack-version
-  - name: release-artifacts
+  - name: released-pack
 
 outputs:
   - name: updated-tap

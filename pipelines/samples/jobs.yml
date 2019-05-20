@@ -21,7 +21,7 @@ jobs:
         params:
           load_file: samples-tar/samples.tar
           load_repository: cnbs/samples
-          load_tag: samples-version/version
+          load_tag: dev
           tag_file: samples-version/version
           tag_as_latest: true
       - put: samples-version

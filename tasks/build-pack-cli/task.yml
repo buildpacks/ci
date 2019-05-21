@@ -17,4 +17,4 @@ run:
   path: ci/tasks/build-pack-cli/run
 
 params:
-  OS_NAME:
+  GOOS:

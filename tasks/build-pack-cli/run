@@ -4,19 +4,19 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-pack_version=$(cat pack-version/version)
-pack_base_version=$(cat pack-version/version | cut -d "-" -f1)
-export PACK_PATH="$PWD/pack-release/pack-${pack_version}-${OS_NAME}"
-export GOOS=${OS_NAME}
+version=$(cat pack-version/version)
+base_version=$(cat pack-version/version | cut -d "-" -f1)
+export PACK_PATH="$PWD/pack-release/pack-${version}-${GOOS}"
 
-echo Building 'pack' CLI version: $pack_version
+echo Building 'pack' CLI version: $version
 
 pushd pack-repo
-    version_string="v$pack_base_version (git sha: $(git log -1 --pretty=%H))"
-    CGO_ENABLED=0 go build -mod=vendor -ldflags "-X 'main.Version=${version_string}'" -o "$PACK_PATH" ./cmd/pack
+    version_string="v$base_version (git sha: $(git log -1 --pretty=%H))"
+    PACK_CI=true PACK_VERSION=${version_string} make build
+    mv ./out/pack "$PACK_PATH"
 popd
 
-echo "pack v${pack_version}" > pack-release/pack-release-name
+echo "pack v${version}" > pack-release/pack-release-name
 
 echo Built:
 

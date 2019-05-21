@@ -20,7 +20,8 @@ if [ "$SELECT_LIFECYCLE" == "default" ]; then
     docker_run \
         -e "PACK_PATH=/tmp/pack" \
         -v "$pack_path":/tmp/pack \
-        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+        -e "PACK_CI=true"
+        golang make acceptance
 elif [ "$SELECT_LIFECYCLE" == "previous" ]; then
     apk add git
 
@@ -33,7 +34,8 @@ elif [ "$SELECT_LIFECYCLE" == "previous" ]; then
         -e "PACK_PATH=/tmp/pack" \
         -v "$pack_path":/tmp/pack \
         -e "LIFECYCLE_VERSION=$lifecycle_version" \
-        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+        -e "PACK_CI=true"
+        golang make acceptance
 else
     mv lifecycle/lifecycle-*.tgz lifecycle/lifecycle.tgz
     lifecycle_path=$PWD/lifecycle/lifecycle.tgz
@@ -47,8 +49,6 @@ else
         -e "LIFECYCLE_PATH=/tmp/lifecycle.tgz" \
         -v "$lifecycle_path":/tmp/lifecycle.tgz \
         -e "LIFECYCLE_VERSION=$lifecycle_version" \
-        golang go test -mod=vendor -tags=acceptance -v -count=1 -parallel=1 -timeout=0 ./acceptance
+        -e "PACK_CI=true"
+        golang make acceptance
 fi
-
-
-# git tag --sort=-creatordate | head -n 1

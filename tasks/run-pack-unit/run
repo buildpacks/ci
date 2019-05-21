@@ -13,4 +13,4 @@ docker tag "$(cat golang-image/image-id)" "golang"
 
 cd pack-repo
 
-docker_run golang go test -mod=vendor -v -count=1 -parallel=1 -timeout=0 ./...
+docker_run -e "PACK_CI=true" golang make unit

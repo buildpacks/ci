@@ -52,19 +52,19 @@ jobs:
         file: ci/tasks/build-pack-cli/task.yml
         output_mapping: {pack-release: pack-linux-release}
         params:
-          OS_NAME: linux
+          GOOS: linux
       - task: build-pack-cli-darwin
         image: golang-image
         file: ci/tasks/build-pack-cli/task.yml
         output_mapping: {pack-release: pack-darwin-release}
         params:
-          OS_NAME: darwin
+          GOOS: darwin
       - task: build-pack-cli-windows
         image: golang-image
         file: ci/tasks/build-pack-cli/task.yml
         output_mapping: {pack-release: pack-windows-release}
         params:
-          OS_NAME: windows
+          GOOS: windows
     - aggregate:
       - put: pack-linux-binary
         params: {file: pack-linux-release/pack-*-linux}

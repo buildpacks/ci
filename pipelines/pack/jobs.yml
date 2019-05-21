@@ -159,6 +159,7 @@ jobs:
           - get: ci
             params:
               submodules: none
+          - get: lifecycle-repo
 
           # Pack binaries
           - get: pack-linux-binary

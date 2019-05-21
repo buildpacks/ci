@@ -27,6 +27,12 @@ resources:
       username: ((buildpack-robot-github-email))
       password: ((buildpack-github-release-token))
 
+  - name: lifecycle-repo
+    type: git
+    source:
+      uri: https://github.com/buildpack/lifecycle.git
+      branch: master
+
   ## Semver ##
   - name: lifecycle-version
     type: semver

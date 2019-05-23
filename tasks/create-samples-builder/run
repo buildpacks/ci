@@ -7,17 +7,17 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+
 function waitForContainer() {
-    container_id=$1
-    health=$(docker container inspect $container_id --format "{{.State.Health.Status}}")
-    if [[ $health == "healthy" ]]; then
-      echo container status: "$health"
-      return
-    else
-      echo container status: "$health"
-    fi
+    for i in $(seq 1 10); do
+      echo "curling localhost:8080"
+      if curl -o /dev/null --fail localhost:8080; then
+        echo "app is healthy"
+        return
+      fi
     sleep 3
-    waitForContainer "$container_id"
+    done
+    fail "container never became healthy"
 }
 
 chmod +x ./pack-linux-binary/pack-*-linux
@@ -39,6 +39,3 @@ apk update
 apk add curl
 
 waitForContainer "$container_id"
-
-echo "curling localhost:8080"
-curl -o /dev/null --fail localhost:8080

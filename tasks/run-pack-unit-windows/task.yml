@@ -17,5 +17,5 @@ run:
     - github.com/buildpack/pack/cache
     - github.com/buildpack/pack/commands
     - github.com/buildpack/pack/config
-    - github.com/buildpack/pack/archive
+    - github.com/buildpack/pack/internal/archive
     - github.com/buildpack/pack/logging

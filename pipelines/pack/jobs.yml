@@ -179,6 +179,25 @@ jobs:
         params:
           SELECT_LIFECYCLE: previous
 
+  - name: acceptance-default-lifecycle-windows
+    plan:
+      - aggregate:
+          # Repos
+          - get: pack-repo
+            passed: [pack-build]
+          - get: ci
+            params:
+              submodules: none
+
+          # Pack binaries
+          - get: pack-windows-binary
+            passed: [pack-build]
+
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance-windows/task.yml
+        tags: [windows]
+
   - name: pack-release
     plan:
       - aggregate:

@@ -1,16 +1,7 @@
 platform: windows
 
 inputs:
-  - name: ci
-  - name: golang-image
   - name: pack-repo
-  - name: pack-windows-binary
-  - name: lifecycle-repo
-    optional: true
-  - name: lifecycle
-    optional: true
-  - name: lifecycle-version
-    optional: true
 
 run:
   dir: pack-repo

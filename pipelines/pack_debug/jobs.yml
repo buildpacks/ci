@@ -146,6 +146,39 @@ jobs:
         params:
           SELECT_LIFECYCLE: default
 
+  - name: acceptance-lifecycle-N-1
+    plan:
+      - aggregate:
+          # Versions
+          - get: pack-version
+            passed: [pack-build]
+            trigger: true
+
+          # Repos
+          - get: pack-repo
+            passed: [pack-build]
+          - get: ci
+            params:
+              submodules: none
+          - get: lifecycle-repo
+
+          # Pack binaries
+          - get: pack-linux-binary
+            passed: [pack-build]
+          - get: pack-windows-binary
+            passed: [pack-build]
+          - get: pack-darwin-binary
+            passed: [pack-build]
+
+          # Images
+          - get: golang-image
+            params: {save: true}
+
+      - task: acceptance
+        privileged: true
+        file: ci/tasks/run-acceptance/task.yml
+        params:
+          SELECT_LIFECYCLE: previous
 
   - name: acceptance-default-lifecycle-windows
     plan:

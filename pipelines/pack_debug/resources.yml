@@ -26,21 +26,21 @@ resources:
       branch: master
 
   ## Semver ##
-  - name: lifecycle-version
+  - name: lifecycle-version-0
     type: semver
     source:
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: lifecycle-version-debug
+      key: lifecycle-patch-version
       json_key: ((concourse-service-account-key-json))
 
   - name: pack-version
     type: semver
     source:
-      initial_version: 0.1.0
+      initial_version: 0.2.1
       driver: gcs
       bucket: cloud-native-buildpacks-versions
-      key: pack-version-debug
+      key: pack-version-debug2
       json_key: ((concourse-service-account-key-json))
 
   ## Docker Images ##

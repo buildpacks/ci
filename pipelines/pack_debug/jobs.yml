@@ -183,11 +183,6 @@ jobs:
   - name: acceptance-default-lifecycle-windows
     plan:
       - aggregate:
-          # Versions
-          - get: pack-version
-            passed: [pack-build]
-            trigger: true
-
           # Repos
           - get: pack-repo
             passed: [pack-build]
@@ -199,12 +194,6 @@ jobs:
           - get: pack-windows-binary
             passed: [pack-build]
 
-          # Images
-          - get: golang-image
-            params: {save: true}
-
       - task: acceptance
         privileged: true
         file: ci/tasks/run-acceptance-windows/task.yml
-        params:
-          SELECT_LIFECYCLE: default

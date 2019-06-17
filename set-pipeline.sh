@@ -16,7 +16,7 @@ dir="$(cd "$(dirname "$0")" && pwd)"
 concourse_service_account_key=$(lpass_note 'cncf-concourse-service-account-json-key')
 buildpack_github_release_token=$(lpass_note 'buildpack-github-release-token')
 cnbs_dockerhub_password=$(lpass_note 'cnbs-dockerhub-password')
-buildpack_robot_github_email=$(lpass show --username "Shared-Cloud Native Buildpacks/Buildpack Robot")
+buildpack_robot_github_email=$(lpass show --username "Shared-Cloud Native Buildpacks/Buildpack GitHub Robot")
 
 cat <(cat "$dir/pipelines/$pipeline/resources.yml" && echo "" && cat "$dir/pipelines/$pipeline/jobs.yml") | pbcopy
 

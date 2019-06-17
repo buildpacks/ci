@@ -1,0 +1,16 @@
+platform: windows
+
+inputs:
+  - name: pack-repo
+
+run:
+  dir: pack-repo
+  path: c:\Go\bin\go.exe
+  args:
+    - test
+    - -mod=vendor
+    - -v
+    - -count=1
+    - -parallel=1
+    - -tags=acceptance
+    - github.com/buildpack/pack/acceptance

@@ -11,6 +11,10 @@ jobs:
         - get: bionic-stack-version
           params:
             pre: rc
+        - get: ubuntu-bionic-image
+          trigger: true
+          params:
+            skip_download: true
 
       ## Prep
       - task: generate-docker-build-args

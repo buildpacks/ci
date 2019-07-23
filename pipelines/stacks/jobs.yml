@@ -33,12 +33,14 @@ jobs:
           params:
             build: stacks-repo/bionic/run
             tag_file: bionic-stack-version/version
+            additional_tags: stacks-repo/bionic/tags
             build_args_file: docker-build-args/args.json
             tag_as_latest: true
         - put: bionic-build-image
           params:
             build: stacks-repo/bionic/build
             tag_file: bionic-stack-version/version
+            additional_tags: stacks-repo/bionic/tags
             tag_as_latest: true
             build_args_file: docker-build-args/args.json
             build_args:

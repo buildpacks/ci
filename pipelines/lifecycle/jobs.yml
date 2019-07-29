@@ -51,49 +51,50 @@ jobs:
         params:
           file: lifecycle-version/version
 
-  - name: acceptance-pack-latest
-    plan:
-      - aggregate:
-        # Versions
-        - get: lifecycle-version
-          passed: [lifecycle-build]
-          trigger: true
-
-        # Repos
-        - get: ci
-          params:
-            submodules: none
-        - get: lifecycle-repo
-          passed: [lifecycle-build]
-
-        # Pack Release
-        - get: pack-github-release
-          params:
-            globs: [pack-*-linux.tgz]
-            include_source_tarball: true
-
-        # Lifecycle binaries
-        - get: lifecycle
-          passed: [lifecycle-build]
-
-        # Images
-        - get: golang-image
-          params: {save: true}
-
-      - task: extract-pack-release
-        file: ci/tasks/extract-pack-release/task.yml
-        params:
-          GET_SOURCE: true
-      - task: acceptance
-        privileged: true
-        file: ci/tasks/run-acceptance/task.yml
+#  - name: acceptance-pack-latest
+#    plan:
+#      - aggregate:
+#        # Versions
+#        - get: lifecycle-version
+#          passed: [lifecycle-build]
+#          trigger: true
+#
+#        # Repos
+#        - get: ci
+#          params:
+#            submodules: none
+#        - get: lifecycle-repo
+#          passed: [lifecycle-build]
+#
+#        # Pack Release
+#        - get: pack-github-release
+#          params:
+#            globs: [pack-*-linux.tgz]
+#            include_source_tarball: true
+#
+#        # Lifecycle binaries
+#        - get: lifecycle
+#          passed: [lifecycle-build]
+#
+#        # Images
+#        - get: golang-image
+#          params: {save: true}
+#
+#      - task: extract-pack-release
+#        file: ci/tasks/extract-pack-release/task.yml
+#        params:
+#          GET_SOURCE: true
+#      - task: acceptance
+#        privileged: true
+#        file: ci/tasks/run-acceptance/task.yml
 
   - name: acceptance-cnb-template
     plan:
       - aggregate:
         # Binaries
         - get: lifecycle
-          passed: [acceptance-pack-latest]
+#          passed: [acceptance-pack-latest]
+          passed: [lifecycle-build]
           trigger: true
           
         # Repos
@@ -102,7 +103,8 @@ jobs:
           params:
             submodules: none
         - get: lifecycle-repo
-          passed: [acceptance-pack-latest]
+#          passed: [acceptance-pack-latest]
+          passed: [lifecycle-build]
 
         # Pack Release
         - get: pack-github-release

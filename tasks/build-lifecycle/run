@@ -14,8 +14,8 @@ echo RC Version "$version"
 echo Release Version "$release_version"
 
 pushd lifecycle-repo
-    LIFECYCLE_VERSION="$release_version" make build
-    LIFECYCLE_VERSION="$release_version" make package
+    SCM_REPO=https://github.com/buildpack/lifecycle LIFECYCLE_VERSION="$release_version" make build
+    SCM_REPO=https://github.com/buildpack/lifecycle LIFECYCLE_VERSION="$release_version" make package
 
     # Note: We're renaming to the RC version during the move, so the archive can be easily promoted
     mv out/"lifecycle-v$release_version+$arch.tgz" ../built-lifecycle/"lifecycle-v$version+$arch.tgz"

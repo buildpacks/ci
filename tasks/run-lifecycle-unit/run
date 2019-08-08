@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-source ci/scripts/common.sh
-
 set -o errexit
 set -o nounset
 set -o pipefail
 
 set -x
 
-docker load -i golang-image/image
-docker tag "$(cat golang-image/image-id)" "golang"
+jq_version=1.6
+
+wget "https://github.com/stedolan/jq/releases/download/jq-${jq_version}/jq-linux64" \
+ -O /usr/local/bin/jq \
+ && chmod +x /usr/local/bin/jq
 
 cd lifecycle-repo
-
-docker_run golang make test
+make test

@@ -8,47 +8,29 @@ set -o pipefail
 
 set -x
 
-docker load -i golang-image/image
-docker tag "$(cat golang-image/image-id)" "golang"
-
-mv pack-linux-binary/pack-*-linux pack-linux-binary/pack
-pack_path=$PWD/pack-linux-binary/pack
-chmod +x ${pack_path}
-
-if [ "$SELECT_LIFECYCLE" == "default" ]; then
-    cd pack-repo
-    docker_run \
-        -e "PACK_PATH=/tmp/pack" \
-        -v "$pack_path":/tmp/pack \
-        -e "PACK_CI=true" \
-        golang make acceptance
-elif [ "$SELECT_LIFECYCLE" == "previous" ]; then
-    apk add git
-
-    pushd lifecycle-repo
-        lifecycle_version="$(git tag --sort=-creatordate | sed -n 2p | cut -c2-)"
-    popd
-
-    cd pack-repo
-    docker_run \
-        -e "PACK_PATH=/tmp/pack" \
-        -v "$pack_path":/tmp/pack \
-        -e "LIFECYCLE_VERSION=$lifecycle_version" \
-        -e "PACK_CI=true" \
-        golang make acceptance
-else
-    mv lifecycle/lifecycle-*.tgz lifecycle/lifecycle.tgz
-    lifecycle_path=$PWD/lifecycle/lifecycle.tgz
-
-    lifecycle_version="$(cat lifecycle-version/version | cut -f1 -d"-")"
-
-    cd pack-repo
-    docker_run \
-        -e "PACK_PATH=/tmp/pack" \
-        -v "$pack_path":/tmp/pack \
-        -e "LIFECYCLE_PATH=/tmp/lifecycle.tgz" \
-        -v "$lifecycle_path":/tmp/lifecycle.tgz \
-        -e "LIFECYCLE_VERSION=$lifecycle_version" \
-        -e "PACK_CI=true" \
-        golang make acceptance
+PACK_DIR=pack
+if [[ -d ${PACK_DIR} ]]; then
+    export PACK_PATH="${PWD}/$(ls -1 ${PACK_DIR}/pack*)"
+    chmod +x ${PACK_PATH}
 fi
+
+PREVIOUS_PACK_DIR=previous-pack
+if [[ -d ${PREVIOUS_PACK_DIR} ]]; then
+    export PREVIOUS_PACK_PATH="${PWD}/$(ls -1 ${PREVIOUS_PACK_DIR}/pack*)"
+    chmod +x ${PREVIOUS_PACK_PATH}
+fi
+
+
+LIFECYCLE_DIR=lifecycle
+if [[ -d ${LIFECYCLE_DIR} ]]; then
+    export LIFECYCLE_PATH="${PWD}/$(ls -1 ${LIFECYCLE_DIR}/lifecycle-*.tgz)"
+fi
+
+PREVIOUS_LIFECYCLE=previous-lifecycle
+if [[ -d ${PREVIOUS_LIFECYCLE} ]]; then
+    export PREVIOUS_LIFECYCLE_PATH="${PWD}/$(ls -1 ${PREVIOUS_LIFECYCLE}/lifecycle-*.tgz)"
+fi
+
+pushd pack-repo
+make acceptance
+popd

@@ -17,7 +17,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpack/ci.git
-      branch: master
+      branch: feature/14-acceptance-suite
 
   - name: tap
     type: git

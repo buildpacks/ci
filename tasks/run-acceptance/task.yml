@@ -2,22 +2,21 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: concourse/docker-image-resource
+    repository: cnbs/ci
 
 inputs:
   - name: ci
-  - name: golang-image
   - name: pack-repo
-  - name: pack-linux-binary
-  - name: lifecycle-repo
+  - name: pack
+  - name: previous-pack
     optional: true
   - name: lifecycle
     optional: true
-  - name: lifecycle-version
+  - name: previous-lifecycle
     optional: true
 
 run:
   path: ci/tasks/run-acceptance/run
 
 params:
-  SELECT_LIFECYCLE:
+  ACCEPTANCE_SUITE_CONFIG:

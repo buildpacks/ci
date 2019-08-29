@@ -96,6 +96,9 @@ jobs:
 #          passed: [acceptance-pack-latest]
           passed: [lifecycle-build]
           trigger: true
+
+        - get: pack
+          resource: pack-linux-binary
           
         # Repos
         - get: cnb-template-repo
@@ -106,24 +109,15 @@ jobs:
 #          passed: [acceptance-pack-latest]
           passed: [lifecycle-build]
 
-        # Pack Release
-        - get: pack-github-release
-          params:
-            globs: [pack-*-linux.tgz]
-
         # Images
         - get: bionic-run-image
           params: {skip_download: true}
         - get: bionic-build-image
           params: {skip_download: true}
 
-      - task: extract-pack-release
-        file: ci/tasks/extract-pack-release/task.yml
       - task: acceptance
         privileged: true
         file: ci/tasks/run-cnb-template/task.yml
-        input_mapping:
-          pack: pack-linux-binary
         params:
           CONCOURSE_SERVICE_ACCOUNT_KEY: ((concourse-service-account-key-json))
 

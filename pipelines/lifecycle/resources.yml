@@ -71,6 +71,13 @@ resources:
       json_key: ((concourse-service-account-key-json))
       regexp: lifecycle-v(.*)\+linux\.x86-64\.tgz
 
+  - name: pack-linux-binary
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-pack-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: development/pack-(.*)-linux
+
   ## Github Releases ##
   
   - name: lifecycle-github-release
@@ -81,10 +88,3 @@ resources:
       access_token: ((buildpack-github-release-token))
       drafts: true
 
-  - name: pack-github-release
-    type: github-release
-    source:
-      owner: buildpack
-      repository: pack
-      access_token: ((buildpack-github-release-token))
-      drafts: true

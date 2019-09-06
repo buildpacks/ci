@@ -247,14 +247,15 @@ jobs:
 
           # Binaries
           - get: pack-windows-binary
-            passed: [acceptance-lifecycle-current, acceptance-lifecycle-N-1]
+            passed: [acceptance-lifecycle-current-windows, acceptance-lifecycle-N-1, compatibility]
           - get: pack-darwin-binary
-            passed: [acceptance-lifecycle-current, acceptance-lifecycle-N-1]
+            passed: [acceptance-lifecycle-current, acceptance-lifecycle-N-1, compatibility]
           - get: pack-linux-binary
-            passed: [acceptance-lifecycle-current, acceptance-lifecycle-N-1]
+            passed: [acceptance-lifecycle-current, acceptance-lifecycle-N-1, compatibility]
 
           # Versions
           - get: pack-version
+            passed: [acceptance-lifecycle-current, acceptance-lifecycle-N-1, compatibility]
             params:
               bump: final
 

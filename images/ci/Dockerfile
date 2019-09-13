@@ -1,4 +1,4 @@
-FROM golang:1.12.8-alpine3.10 as golang
+FROM golang:1.13-alpine as golang
 
 FROM concourse/docker-image-resource:1.3.1
 

@@ -217,7 +217,7 @@ jobs:
             params:
               globs: [lifecycle-*linux*.tgz]
 
-      - in_parallel:
+      - do:
           - task: p_current-cb_previous-lc_previous
             privileged: true
             file: ci/tasks/run-acceptance/task.yml

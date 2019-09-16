@@ -8,7 +8,7 @@ image_resource:
 inputs:
   - name: pack-repo
   - name: ci
-  - name: pack-version
+  - name: version
 
 outputs:
   - name: pack-release

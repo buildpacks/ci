@@ -6,7 +6,7 @@ image_resource:
 
 inputs:
   - name: ci
-  - name: pack-version
+  - name: version
   - name: pack-repo
   - name: pack-windows-binary
   - name: pack-darwin-binary

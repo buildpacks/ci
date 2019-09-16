@@ -4,8 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-version=$(cat pack-version/version)
-base_version=$(cat pack-version/version | cut -d "-" -f1)
+version=$(cat version/version)
+base_version=$(cat version/version | cut -d "-" -f1)
 export PACK_PATH="$PWD/pack-release/pack-${version}-${GOOS}"
 
 echo Building 'pack' CLI version: $version

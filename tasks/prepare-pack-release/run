@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 
-version="$(cat pack-version/version)"
+version="$(cat version/version)"
 outputs_dir="$PWD/release-artifacts"
 
 apk add zip

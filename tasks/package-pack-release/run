@@ -6,7 +6,7 @@ set -o pipefail
 
 set -x
 
-pack_version=$(cat pack-version/version)
+pack_version=$(cat version/version)
 mkdir -p tmp-binary
 mv pack-binary/pack-* tmp-binary/pack-${pack_version}-${OS}
 chmod +x tmp-binary/pack-${pack_version}-${OS}

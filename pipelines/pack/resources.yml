@@ -36,7 +36,7 @@ resources:
       key: lifecycle-version
       json_key: ((concourse-service-account-key-json))
 
-  - name: pack-version
+  - name: version
     type: semver
     source:
       initial_version: 0.1.0

@@ -21,11 +21,11 @@ resources:
       uri: https://github.com/buildpack/ci.git
       branch: master
 
-  - name: cnb-template-repo
-    type: git
-    source:
-      uri: https://github.com/buildpack/knative-integration.git
-      branch: master
+#  - name: cnb-template-repo
+#    type: git
+#    source:
+#      uri: https://github.com/buildpack/knative-integration.git
+#      branch: master
 
   ## Semver ##
 
@@ -46,21 +46,21 @@ resources:
       repository: golang
       tag: 1.12
 
-  - name: bionic-run-image
-    type: docker-image
-    source:
-      repository: cnbs/run
-      tag: 0.0.1-rc.2
-      username: cnbs
-      password: ((cnbs-dockerhub-password))
-
-  - name: bionic-build-image
-    type: docker-image
-    source:
-      repository: cnbs/build
-      tag: 0.0.1-rc.2
-      username: cnbs
-      password: ((cnbs-dockerhub-password))
+#  - name: bionic-run-image
+#    type: docker-image
+#    source:
+#      repository: cnbs/run
+#      tag: 0.0.1-rc.2
+#      username: cnbs
+#      password: ((cnbs-dockerhub-password))
+#
+#  - name: bionic-build-image
+#    type: docker-image
+#    source:
+#      repository: cnbs/build
+#      tag: 0.0.1-rc.2
+#      username: cnbs
+#      password: ((cnbs-dockerhub-password))
 
   ## GCS Buckets ##
 
@@ -71,12 +71,12 @@ resources:
       json_key: ((concourse-service-account-key-json))
       regexp: lifecycle-v(.*)\+linux\.x86-64\.tgz
 
-  - name: pack-linux-binary
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-pack-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/pack-(.*)-linux
+#  - name: pack-linux-binary
+#    type: gcs-resource
+#    source:
+#      bucket: cloud-native-buildpacks-pack-binaries
+#      json_key: ((concourse-service-account-key-json))
+#      regexp: development/pack-(.*)-linux
 
   ## Github Releases ##
   

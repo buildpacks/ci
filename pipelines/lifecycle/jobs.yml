@@ -88,38 +88,38 @@ jobs:
 #        privileged: true
 #        file: ci/tasks/run-acceptance/task.yml
 
-  - name: acceptance-cnb-template
-    plan:
-      - aggregate:
-        # Binaries
-        - get: lifecycle
-#          passed: [acceptance-pack-latest]
-          passed: [lifecycle-build]
-          trigger: true
-
-        - get: pack
-          resource: pack-linux-binary
-          
-        # Repos
-        - get: cnb-template-repo
-        - get: ci
-          params:
-            submodules: none
-        - get: lifecycle-repo
-#          passed: [acceptance-pack-latest]
-          passed: [lifecycle-build]
-
-        # Images
-        - get: bionic-run-image
-          params: {skip_download: true}
-        - get: bionic-build-image
-          params: {skip_download: true}
-
-      - task: acceptance
-        privileged: true
-        file: ci/tasks/run-cnb-template/task.yml
-        params:
-          CONCOURSE_SERVICE_ACCOUNT_KEY: ((concourse-service-account-key-json))
+#  - name: acceptance-cnb-template
+#    plan:
+#      - aggregate:
+#        # Binaries
+#        - get: lifecycle
+##          passed: [acceptance-pack-latest]
+#          passed: [lifecycle-build]
+#          trigger: true
+#
+#        - get: pack
+#          resource: pack-linux-binary
+#          
+#        # Repos
+#        - get: cnb-template-repo
+#        - get: ci
+#          params:
+#            submodules: none
+#        - get: lifecycle-repo
+##          passed: [acceptance-pack-latest]
+#          passed: [lifecycle-build]
+#
+#        # Images
+#        - get: bionic-run-image
+#          params: {skip_download: true}
+#        - get: bionic-build-image
+#          params: {skip_download: true}
+#
+#      - task: acceptance
+#        privileged: true
+#        file: ci/tasks/run-cnb-template/task.yml
+#        params:
+#          CONCOURSE_SERVICE_ACCOUNT_KEY: ((concourse-service-account-key-json))
 
   - name: lifecycle-release
     plan:
@@ -129,9 +129,9 @@ jobs:
           params:
             submodules: none
         - get: lifecycle
-          passed: [acceptance-cnb-template]
+#          passed: [acceptance-cnb-template]
         - get: lifecycle-repo
-          passed: [acceptance-cnb-template]
+#          passed: [acceptance-cnb-template]
           
         # Versions
         - get: lifecycle-version

@@ -44,7 +44,7 @@ jobs:
             tag_as_latest: true
             build_args_file: docker-build-args/args.json
             build_args:
-              go_version: "1.12"
+              go_version: "1.13"
       - put: bionic-stack-version
         params:
           file: bionic-stack-version/version

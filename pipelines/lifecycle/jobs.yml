@@ -129,9 +129,9 @@ jobs:
           params:
             submodules: none
         - get: lifecycle
-#          passed: [acceptance-cnb-template]
+          passed: [lifecycle-build]
         - get: lifecycle-repo
-#          passed: [acceptance-cnb-template]
+          passed: [lifecycle-build]
           
         # Versions
         - get: lifecycle-version

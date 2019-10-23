@@ -12,7 +12,7 @@ inputs:
     optional: true
   - name: lifecycle
     optional: true
-  - name: pack-version
+  - name: previous-lifecycle
     optional: true
     
 run:

@@ -101,10 +101,4 @@ resources:
       owner: buildpack
       repository: pack
       access_token: ((buildpack-github-release-token))
-
-  - name: released-lifecycle
-    type: github-release
-    source:
-      owner: buildpack
-      repository: lifecycle
-      access_token: ((buildpack-github-release-token))
+      

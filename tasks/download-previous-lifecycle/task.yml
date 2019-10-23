@@ -1,0 +1,17 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: cnbs/ci
+
+inputs:
+  - name: ci
+  - name: previous-pack
+
+outputs:
+  - name: previous-lifecycle
+run:
+  path: ci/tasks/download-previous-lifecycle/run
+
+params:
+  ACCEPTANCE_SUITE_CONFIG:

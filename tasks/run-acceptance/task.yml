@@ -12,9 +12,9 @@ inputs:
     optional: true
   - name: lifecycle
     optional: true
-  - name: previous-lifecycle
+  - name: pack-version
     optional: true
-
+    
 run:
   path: ci/tasks/run-acceptance/run
 

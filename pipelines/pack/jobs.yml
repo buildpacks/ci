@@ -116,7 +116,8 @@ jobs:
     plan:
       - in_parallel:
         # Versions
-        - get: version
+        - get: pack-version
+          resource: version
           passed: [pack-build]
           trigger: true
 
@@ -135,15 +136,31 @@ jobs:
           passed: [pack-build]
         - get: pack-darwin-binary
           passed: [pack-build]
-
-        # Lifecycle binaries
-        - get: previous-lifecycle
-          resource: released-lifecycle
-          params:
-            globs: [lifecycle-*linux*.tgz]
+        - do:
+            - get: ci-image
+            - get: released-pack
+              params:
+                globs: [pack-*-linux.tgz]
+            - task: untar
+              image: ci-image
+              config:
+                platform: linux
+                inputs:
+                  - name: released-pack
+                outputs:
+                  - name: previous-pack
+                run:
+                  path: bash
+                  args:
+                    - "-c"
+                    - "tar xvzf released-pack/pack-*-linux.tgz -C previous-pack/"
+            - task: download-previous-lifecycle
+              file: ci/tasks/download-previous-lifecycle/task.yml
+              privileged: true
 
       - task: acceptance
         privileged: true
+        
         file: ci/tasks/run-acceptance/task.yml
         params:
           ACCEPTANCE_SUITE_CONFIG: '[{"pack": "current", "pack_create_builder": "current", "lifecycle": "previous"}]'
@@ -181,7 +198,8 @@ jobs:
     plan:
       - in_parallel:
           # Versions
-          - get: version
+          - get: pack-version
+            resource: version
             passed: [pack-build]
             trigger: true
 
@@ -218,14 +236,13 @@ jobs:
                     args:
                       - "-c"
                       - "tar xvzf released-pack/pack-*-linux.tgz -C previous-pack/"
+              - task: download-previous-lifecycle
+                file: ci/tasks/download-previous-lifecycle/task.yml
+                privileged: true
 
           # Lifecycle binaries
           - get: lifecycle
             resource: lifecycle-master-binary
-          - get: previous-lifecycle
-            resource: released-lifecycle
-            params:
-              globs: [lifecycle-*linux*.tgz]
 
       - do:
           - task: p_current-cb_previous-lc_previous

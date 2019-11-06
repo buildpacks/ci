@@ -10,11 +10,14 @@ set -x
 
 prev_lifecycle_ver="0.5.0" # default, for now
 ls -la previous-pack
-ver_out=$(./previous-pack/pack version)
-re="Default Lifecycle: (.*)"
-if [[ ${ver_out} =~ ${re} ]]; then
-    prev_lifecycle_ver=${BASH_REMATCH[1]}
-fi
+ver_out=$(./previous-pack/pack report)
+re="Default Lifecycle Version:\s*(.*)"
+while read -r line; do
+  if [[ ${line} =~ ${re} ]]; then
+      prev_lifecycle_ver=${BASH_REMATCH[1]}
+      break
+  fi
+done <<< "${ver_out}"
 
 prev_lifecycle_url="https://github.com/buildpack/lifecycle/releases/download/v${prev_lifecycle_ver}/lifecycle-v${prev_lifecycle_ver}+linux.x86-64.tgz"
 wget -O "previous-lifecycle/lifecycle-${prev_lifecycle_ver}.tgz" "${prev_lifecycle_url}"

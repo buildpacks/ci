@@ -10,19 +10,19 @@ resources:
   - name: pack-repo
     type: git
     source:
-      uri: https://github.com/buildpack/pack.git
+      uri: https://github.com/buildpacks/pack.git
       branch: master
 
   - name: ci
     type: git
     source:
-      uri: https://github.com/buildpack/ci.git
+      uri: https://github.com/buildpacks/ci.git
       branch: master
 
   - name: tap
     type: git
     source:
-      uri: https://github.com/buildpack/homebrew-tap.git
+      uri: https://github.com/buildpacks/homebrew-tap.git
       branch: master
       username: ((buildpack-robot-github-email))
       password: ((buildpack-github-release-token))

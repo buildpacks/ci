@@ -6,7 +6,7 @@ resources:
   - name: ci-dockerfile
     type: git
     source:
-      uri: https://github.com/buildpack/ci.git
+      uri: https://github.com/buildpacks/ci.git
       branch: master
       paths: [images/ci/Dockerfile]
 

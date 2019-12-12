@@ -17,8 +17,8 @@ cd updated-tap
 cat << EOF > Formula/pack.rb
 class Pack < Formula
   desc "A CLI for building apps using Cloud Native Buildpacks"
-  homepage "https://github.com/buildpack/pack"
-  url "https://github.com/buildpack/pack/releases/download/v$version/pack-v$version-macos.tgz"
+  homepage "https://github.com/buildpacks/pack"
+  url "https://github.com/buildpacks/pack/releases/download/v$version/pack-v$version-macos.tgz"
   sha256 "$sha"
 
   bottle :unneeded

@@ -10,19 +10,19 @@ resources:
   - name: samples-repo
     type: git
     source:
-      uri: https://github.com/buildpack/samples.git
+      uri: https://github.com/buildpacks/samples.git
       branch: master
 
   - name: sample-java-app
     type: git
     source:
-      uri: https://github.com/buildpack/sample-java-app.git
+      uri: https://github.com/buildpacks/sample-java-app.git
       branch: master
 
   - name: ci
     type: git
     source:
-      uri: https://github.com/buildpack/ci.git
+      uri: https://github.com/buildpacks/ci.git
       branch: master
 
   ## Git Releases ##

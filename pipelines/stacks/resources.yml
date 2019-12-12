@@ -7,13 +7,13 @@ resources:
   - name: stacks-repo
     type: git
     source:
-      uri: https://github.com/buildpack/stacks.git
+      uri: https://github.com/buildpacks/stacks.git
       branch: master
 
   - name: ci
     type: git
     source:
-      uri: https://github.com/buildpack/ci.git
+      uri: https://github.com/buildpacks/ci.git
       branch: master
 
   ## Semver ##

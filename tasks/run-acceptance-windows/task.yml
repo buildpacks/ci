@@ -13,4 +13,4 @@ run:
     - -count=1
     - -parallel=1
     - -tags=acceptance
-    - github.com/buildpack/pack/acceptance
+    - github.com/buildpacks/pack/acceptance

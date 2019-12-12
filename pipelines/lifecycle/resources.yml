@@ -12,19 +12,19 @@ resources:
   - name: lifecycle-repo
     type: git
     source:
-      uri: https://github.com/buildpack/lifecycle.git
+      uri: https://github.com/buildpacks/lifecycle.git
       branch: master
 
   - name: ci
     type: git
     source:
-      uri: https://github.com/buildpack/ci.git
+      uri: https://github.com/buildpacks/ci.git
       branch: master
 
 #  - name: cnb-template-repo
 #    type: git
 #    source:
-#      uri: https://github.com/buildpack/knative-integration.git
+#      uri: https://github.com/buildpacks/knative-integration.git
 #      branch: master
 
   ## Semver ##

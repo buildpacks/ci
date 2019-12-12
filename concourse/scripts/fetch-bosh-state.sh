@@ -9,7 +9,7 @@ mkdir -p "$dir/vars"
 lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-9583 > "$dir"/vars/bbl.tfvars
 lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-11137 > "$dir"/vars/bosh-state.json
 lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-84595 > "$dir"/vars/cloud-config-vars.yml
-lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-41338 > "$dir"/vars/concourse-vars-file.yml
+lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-456 > "$dir"/vars/concourse-vars-file.yml
 lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-17759 > "$dir"/vars/director-vars-file.yml
 lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-69299 > "$dir"/vars/director-vars-store.yml
 lpass show 'Shared-Cloud Native Buildpacks/bbl/vars' -q --attach att-2702221144863353409-57711 > "$dir"/vars/jumpbox-state.json.old

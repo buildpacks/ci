@@ -29,7 +29,7 @@ resources:
   - name: pack-github-release
     type: github-release
     source:
-      owner: buildpack
+      owner: buildpacks
       repository: pack
       access_token: ((buildpack-github-release-token))
 

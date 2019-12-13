@@ -90,7 +90,7 @@ resources:
   - name: pack-github-release
     type: github-release
     source:
-      owner: buildpack
+      owner: buildpacks
       repository: pack
       access_token: ((buildpack-github-release-token))
       drafts: true
@@ -98,7 +98,7 @@ resources:
   - name: released-pack
     type: github-release
     source:
-      owner: buildpack
+      owner: buildpacks
       repository: pack
       access_token: ((buildpack-github-release-token))
       

@@ -83,7 +83,7 @@ resources:
   - name: lifecycle-github-release
     type: github-release
     source:
-      owner: buildpack
+      owner: buildpacks
       repository: lifecycle
       access_token: ((buildpack-github-release-token))
       drafts: true

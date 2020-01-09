@@ -256,11 +256,11 @@ jobs:
             file: ci/tasks/run-acceptance/task.yml
             params:
               ACCEPTANCE_SUITE_CONFIG: '[{"pack": "previous", "pack_create_builder": "current", "lifecycle": "previous"}]'
-          # - task: p_previous-cb_current-lc_current
-          #   privileged: true
-          #   file: ci/tasks/run-acceptance/task.yml
-          #   params:
-          #     ACCEPTANCE_SUITE_CONFIG: '[{"pack": "previous", "pack_create_builder": "current", "lifecycle": "current"}]'
+          - task: p_previous-cb_current-lc_current
+            privileged: true
+            file: ci/tasks/run-acceptance/task.yml
+            params:
+              ACCEPTANCE_SUITE_CONFIG: '[{"pack": "previous", "pack_create_builder": "current", "lifecycle": "current"}]'
 
   - name: pack-release
     plan:

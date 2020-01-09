@@ -8,28 +8,30 @@ set -o pipefail
 
 set -x
 
+# NOTE: We use `echo` in this file to expand out globs ("*"")
+
 PACK_DIR=pack
 if [[ -d ${PACK_DIR} ]]; then
-    export PACK_PATH="${PWD}/$(ls -1 ${PACK_DIR}/pack*)"
+    export PACK_PATH=$(echo ${PWD}/${PACK_DIR}/pack*)
     chmod +x ${PACK_PATH}
 fi
 
 PREVIOUS_PACK_DIR=previous-pack
 if [[ -d ${PREVIOUS_PACK_DIR} ]]; then
-    export PREVIOUS_PACK_PATH="${PWD}/$(ls -1 ${PREVIOUS_PACK_DIR}/pack)"
-    export PREVIOUS_PACK_FIXTURES_PATH="${PWD}/$(ls -1 ${PREVIOUS_PACK_DIR}/buildpacks-pack-*/acceptance/testdata/pack_current)" # TODO: change pack_current -> pack_fixtures after 0.7.0 is released
+    export PREVIOUS_PACK_PATH=${PWD}/${PREVIOUS_PACK_DIR}/pack
+    export PREVIOUS_PACK_FIXTURES_PATH=$(echo ${PWD}/${PREVIOUS_PACK_DIR}/buildpacks-pack-*/acceptance/testdata/pack_current) # TODO: change pack_current -> pack_fixtures after 0.7.0 is released
     chmod +x ${PREVIOUS_PACK_PATH}
 fi
 
 
 LIFECYCLE_DIR=lifecycle
 if [[ -d ${LIFECYCLE_DIR} ]]; then
-    export LIFECYCLE_PATH="${PWD}/$(ls -1 ${LIFECYCLE_DIR}/lifecycle-*.tgz)"
+    export LIFECYCLE_PATH=$(echo ${PWD}/${LIFECYCLE_DIR}/lifecycle-*.tgz)
 fi
 
 PREVIOUS_LIFECYCLE=previous-lifecycle
 if [[ -d ${PREVIOUS_LIFECYCLE} ]]; then
-    export PREVIOUS_LIFECYCLE_PATH="${PWD}/$(ls -1 ${PREVIOUS_LIFECYCLE}/lifecycle-*.tgz)"
+    export PREVIOUS_LIFECYCLE_PATH=$(echo ${PWD}/${PREVIOUS_LIFECYCLE}/lifecycle-*.tgz)
 fi
 
 pushd pack-repo

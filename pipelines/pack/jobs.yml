@@ -223,6 +223,7 @@ jobs:
               - get: released-pack
                 params:
                   globs: [pack-*-linux.tgz]
+                  include_source_tarball: true
               - task: untar
                 image: ci-image
                 config:
@@ -235,7 +236,7 @@ jobs:
                     path: bash
                     args:
                       - "-c"
-                      - "tar xvzf released-pack/pack-*-linux.tgz -C previous-pack/"
+                      - "tar xvzf released-pack/pack-*-linux.tgz -C previous-pack/; tar xvzf released-pack/source.tar.gz -C previous-pack/"
               - task: download-previous-lifecycle
                 file: ci/tasks/download-previous-lifecycle/task.yml
                 privileged: true

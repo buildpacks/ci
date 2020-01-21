@@ -3,6 +3,9 @@ platform: windows
 inputs:
   - name: pack-repo
 
+params:
+  COMPILE_PACK_WITH_VERSION: 0.0.0
+
 run:
   dir: pack-repo
   path: c:\Go\bin\go.exe

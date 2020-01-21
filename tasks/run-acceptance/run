@@ -19,8 +19,12 @@ fi
 PREVIOUS_PACK_DIR=previous-pack
 if [[ -d ${PREVIOUS_PACK_DIR} ]]; then
     export PREVIOUS_PACK_PATH=${PWD}/${PREVIOUS_PACK_DIR}/pack
-    export PREVIOUS_PACK_FIXTURES_PATH=$(echo ${PWD}/${PREVIOUS_PACK_DIR}/buildpacks-pack-*/acceptance/testdata/pack_current) # TODO: change pack_current -> pack_fixtures after 0.7.0 is released
     chmod +x ${PREVIOUS_PACK_PATH}
+
+    SOURCE_DIR=$(ls -1 ${PREVIOUS_PACK_DIR}/buildpacks-pack-* | head -1)
+    if [[ -z "${SOURCE_DIR}" ]]; then
+      export PREVIOUS_PACK_FIXTURES_PATH=$(echo ${PWD}/${SOURCE_DIR}/acceptance/testdata/pack_current) # TODO: change pack_current -> pack_fixtures after 0.7.0 is released
+    fi
 fi
 
 

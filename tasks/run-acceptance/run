@@ -21,12 +21,11 @@ if [[ -d ${PREVIOUS_PACK_DIR} ]]; then
     export PREVIOUS_PACK_PATH=${PWD}/${PREVIOUS_PACK_DIR}/pack
     chmod +x ${PREVIOUS_PACK_PATH}
 
-    SOURCE_DIR=$(ls -1 ${PREVIOUS_PACK_DIR}/buildpacks-pack-* 2>/dev/null | head -1)
+    SOURCE_DIR=$(find ${PREVIOUS_PACK_DIR} -iname 'buildpacks-pack-*' | head -1)
     if [[ -z "${SOURCE_DIR}" ]]; then
       export PREVIOUS_PACK_FIXTURES_PATH=$(echo ${PWD}/${SOURCE_DIR}/acceptance/testdata/pack_current) # TODO: change pack_current -> pack_fixtures after 0.7.0 is released
     fi
 fi
-
 
 LIFECYCLE_DIR=lifecycle
 if [[ -d ${LIFECYCLE_DIR} ]]; then

@@ -65,6 +65,7 @@ jobs:
           
         # Versions
         - get: lifecycle-version
+          passed: [lifecycle-build]
           params:
             bump: final
           

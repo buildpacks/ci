@@ -11,7 +11,7 @@ resources:
     type: git
     source:
       uri: https://github.com/buildpacks/pack.git
-      branch: master
+      branch: release/0.9.0
 
   - name: ci
     type: git

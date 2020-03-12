@@ -11,10 +11,6 @@ jobs:
           params:
             submodules: none
 
-        # Images
-        - get: golang-image
-          params: {save: true}
-
       - task: run-unit-tests
         privileged: true
         file: ci/tasks/run-lifecycle-unit/task.yml
@@ -36,12 +32,8 @@ jobs:
           params:
             pre: build
 
-        # Images
-        - get: golang-image
-          params: {save: true}
-
       - task: build-binaries
-        image: golang-image
+        privileged: true
         file: ci/tasks/build-lifecycle/task.yml
         input_mapping:
           version: lifecycle-version

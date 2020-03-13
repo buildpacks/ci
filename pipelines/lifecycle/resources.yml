@@ -40,12 +40,6 @@ resources:
 
   ## Docker Images ##
 
-  - name: golang-image
-    type: docker-image
-    source:
-      repository: golang
-      tag: 1.13
-
 #  - name: bionic-run-image
 #    type: docker-image
 #    source:

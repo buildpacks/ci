@@ -1,18 +1,6 @@
 ---
-resource_types:
-  - name: gcs-resource
-    type: docker-image
-    source:
-      repository: frodenas/gcs-resource
-
 resources:
   ## Git Repos ##
-  - name: pack-repo
-    type: git
-    source:
-      uri: https://github.com/buildpacks/pack.git
-      branch: master
-
   - name: ci
     type: git
     source:
@@ -27,74 +15,7 @@ resources:
       username: ((buildpack-robot-github-email))
       password: ((buildpack-github-release-token))
 
-  ## Semver ##
-  - name: lifecycle-version
-    type: semver
-    source:
-      driver: gcs
-      bucket: cloud-native-buildpacks-versions
-      key: lifecycle-version
-      json_key: ((concourse-service-account-key-json))
-
-  - name: version
-    type: semver
-    source:
-      initial_version: 0.1.0
-      driver: gcs
-      bucket: cloud-native-buildpacks-versions
-      key: pack-version
-      json_key: ((concourse-service-account-key-json))
-
-  ## Docker Images ##
-  - name: ci-image
-    type: docker-image
-    source:
-      repository: cnbs/ci
-
-  - name: golang-image
-    type: docker-image
-    source:
-      repository: golang
-      tag: 1.13
-
-  ## GCS Buckets ##
-  - name: lifecycle-master-binary
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-lifecycle-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: lifecycle-v(.*)\+linux\.x86-64\.tgz
-
-  - name: pack-linux-binary
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-pack-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/pack-(.*)-linux
-
-  - name: pack-darwin-binary
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-pack-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/pack-(.*)-darwin
-
-  - name: pack-windows-binary
-    type: gcs-resource
-    source:
-      bucket: cloud-native-buildpacks-pack-binaries
-      json_key: ((concourse-service-account-key-json))
-      regexp: development/pack-(.*)-windows
-      
   ## Github Releases ##
-  - name: pack-github-release
-    type: github-release
-    source:
-      owner: buildpacks
-      repository: pack
-      access_token: ((buildpack-github-release-token))
-      drafts: true
-
   - name: released-pack
     type: github-release
     source:

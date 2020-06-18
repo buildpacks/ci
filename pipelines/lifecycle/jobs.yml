@@ -2,7 +2,7 @@ jobs:
   - name: lifecycle-unit
     max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
-      - aggregate:
+      - in_parallel:
         # Repos
         - get: lifecycle-repo
           trigger: true
@@ -18,7 +18,7 @@ jobs:
   - name: lifecycle-build
     max_in_flight: 1 # prevent accidental reuse of our compound version numbers
     plan:
-      - aggregate:
+      - in_parallel:
         # Repos
         - get: lifecycle-repo
           passed: [lifecycle-unit]
@@ -45,7 +45,7 @@ jobs:
 
   - name: lifecycle-release
     plan:
-      - aggregate:
+      - in_parallel:
         # Repos
         - get: ci
           params:

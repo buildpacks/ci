@@ -34,12 +34,19 @@ resources:
 
   ## GCS Buckets ##
 
-  - name: lifecycle
+  - name: lifecycle-linux
     type: gcs-resource
     source:
       bucket: cloud-native-buildpacks-lifecycle-binaries
       json_key: ((concourse-service-account-key-json))
       regexp: lifecycle-v(.*)\+linux\.x86-64\.tgz
+
+  - name: lifecycle-windows
+    type: gcs-resource
+    source:
+      bucket: cloud-native-buildpacks-lifecycle-binaries
+      json_key: ((concourse-service-account-key-json))
+      regexp: lifecycle-v(.*)\+windows\.x86-64\.tgz
 
 #  - name: pack-linux-binary
 #    type: gcs-resource

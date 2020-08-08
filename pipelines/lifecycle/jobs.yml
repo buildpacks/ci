@@ -37,8 +37,10 @@ jobs:
         file: ci/tasks/build-lifecycle/task.yml
         input_mapping:
           version: lifecycle-version
-      - put: lifecycle
-        params: {file: built-lifecycle/lifecycle-*}
+      - put: lifecycle-linux
+        params: {file: built-lifecycle/lifecycle-*+linux.x86-64.tgz}
+      - put: lifecycle-windows
+        params: {file: built-lifecycle/lifecycle-*+windows.x86-64.tgz}
       - put: lifecycle-version
         params:
           file: lifecycle-version/version
@@ -50,7 +52,9 @@ jobs:
         - get: ci
           params:
             submodules: none
-        - get: lifecycle
+        - get: lifecycle-linux
+          passed: [lifecycle-build]
+        - get: lifecycle-windows
           passed: [lifecycle-build]
         - get: lifecycle-repo
           passed: [lifecycle-build]

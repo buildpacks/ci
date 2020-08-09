@@ -8,7 +8,8 @@ inputs:
   - name: ci
   - name: lifecycle-version
   - name: lifecycle-repo
-  - name: lifecycle
+  - name: lifecycle-linux
+  - name: lifecycle-windows
 
 outputs:
   - name: release-artifacts

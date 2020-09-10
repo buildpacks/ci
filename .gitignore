@@ -1,2 +1,5 @@
 bosh/vars/*
 .idea/
+.terraform/
+*.tfstate
+*.tfstate.backup

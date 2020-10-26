@@ -17,4 +17,4 @@ Pop-Location
 & "C:\Program Files\Git\cmd\git.exe" config --global core.autocrlf false
 
 # Add cygwin binaries path
-[Environment]::SetEnvironmentVariable("PATH", "$ENV:PATH;C:\tools\cygwin\bin", "USER")
+[Environment]::SetEnvironmentVariable("PATH", "C:\tools\cygwin\bin;$ENV:PATH", "MACHINE")

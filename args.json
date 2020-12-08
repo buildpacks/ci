@@ -1,4 +1,0 @@
-{
-  "run_image":        "gcr.io/cncf-buildpacks-ci/packs/run:3.0.0-alpha.7",
-  "samples_image":    "gcr.io:443/cncf-buildpacks-ci/packs/samples:sha256:39757cea247cb2a8dde88f6b96445f3edbf1dc570a16e865dc31a929734370e8"
-}

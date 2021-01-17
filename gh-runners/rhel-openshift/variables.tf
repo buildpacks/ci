@@ -32,7 +32,7 @@ variable "GH_TOKEN" {
   sensitive   = true
 }
 
-variable "GH_ORG" {
+variable "GH_OWNER" {
   type        = string
   description = "GitHub organization"
 }

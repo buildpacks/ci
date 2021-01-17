@@ -2,6 +2,7 @@ variable "PACKET_AUTH_TOKEN" {
   type        = string
   description = "Auth Token for connection to packet.net"
 }
+
 variable "PACKET_PROJECT_ID" {
   type        = string
   description = "Packet Project GUID"

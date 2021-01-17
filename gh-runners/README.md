@@ -1,19 +1,34 @@
 # Usage
 
-For managing a Windows Github Actions Runner, one only needs to interact with the _terraform wrapper_ script at: `./scripts/terraformw.sh`. The script wraps terraform commands; performing any prep steps before the main operations.
-
 ## Configure LastPass First
 
 The script assumes that the following 2 credential notes are available in LastPass:
 
-1.  **PACKET_AUTH_TOKEN:** An authentication token that allows terraform to manage instances on your behalf.
+1.  **METAL_AUTH_TOKEN:** An authentication token that allows terraform to manage instances on your behalf.
     ```
-    lpass show --note 'Shared-Cloud Native Buildpacks/packet-auth-token'
+    lpass show --note 'Shared-Cloud Native Buildpacks/cnbs-equinix-metal-api-key'
     ```
-1.  **PACKET_PROJECT_ID:** The GUID representing a packet project where instances will be created.
+1.  **METAL_PROJECT_ID:** The GUID representing a metal project where instances will be created.
     ```
-    lpass show --note 'Shared-Cloud Native Buildpacks/packet-project-id'
+    lpass show --note 'Shared-Cloud Native Buildpacks/cnbs-equinix-metal-project-id'
     ```
+1. **RH_PULL_SECRET:** (required only by [rhel-openshift](rhel-openshift))
+    ```
+    lpass show --note 'Shared-Cloud Native Buildpacks/red-hat-codeready-container-pull-secret'
+    ```
+
+## Create a RHEL Runner
+
+```shell
+source scripts/auth-equinix.sh
+source scripts/auth-github.sh
+source scripts/auth-redhat.sh
+cd rhel-openshift
+terraform init
+terraform plan
+```
+
+# TODO: UPDATE BELOW ⬇
 
 ## Create a runner
 

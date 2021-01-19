@@ -23,9 +23,7 @@ The script assumes that the following 2 credential notes are available in LastPa
 source scripts/auth-equinix.sh
 source scripts/auth-github.sh
 source scripts/auth-redhat.sh
-cd rhel-openshift
-terraform init
-terraform plan
+(cd rhel-openshift && terraform init && terraform apply)
 ```
 
 # TODO: UPDATE BELOW ⬇

@@ -32,16 +32,6 @@ variable "GH_TOKEN" {
   sensitive   = true
 }
 
-variable "GH_OWNER" {
-  type        = string
-  description = "GitHub organization"
-}
-
-variable "GH_REPO" {
-  type        = string
-  description = "GitHub repo name"
-}
-
 variable "GH_RUNNER_VERSION" {
   type        = string
   description = "Version of action runner to install"

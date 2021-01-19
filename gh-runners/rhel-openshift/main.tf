@@ -56,7 +56,13 @@ output "ipv4" {
 ###
 # GITHUB RUNNER
 ###
+locals {
+  repos = toset(["tekton-integration"])
+}
+
 resource "null_resource" "github_runner" {
+  for_each = local.repos
+
   connection {
     host = metal_device.machine.access_public_ipv4
   }
@@ -65,8 +71,8 @@ resource "null_resource" "github_runner" {
     content = replace(replace(replace(replace(
       file("provision-scripts/github-runner.create.tpl.sh"),
       "%GH_TOKEN%", var.GH_TOKEN),
-      "%GH_OWNER%", var.GH_OWNER),
-      "%GH_REPO%", var.GH_REPO),
+      "%GH_OWNER%", "buildpacks"),
+      "%GH_REPO%", each.key),
       "%GH_RUNNER_VERSION%", var.GH_RUNNER_VERSION
     )
     destination = "/tmp/provision-github-runner.create.sh"
@@ -83,10 +89,10 @@ resource "null_resource" "github_runner" {
 }
 
 resource "null_resource" "github_runner_destroy" {
+  for_each = local.repos
+
   triggers = {
-    ipv4     = metal_device.machine.access_public_ipv4
-    gh_owner = var.GH_OWNER
-    gh_repo  = var.GH_REPO
+    ipv4 = metal_device.machine.access_public_ipv4
   }
 
   connection {
@@ -97,8 +103,8 @@ resource "null_resource" "github_runner_destroy" {
     when = destroy
     content = replace(replace(
       file("provision-scripts/github-runner.destroy.tpl.sh"),
-      "%GH_OWNER%", self.triggers.gh_owner),
-      "%GH_REPO%", self.triggers.gh_repo
+      "%GH_OWNER%", "buildpacks"),
+      "%GH_REPO%", each.key
     )
     destination = "/tmp/provision-github-runner.destroy.sh"
   }

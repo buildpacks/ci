@@ -136,8 +136,8 @@ resource "null_resource" "codeready_containers" {
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/provision/codeready-containers.create.sh",
-      "sudo -i -u user bash /tmp/provision/codeready-containers.create.sh",
+      "chmod +x /tmp/provision-codeready-containers.create.sh",
+      "sudo -i -u user bash /tmp/provision-codeready-containers.create.sh",
     ]
   }
 }

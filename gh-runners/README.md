@@ -26,6 +26,12 @@ source scripts/auth-redhat.sh
 (cd rhel-openshift && terraform init && terraform apply)
 ```
 
+## Get info
+
+```shell
+(cd rhel-openshift && terraform output)
+```
+
 # TODO: UPDATE BELOW ⬇
 
 ## Create a runner

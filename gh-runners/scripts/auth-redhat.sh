@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+
 echo "> Setting 'TF_VAR_RH_USERNAME' variable..."
 TF_VAR_RH_USERNAME="$(lpass show --username redhat.com)"
 export TF_VAR_RH_USERNAME

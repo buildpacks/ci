@@ -49,7 +49,7 @@ resource "metal_device" "machine" {
   }
 }
 
-output "ipv4" {
+output "public_ip" {
   value = metal_device.machine.access_public_ipv4
 }
 
@@ -92,11 +92,11 @@ resource "null_resource" "github_runner_destroy" {
   for_each = local.repos
 
   triggers = {
-    ipv4 = metal_device.machine.access_public_ipv4
+    public_ip = metal_device.machine.access_public_ipv4
   }
 
   connection {
-    host = self.triggers.ipv4
+    host = self.triggers.public_ip
   }
 
   provisioner "file" {

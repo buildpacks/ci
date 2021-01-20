@@ -12,7 +12,7 @@ variable "METAL_PROJECT_ID" {
 variable "GH_TOKEN" {
   type        = string
   description = "GitHub personal access token."
-  sensitive   = true
+  sensitive   = false
 }
 
 variable "GH_RUNNER_VERSION" {

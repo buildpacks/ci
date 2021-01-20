@@ -88,10 +88,14 @@ resource "null_resource" "github_runner_destroy" {
 
   triggers = {
     public_ip = metal_device.machine.access_public_ipv4
+    password  = metal_device.machine.root_password
   }
 
   connection {
-    host = self.triggers.public_ip
+    host        = self.triggers.public_ip
+    user        = "Admin"
+    password    = self.triggers.password
+    script_path = "/Windows/Temp/terraform_%RAND%.bat"
   }
 
   provisioner "file" {
@@ -99,7 +103,6 @@ resource "null_resource" "github_runner_destroy" {
     source      = "provision-scripts/github-runner.destroy.ps1"
     destination = "C:/github-runner.destroy.ps1"
   }
-
 
   provisioner "remote-exec" {
     when = destroy

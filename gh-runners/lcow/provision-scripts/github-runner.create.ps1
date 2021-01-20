@@ -18,6 +18,7 @@ $ErrorActionPreference = "Stop"
 $ACTIONS_RUNNER_INSTALL_DIR = "\actions-runners\$Owner-$Repo"
 $ACTIONS_RUNNER_WORK_DIR = "$ACTIONS_RUNNER_INSTALL_DIR-work"
 
+echo "> Creating workspace..."
 md -Force $ACTIONS_RUNNER_INSTALL_DIR
 md -Force $ACTIONS_RUNNER_WORK_DIR
 

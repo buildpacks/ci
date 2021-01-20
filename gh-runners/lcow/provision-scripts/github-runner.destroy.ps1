@@ -16,7 +16,7 @@ Push-Location $ACTIONS_RUNNER_INSTALL_DIR
   echo "> Token: $ACTIONS_RUNNER_INPUT_TOKEN"
 
   echo "> Unregistering runner..."
-  .\config.cmd remove --unattended --token $ACTIONS_RUNNER_INPUT_TOKEN
+  ./config.cmd remove --unattended --token $ACTIONS_RUNNER_INPUT_TOKEN
 
 Pop-Location
 

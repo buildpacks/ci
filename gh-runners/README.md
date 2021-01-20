@@ -18,6 +18,8 @@ source scripts/auth-github.sh
 (cd lcow && terraform init && terraform apply)
 ```
 
+- **Expected execution time:** ~35 minutes
+
 ### Info
 
 To view credentials for a runner, execute:
@@ -54,6 +56,8 @@ source scripts/auth-github.sh
 source scripts/auth-redhat.sh
 (cd rhel-openshift && terraform init && terraform apply)
 ```
+
+- **Expected execution time:** 20 minutes
 
 ### Info
 

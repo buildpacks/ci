@@ -6,12 +6,13 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
 echo "> Installing dependencies..."
-choco install docker-desktop git make cygwin -y
+choco install git make cygwin -y
 
 echo "> Configuring git..."
 & "C:\Program Files\Git\cmd\git.exe" config --global core.autocrlf false
 
 echo "> Adding cygwin binaries to PATH..."
-[Environment]::SetEnvironmentVariable("PATH", "C:\tools\cygwin\bin;$ENV:PATH")
+[Environment]::SetEnvironmentVariable("PATH", "C:\tools\cygwin\bin;$ENV:PATH", [System.EnvironmentVariableTarget]::User)
 
-echo "> Done!"
+echo "> Restarting..."
+shutdown.exe /r /t 5

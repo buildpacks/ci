@@ -39,9 +39,8 @@ Push-Location $ACTIONS_RUNNER_INSTALL_DIR
 
   echo "> Configuring runner..."
   $ACTIONS_RUNNER_INPUT_TOKEN = (Invoke-RestMethod @RUNNER_TOKEN_REQUEST).token
-  echo "> Token: $ACTIONS_RUNNER_INPUT_TOKEN"
-  echo "$ACTIONS_RUNNER_INPUT_TOKEN" > .github-runner-token
-
+  echo "Token: $ACTIONS_RUNNER_INPUT_TOKEN"
+  
   ./config.cmd --unattended --replace --runasservice `
       --windowslogonaccount "$ServiceAccount" `
       --windowslogonpassword "$ServicePassword" `

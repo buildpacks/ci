@@ -2,10 +2,6 @@
 
 set -e
 
-# INPUTS
-
-RH_PULL_SECRET='%RH_PULL_SECRET%'
-
 # CHECKS
 
 if [ "$EUID" -eq 0 ]; then 
@@ -13,18 +9,27 @@ if [ "$EUID" -eq 0 ]; then
     exit 1
 fi
 
+# INPUTS
+
+while getopts p:v: flag; do
+    case "${flag}" in
+        p) RH_PULL_SECRET=${OPTARG};;
+        v) RH_CRC_VERSION=${OPTARG};;
+    esac
+done
+
 echo "> Installing CodeReady Containers dependencies..."
 # NOTE: libgcrypt - upgrade (see: https://github.com/code-ready/crc/issues/1225)
 sudo yum install -y NetworkManager qemu-kvm libvirt libgcrypt
 
 echo "> Downloading CodeReady Containers..."
-wget https://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/crc-linux-amd64.tar.xz
+wget https://mirror.openshift.com/pub/openshift-v4/clients/crc/${RH_CRC_VERSION}/crc-linux-amd64.tar.xz -O crc-${RH_CRC_VERSION}.tar.xz
 
 echo "> Extracting CodeReady Containers..."
-tar -xvf crc-linux-amd64.tar.xz crc-linux-1.20.0-amd64/crc
+tar --strip-components=1 -xvf crc-${RH_CRC_VERSION}.tar.xz --wildcards --no-anchored 'crc'
 
 echo "> Installing CodeReady Containers..."
-sudo cp crc-linux-1.20.0-amd64/crc /usr/bin/
+sudo mv crc /usr/bin/crc
 
 echo "> Setting up CodeReady Containers..."
 crc setup

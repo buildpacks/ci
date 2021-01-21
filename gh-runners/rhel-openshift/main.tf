@@ -12,7 +12,7 @@ resource "metal_device" "machine" {
   facilities       = ["ny5"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
-  user_data        = file("provision-scripts/user-data.tpl.sh")
+  user_data        = file("provision-scripts/user-data.sh")
 
   connection {
     type    = "ssh"
@@ -25,18 +25,14 @@ resource "metal_device" "machine" {
   # Create
   ##
   provisioner "file" {
-    content = replace(replace(
-      file("provision-scripts/redhat.create.tpl.sh"),
-      "%RH_USERNAME%", var.RH_USERNAME),
-      "%RH_PASSWORD%", var.RH_PASSWORD
-    )
+    source      = "provision-scripts/redhat.create.sh"
     destination = "/tmp/provision-redhat.create.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-redhat.create.sh",
-      "/tmp/provision-redhat.create.sh",
+      "/tmp/provision-redhat.create.sh -u ${var.RH_USERNAME} -p ${var.RH_PASSWORD}",
     ]
   }
 
@@ -45,7 +41,7 @@ resource "metal_device" "machine" {
   ##
   provisioner "remote-exec" {
     when   = destroy
-    script = "provision-scripts/redhat.destroy.tpl.sh"
+    script = "provision-scripts/redhat.destroy.sh"
   }
 }
 
@@ -68,20 +64,14 @@ resource "null_resource" "github_runner" {
   }
 
   provisioner "file" {
-    content = replace(replace(replace(replace(
-      file("provision-scripts/github-runner.create.tpl.sh"),
-      "%GH_TOKEN%", var.GH_TOKEN),
-      "%GH_OWNER%", "buildpacks"),
-      "%GH_REPO%", each.key),
-      "%GH_RUNNER_VERSION%", var.GH_RUNNER_VERSION
-    )
+    source      = "provision-scripts/github-runner.create.sh"
     destination = "/tmp/provision-github-runner.create.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -t ${var.GH_TOKEN} -o buildpacks -r ${each.key} -v ${var.GH_RUNNER_VERSION}",
     ]
   }
 
@@ -92,7 +82,8 @@ resource "null_resource" "github_runner_destroy" {
   for_each = local.repos
 
   triggers = {
-    public_ip = metal_device.machine.access_public_ipv4
+    public_ip    = metal_device.machine.access_public_ipv4
+    github_token = var.GH_TOKEN
   }
 
   connection {
@@ -100,12 +91,8 @@ resource "null_resource" "github_runner_destroy" {
   }
 
   provisioner "file" {
-    when = destroy
-    content = replace(replace(
-      file("provision-scripts/github-runner.destroy.tpl.sh"),
-      "%GH_OWNER%", "buildpacks"),
-      "%GH_REPO%", each.key
-    )
+    when        = destroy
+    source      = "provision-scripts/github-runner.destroy.sh"
     destination = "/tmp/provision-github-runner.destroy.sh"
   }
 
@@ -113,7 +100,7 @@ resource "null_resource" "github_runner_destroy" {
     when = destroy
     inline = [
       "chmod +x /tmp/provision-github-runner.destroy.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh",
+      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh  -t ${self.triggers.github_token} -o buildpacks -r ${each.key}",
     ]
   }
 }
@@ -127,17 +114,14 @@ resource "null_resource" "codeready_containers" {
   }
 
   provisioner "file" {
-    content = replace(
-      file("provision-scripts/codeready-containers.create.tpl.sh"),
-      "%RH_PULL_SECRET%", var.RH_PULL_SECRET
-    )
+    source      = "provision-scripts/codeready-containers.create.sh"
     destination = "/tmp/provision-codeready-containers.create.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-codeready-containers.create.sh",
-      "sudo -i -u user bash /tmp/provision-codeready-containers.create.sh",
+      "sudo -i -u user bash /tmp/provision-codeready-containers.create.sh -p '${var.RH_PULL_SECRET}' -v ${var.RH_CRC_VERSION}",
     ]
   }
 }

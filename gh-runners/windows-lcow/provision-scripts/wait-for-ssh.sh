@@ -9,7 +9,7 @@ if [ -z "$host" ]; then
 fi
 
 echo "Waiting for SSH..."
-while [ $attempts -lt 15 ]; do
+while [ $attempts -lt 60 ]; do
   if nc -z "$host" 22; then
     echo "SSH Connected!"
     exit 0

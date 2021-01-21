@@ -2,10 +2,21 @@
 
 set -e
 
+# CHECKS
+
+if [ "$EUID" -ne 0 ]; then 
+    echo "Must be ran as root"
+    exit 1
+fi
+
 # INPUTS
 
-RH_USERNAME="%RH_USERNAME%"
-RH_PASSWORD="%RH_PASSWORD%"
+while getopts u:p: flag; do
+    case "${flag}" in
+        u) RH_USERNAME=${OPTARG};;
+        p) RH_PASSWORD=${OPTARG};;
+    esac
+done
 
 echo "> Removing previous repos..."
 # see https://access.redhat.com/discussions/4222851#comment-1617351

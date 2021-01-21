@@ -10,10 +10,15 @@ if [ "$EUID" -eq 0 ]; then
 fi
 
 # INPUTS
-GH_TOKEN="%GH_TOKEN%"
-GH_OWNER="%GH_OWNER%"
-GH_REPO="%GH_REPO%"
-GH_RUNNER_VERSION="%GH_RUNNER_VERSION%"
+
+while getopts t:o:r:v: flag; do
+    case "${flag}" in
+        t) GH_TOKEN=${OPTARG};;
+        o) GH_OWNER=${OPTARG};;
+        r) GH_REPO=${OPTARG};;
+        v) GH_RUNNER_VERSION=${OPTARG};;
+    esac
+done
 
 echo "> Install depenedencies..."
 sudo yum install -y jq
@@ -37,8 +42,7 @@ pushd $ACTIONS_RUNNER_INSTALL_DIR > /dev/null
     echo "> Configuring runner..."
     ACTIONS_RUNNER_INPUT_TOKEN=$(curl -sS --request POST --url "https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/runners/registration-token" --header "authorization: Bearer ${GH_TOKEN}"  --header 'content-type: application/json' | jq -r .token)
 
-    echo "> Token: $ACTIONS_RUNNER_INPUT_TOKEN"
-    echo "$ACTIONS_RUNNER_INPUT_TOKEN" > .github-runner-token
+    echo "Token: $ACTIONS_RUNNER_INPUT_TOKEN"
 
     ./config.sh --unattended --replace \
         --name $HOSTNAME \

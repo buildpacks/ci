@@ -20,10 +20,16 @@ variable "RH_PASSWORD" {
   sensitive   = true
 }
 
+variable "RH_CRC_VERSION" {
+  type        = string
+  description = "RedHat CodeReady Containers version"
+  default     = "1.20.0"
+}
+
 variable "RH_PULL_SECRET" {
   type        = string
   description = "RedHat Pull Secret"
-  sensitive   = true
+  sensitive   = false
 }
 
 variable "GH_TOKEN" {

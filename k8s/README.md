@@ -1,18 +1,6 @@
-## Environments
 
-This setup is broken into various environments:
 
-- [gke](gke) - Google Kubernetes Engine environment
-- [local](local) - Local k8s environment (ie. [kind](https://kind.sigs.k8s.io/), Docker)
-
-## Prerequisites
-
-- `kubectl`
-    - `brew install kubectl`
-- `terraform`
-    - `brew install terraform`
-
-### GKE
+### Prerequisites
 
 - GCP account access
 - Configured (authenticated) `gcloud`
@@ -20,20 +8,29 @@ This setup is broken into various environments:
     - `gcloud init`
         - Login and select `cncf-buildpacks-ci` project
     - `gcloud auth application-default login`
+- `kubectl`
+    - `brew install kubectl`
+- `terraform`
+    - `brew install terraform`
 
-## Updates
+
+### Updates
+
+_NOTE: Variables are stored in [`terraform.tfvars`](terraform.tfvars)_
 
 ```shell
-terraform -chdir=<ENV> init
-terraform -chdir=<ENV> apply
+terraform init
+terraform apply
 ```
 
-## Access
-
-### GKE
+### Access
 
 ```shell bash
 gcloud container clusters get-credentials $(terraform output kubernetes_cluster_name) --region $(terraform output region)
+```
+
+```shell fish
+gcloud container clusters get-credentials (terraform output kubernetes_cluster_name) --region (terraform output region)
 ```
 
 ### Dashboards
@@ -42,4 +39,9 @@ gcloud container clusters get-credentials $(terraform output kubernetes_cluster_
 kubectl proxy
 ```
 
+- [k8s](http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/)
+    - Get token: 
+    ```
+    kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+    ````
 - [Tekton](http://localhost:8001/api/v1/namespaces/tekton-pipelines/services/tekton-dashboard:http/proxy/#/pipelineruns)

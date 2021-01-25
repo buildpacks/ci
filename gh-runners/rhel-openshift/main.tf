@@ -15,10 +15,8 @@ resource "metal_device" "machine" {
   user_data        = file("provision-scripts/user-data.sh")
 
   connection {
-    type    = "ssh"
-    user    = "root"
-    host    = self.access_public_ipv4
-    timeout = "5m"
+    host     = self.access_public_ipv4
+    password = self.root_password
   }
 
   ##
@@ -49,6 +47,11 @@ output "public_ip" {
   value = metal_device.machine.access_public_ipv4
 }
 
+output "root_password" {
+  value     = metal_device.machine.root_password
+  sensitive = true
+}
+
 ###
 # GITHUB RUNNER
 ###
@@ -59,8 +62,15 @@ locals {
 resource "null_resource" "github_runner" {
   for_each = local.repos
 
+  triggers = {
+    public_ip    = metal_device.machine.access_public_ipv4
+    password     = metal_device.machine.root_password
+    github_token = var.GH_TOKEN
+  }
+
   connection {
-    host = metal_device.machine.access_public_ipv4
+    host     = self.triggers.public_ip
+    password = self.triggers.password
   }
 
   provisioner "file" {
@@ -71,24 +81,11 @@ resource "null_resource" "github_runner" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -t ${var.GH_TOKEN} -o buildpacks -r ${each.key} -v ${var.GH_RUNNER_VERSION}",
+      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -t ${self.triggers.github_token} -o buildpacks -r ${each.key} -v ${var.GH_RUNNER_VERSION}",
     ]
   }
 
-  depends_on = [null_resource.github_runner_destroy]
-}
-
-resource "null_resource" "github_runner_destroy" {
-  for_each = local.repos
-
-  triggers = {
-    public_ip    = metal_device.machine.access_public_ipv4
-    github_token = var.GH_TOKEN
-  }
-
-  connection {
-    host = self.triggers.public_ip
-  }
+  # ----- destroy -----
 
   provisioner "file" {
     when        = destroy
@@ -110,7 +107,8 @@ resource "null_resource" "github_runner_destroy" {
 ###
 resource "null_resource" "codeready_containers" {
   connection {
-    host = metal_device.machine.access_public_ipv4
+    host     = metal_device.machine.access_public_ipv4
+    password = metal_device.machine.root_password
   }
 
   provisioner "file" {

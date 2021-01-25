@@ -1,7 +1,6 @@
 variable "METAL_AUTH_TOKEN" {
   type        = string
   description = "Auth Token for Equinix Metal"
-  sensitive   = true
 }
 
 variable "METAL_PROJECT_ID" {
@@ -17,7 +16,6 @@ variable "RH_USERNAME" {
 variable "RH_PASSWORD" {
   type        = string
   description = "RedHat Password"
-  sensitive   = true
 }
 
 variable "RH_CRC_VERSION" {
@@ -29,13 +27,11 @@ variable "RH_CRC_VERSION" {
 variable "RH_PULL_SECRET" {
   type        = string
   description = "RedHat Pull Secret"
-  sensitive   = false
 }
 
 variable "GH_TOKEN" {
   type        = string
   description = "GitHub personal access token."
-  sensitive   = true
 }
 
 variable "GH_RUNNER_VERSION" {

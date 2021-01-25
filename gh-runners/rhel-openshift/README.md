@@ -1,39 +1,40 @@
-# RHEL Runner
+# RHEL OpenShift Runner
 
 ## Usage
 
 ### Configuration
 
-The following `source`-able scripts below retrieve the required secrets from your LastPass account. [`lpass`](https://github.com/lastpass/lastpass-cli) is required.
+All secrets are managed via [Terraform Cloud](https://app.terraform.io/app/buildpacksio/workspaces).
 
-- [auth-equinix.sh](../scripts/auth-equinix.sh)
-- [auth-github.sh](../scripts/auth-github.sh)
-- [auth-redhat.sh](../scripts/auth-redhat.sh)
+The following script configures terraform CLI authentication against Terraform Cloud.
+
+- [auth-terraform.sh](../scripts/auth-terraform.sh) 
+    - _depends on: [`lpass`](https://github.com/lastpass/lastpass-cli)_
 
 ### Create
 
 ```shell
-source ../scripts/auth-equinix.sh
-source ../scripts/auth-github.sh
-source ../scripts/auth-redhat.sh
+./../scripts/auth-terraform.sh
 terraform init
 terraform apply
 ```
 
-- **Expected execution time:** 20 minutes
+- **Expected execution time:** ~30 minutes
 
 ### Info
 
 ```shell
+# info (non-sensitive)
 terraform output
+
+# password (sensitive)
+terraform output root_password
 ```
 
 ### Destroy
 
 ```shell
-source ../scripts/auth-equinix.sh
-source ../scripts/auth-github.sh
-source ../scripts/auth-redhat.sh
+./../scripts/auth-terraform.sh
 terraform init
 terraform destroy
 ```

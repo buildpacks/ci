@@ -64,6 +64,8 @@ resource "null_resource" "docker" {
     root_password = metal_device.machine.root_password
   }
 
+  depends_on = [null_resource.dependencies]
+
   connection {
     host        = self.triggers.public_ip
     user        = "Admin"

@@ -2,11 +2,11 @@ provider "metal" {
   auth_token = var.METAL_AUTH_TOKEN
 }
 
-resource "metal_device" "machine" {
+resource "metal_device" "windows-lcow" {
   project_id       = var.METAL_PROJECT_ID
   hostname         = "windows-lcow-gh-runner"
   operating_system = "windows_2019"
-  facilities       = ["dfw2"]
+  facilities       = ["dfw2", "iad2"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
   user_data        = file("provision-scripts/user_data.ps1")
@@ -23,14 +23,44 @@ resource "metal_device" "machine" {
   }
 }
 
+resource "metal_device" "windows-workstation1" {
+  project_id       = var.METAL_PROJECT_ID
+  hostname         = "windows-workstation1"
+  operating_system = "windows_2019"
+  facilities       = ["dfw2", "iad2"]
+  plan             = "c3.small.x86"
+  billing_cycle    = "hourly"
+  user_data        = file("provision-scripts/user_data.ps1")
+
+  connection {
+    host        = self.access_public_ipv4
+    user        = "Admin"
+    password    = self.root_password
+    script_path = "/Windows/Temp/terraform_%RAND%.bat"
+  }
+
+  provisioner "local-exec" {
+    command = "./provision-scripts/wait-for-ssh.sh ${self.access_public_ipv4}"
+  }
+}
+
+locals {
+  machines = {
+    "lcow" : metal_device.windows-lcow,
+    "workstation1" : metal_device.windows-workstation1
+  }
+}
+
 ###
 # DEPENDENCIES
 ###
 resource "null_resource" "dependencies" {
+  for_each = local.machines
+
   triggers = {
     sha           = sha1(file("provision-scripts/dependencies.ps1"))
-    public_ip     = metal_device.machine.access_public_ipv4
-    root_password = metal_device.machine.root_password
+    public_ip     = each.value.access_public_ipv4
+    root_password = each.value.root_password
   }
 
   connection {
@@ -58,10 +88,12 @@ resource "null_resource" "dependencies" {
 # DOCKER
 ###
 resource "null_resource" "docker" {
+  for_each = local.machines
+
   triggers = {
     sha           = sha1(file("provision-scripts/docker.create.ps1"))
-    public_ip     = metal_device.machine.access_public_ipv4
-    root_password = metal_device.machine.root_password
+    public_ip     = each.value.access_public_ipv4
+    root_password = each.value.root_password
   }
 
   depends_on = [null_resource.dependencies]
@@ -114,8 +146,8 @@ resource "null_resource" "github_runner" {
 
   triggers = {
     sha           = sha1(file("provision-scripts/github-runner.create.ps1"))
-    public_ip     = metal_device.machine.access_public_ipv4
-    root_password = metal_device.machine.root_password
+    public_ip     = metal_device.windows-lcow.access_public_ipv4
+    root_password = metal_device.windows-lcow.root_password
     github_token  = var.GH_TOKEN
   }
 
@@ -155,19 +187,14 @@ resource "null_resource" "github_runner" {
   depends_on = [null_resource.dependencies]
 }
 
-output "hostname" {
-  value = metal_device.machine.hostname
-}
 
-output "root_username" {
-  value = "Admin"
-}
-
-output "root_password" {
-  value     = metal_device.machine.root_password
-  sensitive = true
-}
-
-output "public_ip" {
-  value = metal_device.machine.access_public_ipv4
+output "machine_info" {
+  value = {
+    for machine in local.machines :
+    machine.hostname => {
+      "public_ip" : machine.access_public_ipv4
+      "root_username" : "Admin"
+      "root_password" : machine.access_public_ipv4
+    }
+  }
 }

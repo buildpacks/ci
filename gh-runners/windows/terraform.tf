@@ -3,7 +3,7 @@ terraform {
     organization = "buildpacksio"
 
     workspaces {
-      name = "gh-runners-windows-lcow"
+      name = "windows"
     }
   }
 

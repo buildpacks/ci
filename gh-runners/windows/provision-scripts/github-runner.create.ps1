@@ -5,6 +5,8 @@ param (
     [string]$Repo,
     # github token
     [string]$Token,
+    # github label
+    [string]$Label,
     # github runner version
     [string]$Version,
     # service logon account
@@ -45,7 +47,7 @@ Push-Location $ACTIONS_RUNNER_INSTALL_DIR
       --windowslogonaccount "$ServiceAccount" `
       --windowslogonpassword "$ServicePassword" `
       --name "$(hostname)" `
-      --labels "lcow" `
+      --labels "$Label" `
       --work $ACTIONS_RUNNER_WORK_DIR `
       --url "https://github.com/${Owner}/${Repo}" `
       --token $ACTIONS_RUNNER_INPUT_TOKEN

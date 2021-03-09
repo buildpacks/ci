@@ -1,4 +1,4 @@
 $ErrorActionPreference = "Stop"
 
-echo "> Installing Docker..."
+echo "> Uninstalling Docker..."
 choco uninstall docker-desktop -y

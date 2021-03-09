@@ -102,7 +102,7 @@ resource "null_resource" "dependencies" {
   }
 
   provisioner "local-exec" {
-    command = "sleep 5 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
+    command = "sleep 20 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
   }
 }
 
@@ -137,7 +137,7 @@ resource "null_resource" "docker" {
   }
 
   provisioner "local-exec" {
-    command = "sleep 5 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
+    command = "sleep 20 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
   }
 
   # ------ DESTROY ------

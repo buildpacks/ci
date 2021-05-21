@@ -104,6 +104,12 @@ resource "null_resource" "dependencies" {
   provisioner "local-exec" {
     command = "sleep 20 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
   }
+
+  lifecycle {
+    ignore_changes = [
+      triggers["root_password"]
+    ]
+  }
 }
 
 ###
@@ -230,7 +236,6 @@ resource "null_resource" "github_runner" {
 
   depends_on = [null_resource.dependencies]
 }
-
 
 output "machine_info" {
   value = {

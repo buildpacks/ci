@@ -3,7 +3,7 @@
 set -e
 
 echo "> Downloading API token..."
-TOKEN="$(lpass show --note 'Shared-Cloud Native Buildpacks/terraform-api-token')"
+TOKEN="$(op get item 4bqcschjgjcp3nvgy4hbwqhrgq --fields credential)"
 
 CREDENTIALS_BLOCK="credentials \"app.terraform.io\" { token = \"${TOKEN}\" }"
 

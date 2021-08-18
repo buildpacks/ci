@@ -9,7 +9,7 @@ All secrets are managed via [Terraform Cloud](https://app.terraform.io/app/build
 The following script configures terraform CLI authentication against Terraform Cloud.
 
 - [auth-terraform.sh](../scripts/auth-terraform.sh) 
-    - _depends on: [`lpass`](https://github.com/lastpass/lastpass-cli)_
+    - _depends on: [`op`](https://1password.com/downloads/command-line/)_
 
 ### Create
 

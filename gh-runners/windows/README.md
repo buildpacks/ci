@@ -1,4 +1,4 @@
-# Windows LCOW Runner
+# Windows Runners
 
 ## Usage
 

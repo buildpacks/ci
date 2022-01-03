@@ -1,5 +1,5 @@
 #!/bin/env bash
-
+set -x
 set -e
 
 # CHECKS
@@ -39,4 +39,6 @@ source $HOME/.bash_profile
 echo "> Starting CodeReady Containers..."
 echo $RH_PULL_SECRET > /tmp/pull-secret
 crc start -p /tmp/pull-secret
-rm /tmp/pull-secret
+
+echo "> Cleaning up..."
+rm -f /tmp/pull-secret

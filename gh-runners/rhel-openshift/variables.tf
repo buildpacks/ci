@@ -21,7 +21,7 @@ variable "RH_PASSWORD" {
 variable "RH_CRC_VERSION" {
   type        = string
   description = "RedHat CodeReady Containers version"
-  default     = "1.20.0"
+  default     = "latest"
 }
 
 variable "RH_PULL_SECRET" {
@@ -38,4 +38,14 @@ variable "GH_RUNNER_VERSION" {
   type        = string
   description = "Version of action runner to install"
   default     = "2.275.1"
+}
+
+variable "LOGIN_USERNAME" {
+  type        = string
+  description = "Login username"
+}
+
+variable "LOGIN_PASSWORD" {
+  type        = string
+  description = "Login password"
 }

@@ -20,7 +20,7 @@ resource "metal_device" "machine" {
   }
 
   ##
-  # Create
+  # RED HAT
   ##
   provisioner "file" {
     source      = "provision-scripts/redhat.create.sh"
@@ -34,23 +34,27 @@ resource "metal_device" "machine" {
     ]
   }
 
-  ##
-  # Destroy
-  ##
   provisioner "remote-exec" {
     when   = destroy
     script = "provision-scripts/redhat.destroy.sh"
   }
+
+  ###
+  # USERS
+  ###
+  provisioner "file" {
+    source      = "provision-scripts/users.create.sh"
+    destination = "/tmp/provision-users.create.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/provision-users.create.sh",
+      "/tmp/provision-users.create.sh -u '${var.LOGIN_USERNAME}' -p '${var.LOGIN_PASSWORD}'",
+    ]
+  }
 }
 
-output "public_ip" {
-  value = metal_device.machine.access_public_ipv4
-}
-
-output "root_password" {
-  value     = metal_device.machine.root_password
-  sensitive = true
-}
 
 ###
 # GITHUB RUNNER
@@ -63,14 +67,16 @@ resource "null_resource" "github_runner" {
   for_each = local.repos
 
   triggers = {
-    public_ip    = metal_device.machine.access_public_ipv4
-    password     = metal_device.machine.root_password
-    github_token = var.GH_TOKEN
+    public_ip      = metal_device.machine.access_public_ipv4
+    login_username = var.LOGIN_USERNAME
+    login_password = var.LOGIN_PASSWORD
+    github_token   = var.GH_TOKEN
   }
 
   connection {
     host     = self.triggers.public_ip
-    password = self.triggers.password
+    user     = self.triggers.login_username
+    password = self.triggers.login_password
   }
 
   provisioner "file" {
@@ -81,7 +87,7 @@ resource "null_resource" "github_runner" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-github-runner.create.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.create.sh -t ${self.triggers.github_token} -o buildpacks -r ${each.key} -v ${var.GH_RUNNER_VERSION}",
+      "/tmp/provision-github-runner.create.sh -t ${self.triggers.github_token} -o buildpacks -r ${each.key} -v ${var.GH_RUNNER_VERSION}",
     ]
   }
 
@@ -97,7 +103,7 @@ resource "null_resource" "github_runner" {
     when = destroy
     inline = [
       "chmod +x /tmp/provision-github-runner.destroy.sh",
-      "sudo -i -u user bash /tmp/provision-github-runner.destroy.sh  -t ${self.triggers.github_token} -o buildpacks -r ${each.key}",
+      "/tmp/provision-github-runner.destroy.sh  -t ${self.triggers.github_token} -o buildpacks -r ${each.key}",
     ]
   }
 }
@@ -106,9 +112,16 @@ resource "null_resource" "github_runner" {
 # CODEREADY CONTAINERS
 ###
 resource "null_resource" "codeready_containers" {
+
+  triggers = {
+    login_username = var.LOGIN_USERNAME
+    login_password = var.LOGIN_PASSWORD
+  }
+
   connection {
     host     = metal_device.machine.access_public_ipv4
-    password = metal_device.machine.root_password
+    user     = self.triggers.login_username
+    password = self.triggers.login_password
   }
 
   provisioner "file" {
@@ -119,7 +132,20 @@ resource "null_resource" "codeready_containers" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/provision-codeready-containers.create.sh",
-      "sudo -i -u user bash /tmp/provision-codeready-containers.create.sh -p '${var.RH_PULL_SECRET}' -v ${var.RH_CRC_VERSION}",
+      "/tmp/provision-codeready-containers.create.sh -p '${var.RH_PULL_SECRET}' -v ${var.RH_CRC_VERSION}",
     ]
   }
+}
+
+output "public_ip" {
+  value = metal_device.machine.access_public_ipv4
+}
+
+output "login_user" {
+  value = var.LOGIN_USERNAME
+}
+
+output "login_password" {
+  value     = var.LOGIN_PASSWORD
+  sensitive = true
 }

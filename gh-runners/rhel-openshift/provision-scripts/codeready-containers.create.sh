@@ -32,6 +32,7 @@ echo "> Installing CodeReady Containers..."
 sudo mv crc /usr/bin/crc
 
 echo "> Setting up CodeReady Containers..."
+crc config set consent-telemetry no
 crc setup
 echo 'export PATH=$PATH:$HOME/.crc/bin/oc' >> $HOME/.bash_profile
 source $HOME/.bash_profile

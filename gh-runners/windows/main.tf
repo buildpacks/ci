@@ -6,7 +6,7 @@ resource "metal_device" "windows-lcow" {
   project_id       = var.METAL_PROJECT_ID
   hostname         = "windows-lcow-gh-runner"
   operating_system = "windows_2019"
-  facilities       = ["dfw2", "iad2"]
+  facilities       = ["da11", "dfw2", "iad1", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
   user_data        = file("provision-scripts/user_data.ps1")
@@ -27,7 +27,7 @@ resource "metal_device" "windows-wcow" {
   project_id       = var.METAL_PROJECT_ID
   hostname         = "windows-wcow-gh-runner"
   operating_system = "windows_2019"
-  facilities       = ["dfw2", "iad2"]
+  facilities       = ["da11", "dfw2", "iad1", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
   user_data        = file("provision-scripts/user_data.ps1")
@@ -48,7 +48,7 @@ resource "metal_device" "windows-workstation1" {
   project_id       = var.METAL_PROJECT_ID
   hostname         = "windows-workstation1"
   operating_system = "windows_2019"
-  facilities       = ["dfw2", "iad2"]
+  facilities       = ["da11", "dfw2", "iad1", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
   user_data        = file("provision-scripts/user_data.ps1")

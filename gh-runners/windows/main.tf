@@ -2,14 +2,26 @@ provider "metal" {
   auth_token = var.METAL_AUTH_TOKEN
 }
 
+resource "random_string" "password" {
+  length           = 16
+  special          = true
+  override_special = "!"
+}
+
 resource "metal_device" "windows-lcow" {
   project_id       = var.METAL_PROJECT_ID
   hostname         = "windows-lcow-gh-runner"
   operating_system = "windows_2019"
-  facilities       = ["dfw2", "iad2"]
+  facilities       = ["da11", "dfw2", "iad1", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
-  user_data        = file("provision-scripts/user_data.ps1")
+  user_data = templatefile(
+    "provision-scripts/user_data.ps1",
+    {
+      admin_username = "Admin"
+      admin_password = random_string.password.result
+    }
+  )
 
   connection {
     host        = self.access_public_ipv4
@@ -27,10 +39,16 @@ resource "metal_device" "windows-wcow" {
   project_id       = var.METAL_PROJECT_ID
   hostname         = "windows-wcow-gh-runner"
   operating_system = "windows_2019"
-  facilities       = ["dfw2", "iad2"]
+  facilities       = ["da11", "dfw2", "iad1", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
-  user_data        = file("provision-scripts/user_data.ps1")
+  user_data = templatefile(
+    "provision-scripts/user_data.ps1",
+    {
+      admin_username = "Admin"
+      admin_password = random_string.password.result
+    }
+  )
 
   connection {
     host        = self.access_public_ipv4
@@ -48,10 +66,16 @@ resource "metal_device" "windows-workstation1" {
   project_id       = var.METAL_PROJECT_ID
   hostname         = "windows-workstation1"
   operating_system = "windows_2019"
-  facilities       = ["dfw2", "iad2"]
+  facilities       = ["da11", "dfw2", "iad1", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
-  user_data        = file("provision-scripts/user_data.ps1")
+  user_data = templatefile(
+    "provision-scripts/user_data.ps1",
+    {
+      admin_username = "Admin"
+      admin_password = random_string.password.result
+    }
+  )
 
   connection {
     host        = self.access_public_ipv4
@@ -82,7 +106,7 @@ resource "null_resource" "dependencies" {
   triggers = {
     sha           = sha1(file("provision-scripts/dependencies.ps1"))
     public_ip     = each.value.access_public_ipv4
-    root_password = each.value.root_password
+    root_password = random_string.password.result
   }
 
   connection {
@@ -104,12 +128,6 @@ resource "null_resource" "dependencies" {
   provisioner "local-exec" {
     command = "sleep 20 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
   }
-
-  lifecycle {
-    ignore_changes = [
-      triggers["root_password"]
-    ]
-  }
 }
 
 ###
@@ -121,7 +139,7 @@ resource "null_resource" "docker" {
   triggers = {
     sha           = sha1(file("provision-scripts/docker.create.ps1"))
     public_ip     = each.value.access_public_ipv4
-    root_password = each.value.root_password
+    root_password = random_string.password.result
   }
 
   depends_on = [null_resource.dependencies]
@@ -195,7 +213,7 @@ resource "null_resource" "github_runner" {
   triggers = {
     sha           = sha1(file("provision-scripts/github-runner.create.ps1"))
     public_ip     = each.value.machine.access_public_ipv4
-    root_password = each.value.machine.root_password
+    root_password = random_string.password.result
     github_token  = var.GH_TOKEN
     repo          = each.value.repo
     label         = each.value.label
@@ -243,7 +261,7 @@ output "machine_info" {
     machine.hostname => {
       "public_ip" : machine.access_public_ipv4
       "root_username" : "Admin"
-      "root_password" : machine.root_password
+      "root_password" : random_string.password.result
     }
   }
 }

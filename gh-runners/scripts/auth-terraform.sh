@@ -3,7 +3,7 @@
 set -e
 
 echo "> Downloading API token..."
-TOKEN="$(op get item 4bqcschjgjcp3nvgy4hbwqhrgq --fields credential)"
+TOKEN="$(op read op://Shared/4bqcschjgjcp3nvgy4hbwqhrgq/credential)"
 
 CREDENTIALS_BLOCK="credentials \"app.terraform.io\" { token = \"${TOKEN}\" }"
 

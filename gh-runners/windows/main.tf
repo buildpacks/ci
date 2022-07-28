@@ -10,9 +10,9 @@ resource "random_string" "password" {
 
 resource "metal_device" "windows-lcow" {
   project_id       = var.METAL_PROJECT_ID
-  hostname         = "windows-lcow-gh-runner"
+  hostname         = "windows-lcow"
   operating_system = "windows_2019"
-  facilities       = ["da11", "dfw2", "iad1", "dc13"]
+  facilities       = ["da11", "dfw2", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
   user_data = templatefile(
@@ -22,24 +22,13 @@ resource "metal_device" "windows-lcow" {
       admin_password = random_string.password.result
     }
   )
-
-  connection {
-    host        = self.access_public_ipv4
-    user        = "Admin"
-    password    = self.root_password
-    script_path = "/Windows/Temp/terraform_%RAND%.bat"
-  }
-
-  provisioner "local-exec" {
-    command = "./provision-scripts/wait-for-ssh.sh ${self.access_public_ipv4}"
-  }
 }
 
-resource "metal_device" "windows-wcow" {
+resource "metal_device" "windows-dev1" {
   project_id       = var.METAL_PROJECT_ID
-  hostname         = "windows-wcow-gh-runner"
+  hostname         = "windows-dev1"
   operating_system = "windows_2019"
-  facilities       = ["da11", "dfw2", "iad1", "dc13"]
+  facilities       = ["da11", "dfw2", "dc13"]
   plan             = "c3.small.x86"
   billing_cycle    = "hourly"
   user_data = templatefile(
@@ -49,51 +38,12 @@ resource "metal_device" "windows-wcow" {
       admin_password = random_string.password.result
     }
   )
-
-  connection {
-    host        = self.access_public_ipv4
-    user        = "Admin"
-    password    = self.root_password
-    script_path = "/Windows/Temp/terraform_%RAND%.bat"
-  }
-
-  provisioner "local-exec" {
-    command = "./provision-scripts/wait-for-ssh.sh ${self.access_public_ipv4}"
-  }
-}
-
-resource "metal_device" "windows-workstation1" {
-  project_id       = var.METAL_PROJECT_ID
-  hostname         = "windows-workstation1"
-  operating_system = "windows_2019"
-  facilities       = ["da11", "dfw2", "iad1", "dc13"]
-  plan             = "c3.small.x86"
-  billing_cycle    = "hourly"
-  user_data = templatefile(
-    "provision-scripts/user_data.ps1",
-    {
-      admin_username = "Admin"
-      admin_password = random_string.password.result
-    }
-  )
-
-  connection {
-    host        = self.access_public_ipv4
-    user        = "Admin"
-    password    = self.root_password
-    script_path = "/Windows/Temp/terraform_%RAND%.bat"
-  }
-
-  provisioner "local-exec" {
-    command = "./provision-scripts/wait-for-ssh.sh ${self.access_public_ipv4}"
-  }
 }
 
 locals {
   machines = {
     "lcow" : metal_device.windows-lcow,
-    "wcow" : metal_device.windows-wcow,
-    "workstation1" : metal_device.windows-workstation1
+    "dev1" : metal_device.windows-dev1
   }
 }
 
@@ -114,6 +64,7 @@ resource "null_resource" "dependencies" {
     user        = "Admin"
     password    = self.triggers.root_password
     script_path = "/Windows/Temp/terraform_%RAND%.bat"
+    timeout     = "15m"
   }
 
   provisioner "file" {
@@ -126,7 +77,7 @@ resource "null_resource" "dependencies" {
   }
 
   provisioner "local-exec" {
-    command = "sleep 20 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
+    command = "sleep 20"
   }
 }
 
@@ -149,6 +100,7 @@ resource "null_resource" "docker" {
     user        = "Admin"
     password    = self.triggers.root_password
     script_path = "/Windows/Temp/terraform_%RAND%.bat"
+    timeout     = "15m"
   }
 
   provisioner "file" {
@@ -161,7 +113,7 @@ resource "null_resource" "docker" {
   }
 
   provisioner "local-exec" {
-    command = "sleep 20 && ./provision-scripts/wait-for-ssh.sh ${self.triggers.public_ip}"
+    command = "sleep 20"
   }
 
   # ------ DESTROY ------
@@ -193,8 +145,7 @@ locals {
   // - (machine=2, label=Y, repo=2)
   runner_machines = flatten([
     for label, machine in {
-      "lcow" : metal_device.windows-lcow,
-      "wcow" : metal_device.windows-wcow
+      "lcow" : metal_device.windows-lcow
       } : [
       for repo in local.repos : {
         machine : machine,
@@ -224,6 +175,7 @@ resource "null_resource" "github_runner" {
     user        = "Admin"
     password    = self.triggers.root_password
     script_path = "/Windows/Temp/terraform_%RAND%.bat"
+    timeout     = "15m"
   }
 
   provisioner "file" {

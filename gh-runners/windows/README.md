@@ -60,6 +60,8 @@ terraform apply
 ### Info
 
 ```shell
+./../scripts/auth-terraform.sh
+terraform init
 terraform output
 ```
 
